@@ -1,0 +1,220 @@
+﻿@import "tailwindcss";
+
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #161616;
+  --neon: #d4ff00;
+  --neon2: #c8f200;
+  --blue: #00c2ff;
+  --text: #ffffff;
+  --muted: #888888;
+  --border: #222222;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #d4ff00; border-radius: 2px; }
+
+/* Pill button base */
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.pill-btn-primary {
+  background: #d4ff00;
+  color: #0a0a0a;
+  border: none;
+}
+.pill-btn-primary:hover { background: #c8f200; transform: translateY(-1px); }
+
+.pill-btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #333;
+}
+.pill-btn-outline:hover { border-color: #d4ff00; color: #d4ff00; }
+
+/* Neon yellow section strip */
+.neon-strip {
+  background: #d4ff00;
+  color: #0a0a0a;
+}
+
+/* Card */
+.card {
+  background: #161616;
+  border-radius: 16px;
+  border: 1px solid #222;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px #00000066;
+}
+
+/* Section label */
+.section-label {
+  color: #d4ff00;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Stat number */
+.stat-number {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: end;
+  padding-top: 0 !important;
+  padding-bottom: 40px !important;
+}
+.hero-title {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+}
+.hero-left {
+  grid-column: 1;
+  grid-row: 1;
+  padding-bottom: 58px;
+  align-self: end;
+}
+.hero-card {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  width: min(100%, 230px);
+  height: 278px;
+  border: 1px solid #222;
+  border-radius: 18px 18px 0 0;
+  background: linear-gradient(180deg, #1a1a1a, #0a0a0a);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 54px;
+  padding-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-mark {
+  color: #d4ff0038;
+  font-size: 4.2rem;
+  font-weight: 900;
+  letter-spacing: -0.16em;
+  line-height: 1;
+  position: relative;
+}
+.hero-mark span {
+  font-size: 0.95em;
+  margin-left: 0.02em;
+}
+.hero-stats {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: end;
+  padding: 0 0 74px 48px;
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: 780px !important;
+    grid-template-columns: 1fr 1fr;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  .hero-title {
+    top: 30px;
+  }
+  .hero-left {
+    grid-column: 1;
+  }
+  .hero-card {
+    grid-column: 2;
+  }
+  .hero-stats {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 32px 0 0;
+  }
+  .hero-stats > div {
+    flex: 1;
+    border-bottom: 0 !important;
+    border-top: 1px solid #1b1b1b;
+    padding-top: 18px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    display: flex;
+    min-height: auto !important;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 190px 24px 64px !important;
+  }
+  .hero-title {
+    top: 42px;
+  }
+  .hero-title h1 {
+    font-size: clamp(2.7rem, 13vw, 4rem) !important;
+  }
+  .hero-left {
+    padding-bottom: 32px;
+  }
+  .hero-card {
+    align-self: center;
+    height: 300px;
+  }
+  .hero-stats {
+    padding-top: 30px;
+    flex-direction: column;
+  }
+  .hero-stats > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+}
