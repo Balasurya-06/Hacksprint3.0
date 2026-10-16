@@ -47,6 +47,7 @@ export default function Home() {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section
         id="home"
+        className="hero"
         style={{
           minHeight: "100vh",
           paddingTop: "68px",
@@ -61,7 +62,7 @@ export default function Home() {
         }}
       >
         {/* Left panel */}
-        <div style={{ width: "100%", maxWidth: "360px", paddingTop: "60px", paddingBottom: "40px", position: "relative", zIndex: 1 }}>
+        <div className="hero-left" style={{ width: "100%", maxWidth: "360px", paddingTop: "60px", paddingBottom: "40px", position: "relative", zIndex: 1 }}>
           {/* small profile avatars */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "28px" }}>
             {["#ff6b35", "#a855f7", "#06b6d4", "#f59e0b"].map((c, i) => (
@@ -186,6 +187,7 @@ export default function Home() {
 
         {/* Center hero headline — spans full width */}
         <div
+          className="hero-title"
           style={{
             position: "absolute",
             top: 0,
@@ -234,7 +236,7 @@ export default function Home() {
         </div>
 
         {/* Right stats panel */}
-        <div style={{ paddingTop: "100px", paddingBottom: "40px", textAlign: "right" }}>
+        <div className="hero-stats" style={{ paddingTop: "100px", paddingBottom: "40px", textAlign: "right" }}>
           {[
             { value: "500+", label: "Active Hackers" },
             { value: "5+", label: "Challenge Tracks" },

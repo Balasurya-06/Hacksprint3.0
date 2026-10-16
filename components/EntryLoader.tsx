@@ -38,6 +38,7 @@ export default function EntryLoader() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="registration-popup-title"
+      className="entry-loader"
       style={{
         position: "fixed",
         inset: 0,
@@ -50,6 +51,7 @@ export default function EntryLoader() {
       }}
     >
       <div
+        className="entry-loader-card"
         style={{
           position: "relative",
           width: "min(100%, 520px)",
@@ -101,7 +103,7 @@ export default function EntryLoader() {
             Registration is now open
           </p>
         ) : (
-          <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+          <div className="entry-loader-timer" style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
             {values.map(([value, label]) => (
               <div key={label} style={{ minWidth: "68px", border: "1px solid #344800", borderRadius: "8px", background: "#151c00", padding: "10px 6px" }}>
                 <strong style={{ color: "#d4ff00", display: "block", fontFamily: "monospace", fontSize: "1.15rem" }}>{String(value).padStart(2, "0")}</strong>

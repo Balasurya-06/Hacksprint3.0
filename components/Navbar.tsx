@@ -45,8 +45,10 @@ export default function Navbar() {
         borderRadius: "999px",
         boxShadow: "0 14px 35px #00000055",
       }}
+      className="floating-navbar"
     >
       <div
+        className="navbar-inner"
         style={{
           maxWidth: "1120px",
           margin: "0 auto",
@@ -61,6 +63,7 @@ export default function Navbar() {
         <a
           href="#home"
           onClick={(event) => handleClick(event, "#home")}
+          className="navbar-brand"
           style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "9px", paddingRight: "14px" }}
         >
           <Image
