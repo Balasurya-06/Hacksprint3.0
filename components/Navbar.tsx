@@ -1,43 +1,57 @@
 ﻿"use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 const navLinks = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Highlights", href: "#highlights" },
-  { label: "Timeline", href: "#timeline" },
-  { label: "Prizes", href: "#prizes" },
-  { label: "Crew", href: "#crew" },
-  { label: "Sponsors", href: "#sponsors" },
-  { label: "Past Events", href: "#past-events" },
+  { label: "Home", href: "#home", icon: "⌂" },
+  { label: "About", href: "#about", icon: "◎" },
+  { label: "Highlights", href: "#highlights", icon: "✦" },
+  { label: "Crew", href: "#crew", icon: "♧" },
+  { label: "Past Events", href: "#past-events", icon: "◷" },
+  { label: "Sponsors", href: "#why-sponsor-us", icon: "◇" },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     event.preventDefault();
     setOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+    if (href.startsWith("#")) {
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth" });
+      } else {
+        router.push(`/${href}`);
+      }
+    } else {
+      router.push(href);
+    }
   };
 
   return (
     <nav
       style={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
+        top: "16px",
+        left: "50%",
+        width: "calc(100% - 32px)",
+        transform: "translateX(-50%)",
         zIndex: 100,
-        background: "rgba(10,10,10,0.92)",
+        maxWidth: "1120px",
+        background: "rgba(17,17,17,0.9)",
         backdropFilter: "blur(16px)",
-        borderBottom: "1px solid #1a1a1a",
+        border: "1px solid #303030",
+        borderRadius: "999px",
+        boxShadow: "0 14px 35px #00000055",
       }}
     >
       <div
         style={{
-          maxWidth: "880px",
+          maxWidth: "1120px",
           margin: "0 auto",
-          padding: "0 32px",
-          height: "52px",
+          padding: "7px 10px 7px 16px",
+          minHeight: "58px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -47,28 +61,40 @@ export default function Navbar() {
         <a
           href="#home"
           onClick={(event) => handleClick(event, "#home")}
-          style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "12px" }}
+          style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "9px", paddingRight: "14px" }}
         >
-          <span style={{ width: "30px", height: "30px", borderRadius: "50%", background: "#d4ff00", color: "#0a0a0a", display: "grid", placeItems: "center", fontSize: "0.65rem", fontWeight: 900 }}>HS</span>
-          <span style={{ fontWeight: 800, fontSize: "1rem", color: "#fff", letterSpacing: "-0.02em" }}>
-            HACKSPRINT
+          <Image
+            src="/logo.png"
+            alt="HACKSPRINT 3.0"
+            width={42}
+            height={42}
+            style={{ width: "42px", height: "42px", objectFit: "contain" }}
+          />
+          <span style={{ fontWeight: 900, fontSize: "0.9rem", letterSpacing: "-0.03em" }}>
+            <span style={{ color: "#2d8cff" }}>HACKSPRINT</span>
+            <span style={{ color: "#d4ff00", marginLeft: "4px" }}>3.0</span>
           </span>
         </a>
 
         {/* Desktop links */}
-        <div className="hidden lg:flex" style={{ gap: "4px", alignItems: "center" }}>
+        <div className="hidden lg:flex" style={{ gap: "2px", alignItems: "center", flex: 1, justifyContent: "center" }}>
           {navLinks.map((l) => (
             <a
               key={l.href}
               href={l.href}
               onClick={(event) => handleClick(event, l.href)}
               style={{
-                padding: "8px 12px",
-                fontSize: "0.8rem",
-                fontWeight: 500,
+                display: "flex",
+                minWidth: "68px",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "2px",
+                padding: "7px 8px",
+                fontSize: "0.68rem",
+                fontWeight: 600,
                 color: "#999",
                 textDecoration: "none",
-                borderRadius: "8px",
+                borderRadius: "999px",
                 transition: "color 0.2s, background 0.2s",
               }}
               onMouseEnter={(e) => {
@@ -80,23 +106,24 @@ export default function Navbar() {
                 e.currentTarget.style.background = "transparent";
               }}
             >
+              <span style={{ color: l.label === "Home" ? "#d4ff00" : "#aaa", fontSize: "1.05rem", lineHeight: 1 }}>{l.icon}</span>
               {l.label}
             </a>
           ))}
         </div>
 
         {/* Right side */}
-        <div className="hidden lg:flex" style={{ gap: "12px", alignItems: "center" }}>
+        <div className="hidden lg:flex" style={{ gap: "7px", alignItems: "center" }}>
           <a
             href="#contact"
             onClick={(event) => handleClick(event, "#contact")}
             style={{
-              padding: "9px 20px",
-              border: "1px solid #333",
+              padding: "10px 15px",
+              border: "1px solid #d4ff00",
               borderRadius: "100px",
               color: "#fff",
-              fontSize: "0.8rem",
-              fontWeight: 600,
+              fontSize: "0.72rem",
+              fontWeight: 800,
               textDecoration: "none",
               transition: "border-color 0.2s, color 0.2s",
             }}
@@ -115,8 +142,8 @@ export default function Navbar() {
             href="#contact"
             onClick={(event) => handleClick(event, "#contact")}
             style={{
-              width: "36px",
-              height: "36px",
+              width: "34px",
+              height: "34px",
               borderRadius: "50%",
               background: "#d4ff00",
               display: "flex",
@@ -158,7 +185,7 @@ export default function Navbar() {
 
       {/* Mobile drawer */}
       {open && (
-        <div style={{ background: "#111", padding: "20px 32px 28px", borderTop: "1px solid #1a1a1a" }}>
+        <div style={{ background: "#111", padding: "20px 24px 28px", borderTop: "1px solid #1a1a1a", borderRadius: "0 0 24px 24px" }}>
           {navLinks.map((l) => (
             <a
               key={l.href}

@@ -1,5 +1,44 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+
+const registrationStart = new Date("2026-11-04T00:00:00+05:30").getTime();
+
+function RegistrationTimer() {
+  const [remaining, setRemaining] = useState<number | null>(null);
+
+  useEffect(() => {
+    const updateTimer = () => setRemaining(Math.max(0, registrationStart - Date.now()));
+    updateTimer();
+    const interval = window.setInterval(updateTimer, 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  if (remaining === null) return null;
+  if (remaining === 0) {
+    return <p style={{ color: "#d4ff00", fontSize: "0.78rem", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>Registration is now open</p>;
+  }
+
+  const totalSeconds = Math.floor(remaining / 1000);
+  const values = [
+    [Math.floor(totalSeconds / 86400), "Days"],
+    [Math.floor((totalSeconds % 86400) / 3600), "Hours"],
+    [Math.floor((totalSeconds % 3600) / 60), "Minutes"],
+    [totalSeconds % 60, "Seconds"],
+  ];
+
+  return (
+    <div aria-label="Registration countdown" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+      {values.map(([value, label]) => (
+        <div key={label} style={{ minWidth: "68px", border: "1px solid #344800", borderRadius: "7px", background: "#111700", padding: "9px 8px", textAlign: "center" }}>
+          <strong style={{ color: "#d4ff00", display: "block", fontFamily: "monospace", fontSize: "1.1rem", lineHeight: 1 }}>{String(value).padStart(2, "0")}</strong>
+          <span style={{ color: "#71804f", display: "block", fontSize: "0.55rem", letterSpacing: "0.08em", marginTop: "6px", textTransform: "uppercase" }}>{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -7,6 +46,7 @@ export default function Home() {
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section
+        id="home"
         style={{
           minHeight: "100vh",
           paddingTop: "68px",
@@ -21,7 +61,7 @@ export default function Home() {
         }}
       >
         {/* Left panel */}
-        <div style={{ paddingTop: "60px", paddingBottom: "40px" }}>
+        <div style={{ width: "100%", maxWidth: "360px", paddingTop: "60px", paddingBottom: "40px", position: "relative", zIndex: 1 }}>
           {/* small profile avatars */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "28px" }}>
             {["#ff6b35", "#a855f7", "#06b6d4", "#f59e0b"].map((c, i) => (
@@ -48,9 +88,12 @@ export default function Home() {
             <span style={{ color: "#666", fontSize: "0.8rem", marginLeft: "8px" }}>500+ Participants</span>
           </div>
 
-          <p style={{ color: "#888", fontSize: "0.875rem", marginBottom: "8px" }}>
-            Build and compete with the world&apos;s top hackers.
-            <br />More than 20 unique challenge tracks.
+          <p style={{ color: "#888", fontSize: "0.875rem", lineHeight: 1.7, marginBottom: "8px" }}>
+            Organized by the Department of Computer Science &amp; Engineering, KAHE, in association with the Metaverse Students Association.
+            <br />
+            <strong style={{ color: "#d4ff00", display: "inline-block", fontSize: "0.95rem", letterSpacing: "0.04em", marginTop: "6px", textTransform: "uppercase" }}>
+              India&apos;s Largest Student Hackathon 2027
+            </strong>
           </p>
 
           <Link
@@ -71,20 +114,73 @@ export default function Home() {
             Explore All Tracks ↗
           </Link>
 
-          {/* Avatar row repeat */}
-          <div style={{ display: "flex", gap: "8px", marginTop: "20px" }}>
-            {["#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6"].map((c, i) => (
-              <div
-                key={i}
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  background: `linear-gradient(135deg, ${c}, #000)`,
-                  border: "1px solid #222",
-                }}
-              />
-            ))}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0", marginTop: "26px", maxWidth: "360px", padding: "4px 0 12px 8px" }}>
+            <a
+              href="https://chat.whatsapp.com/C9gawXXKFtr76gk6YoUe3K"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: "flex",
+                width: "270px",
+                alignItems: "center",
+                gap: "11px",
+                border: "1px solid #73b8ff",
+                borderRadius: "14px",
+                background: "#bfe1ff",
+                boxShadow: "0 5px 0 #5799d8",
+                color: "#2764a0",
+                fontSize: "0.95rem",
+                fontWeight: 800,
+                padding: "13px 18px",
+                textDecoration: "none",
+                transform: "rotate(-4deg)",
+                transition: "transform 0.2s, box-shadow 0.2s",
+              }}
+              onMouseEnter={(event) => {
+                event.currentTarget.style.transform = "rotate(-4deg) translateY(-3px)";
+                event.currentTarget.style.boxShadow = "0 8px 0 #5799d8";
+              }}
+              onMouseLeave={(event) => {
+                event.currentTarget.style.transform = "rotate(-4deg)";
+                event.currentTarget.style.boxShadow = "0 5px 0 #5799d8";
+              }}
+            >
+              <span aria-hidden="true" style={{ color: "#2764a0", fontSize: "1.4rem", lineHeight: 1 }}>◉</span>
+              <span>Join WhatsApp Community ↗</span>
+            </a>
+            <a
+              href="/brochure.pdf"
+              download
+              style={{
+                display: "flex",
+                width: "250px",
+                alignItems: "center",
+                gap: "11px",
+                border: "1px solid #a0dc26",
+                borderRadius: "14px",
+                background: "#d9ff70",
+                boxShadow: "0 5px 0 #8dbb28",
+                color: "#49741c",
+                fontSize: "0.95rem",
+                fontWeight: 900,
+                marginTop: "-2px",
+                padding: "13px 18px",
+                textDecoration: "none",
+                transform: "rotate(3deg) translateX(22px)",
+                transition: "transform 0.2s, box-shadow 0.2s",
+              }}
+              onMouseEnter={(event) => {
+                event.currentTarget.style.transform = "rotate(3deg) translateX(22px) translateY(-3px)";
+                event.currentTarget.style.boxShadow = "0 8px 0 #8dbb28";
+              }}
+              onMouseLeave={(event) => {
+                event.currentTarget.style.transform = "rotate(3deg) translateX(22px)";
+                event.currentTarget.style.boxShadow = "0 5px 0 #8dbb28";
+              }}
+            >
+              <span aria-hidden="true" style={{ fontSize: "1.4rem", lineHeight: 1 }}>↓</span>
+              <span>Download Brochure</span>
+            </a>
           </div>
         </div>
 
@@ -123,96 +219,26 @@ export default function Home() {
             <span style={{ color: "#d4ff00" }}>Hackathon</span> Sprint
           </h1>
 
-          {/* Floating badge */}
-          <div
+          <Image
+            src="/logo.png"
+            alt="Hacksprint 3.0"
+            width={500}
+            height={500}
             style={{
-              marginTop: "32px",
-              width: "110px",
-              height: "110px",
-              borderRadius: "50%",
-              border: "1px solid #333",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              position: "relative",
+              width: "min(64vw, 420px)",
+              height: "auto",
+              marginTop: "16px",
+              objectFit: "contain",
             }}
-          >
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                background: "#d4ff00",
-                clipPath: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)",
-              }}
-            />
-            <span style={{ color: "#666", fontSize: "0.5rem", letterSpacing: "0.2em", marginTop: "6px" }}>
-              SUPER • RARE • SPRINT •
-            </span>
-          </div>
-
-          {/* Hero 3D placeholder character area */}
-          <div
-            style={{
-              marginTop: "-80px",
-              width: "300px",
-              height: "340px",
-              background: "linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%)",
-              borderRadius: "20px 20px 0 0",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "1px solid #1f1f1f",
-              borderBottom: "none",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                backgroundImage: "radial-gradient(circle at 50% 30%, #d4ff0015 0%, transparent 60%)",
-              }}
-            />
-            <span
-              style={{
-                fontFamily: "Impact, sans-serif",
-                fontSize: "6rem",
-                fontWeight: 900,
-                color: "#d4ff00",
-                opacity: 0.15,
-                letterSpacing: "-0.05em",
-              }}
-            >
-              HS3
-            </span>
-            <div
-              style={{
-                position: "absolute",
-                bottom: "20px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                background: "#d4ff00",
-                borderRadius: "100px",
-                padding: "6px 16px",
-                fontSize: "0.7rem",
-                fontWeight: 700,
-                color: "#0a0a0a",
-                whiteSpace: "nowrap",
-              }}
-            >
-              HACKSPRINT 3.0
-            </div>
-          </div>
+          />
         </div>
 
         {/* Right stats panel */}
         <div style={{ paddingTop: "100px", paddingBottom: "40px", textAlign: "right" }}>
           {[
             { value: "500+", label: "Active Hackers" },
-            { value: "20+", label: "Challenge Tracks" },
-            { value: "48h", label: "Sprint Duration" },
+            { value: "5+", label: "Challenge Tracks" },
+            { value: "36h", label: "Sprint Duration" },
           ].map((s, i) => (
             <div
               key={i}
@@ -239,287 +265,63 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── NEON STRIP — supported by ── */}
-      <section style={{ background: "#d4ff00", padding: "40px 0" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
-          <p style={{ color: "#0a0a0a", fontSize: "0.8rem", fontWeight: 600, marginBottom: "6px" }}>Supported by</p>
-          <div style={{ width: "40px", height: "2px", background: "#0a0a0a", marginBottom: "20px" }} />
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            {["Ethereum", "Solana", "TypeScript", "React", "Next.js", "GitHub"].map((t) => (
-              <div
-                key={t}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "10px 20px",
-                  borderRadius: "100px",
-                  border: "1.5px solid #0a0a0a",
-                  background: "transparent",
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                  color: "#0a0a0a",
-                }}
-              >
-                <div style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#0a0a0a", opacity: 0.15 }} />
-                {t}
+      <section id="registration" style={{ background: "#111", borderTop: "1px solid #222", borderBottom: "1px solid #222", padding: "24px 32px" }}>
+        <div style={{ maxWidth: "760px", margin: "0 auto", textAlign: "center" }}>
+          <p style={{ color: "#d4ff00", fontSize: "0.68rem", fontWeight: 800, letterSpacing: "0.14em", marginBottom: "8px", textTransform: "uppercase" }}>
+            Registration opens November 4, 2026 at 12:00 AM IST
+          </p>
+          <RegistrationTimer />
+        </div>
+      </section>
+
+      {/* ── ANNOUNCEMENT MARQUEE ── */}
+      <section style={{ overflow: "hidden", padding: "16px 32px", background: "#d4ff00", color: "#0a0a0a" }} aria-label="Announcements">
+        <div style={{ minWidth: 0, overflow: "hidden", whiteSpace: "nowrap" }} role="region" aria-label="HackSprint announcements">
+          <div style={{ display: "flex", width: "max-content", animation: "announcement-marquee 28s linear infinite" }}>
+            {[0, 1].map((copy) => (
+              <div style={{ display: "flex", alignItems: "center", gap: "18px", paddingRight: "18px", fontSize: "0.76rem", fontWeight: 700 }} key={copy} aria-hidden={copy === 1}>
+                <span style={{ fontSize: "0.68rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", border: "1px solid #0a0a0a", borderRadius: "999px", padding: "4px 9px" }}>Announcement</span>
+                <span>HackSprint 3.0 is live — registration is now open</span>
+                <span style={{ fontSize: "0.85rem" }}>✦</span>
+                <span>Build, compete, and win with the world&apos;s top hackers</span>
+                <span style={{ fontSize: "0.85rem" }}>✦</span>
+                <span>Supported by Ethereum, Solana, TypeScript, React, Next.js, and GitHub</span>
+                <span style={{ fontSize: "0.85rem" }}>✦</span>
               </div>
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ── ABOUT ── */}
+      <section id="about" style={{ background: "#0a0a0a", padding: 0 }}>
+        <AboutContent />
       </section>
 
       {/* ── TRENDING SECTION ── */}
-      <section style={{ background: "#0a0a0a", padding: "80px 0" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
-          {/* Header row */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              marginBottom: "40px",
-              flexWrap: "wrap",
-              gap: "20px",
-            }}
-          >
-            <div>
-              <p style={{ color: "#d4ff00", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.12em", marginBottom: "6px" }}>
-                Trending
-              </p>
-              <h2
-                style={{
-                  fontSize: "2.8rem",
-                  fontWeight: 800,
-                  color: "#fff",
-                  letterSpacing: "-0.03em",
-                  lineHeight: 1.1,
-                }}
-              >
-                Highlights.
-              </h2>
-            </div>
-            <div style={{ maxWidth: "280px" }}>
-              <p style={{ color: "#555", fontSize: "0.875rem", lineHeight: 1.6, marginBottom: "16px" }}>
-                Build and ship with the world&apos;s top hackers. More than 20 unique challenge tracks.
-              </p>
-              <div style={{ display: "flex", gap: "8px" }}>
-                {["←", "→"].map((a, i) => (
-                  <button
-                    key={i}
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50%",
-                      border: "1px solid #222",
-                      background: i === 1 ? "#d4ff00" : "transparent",
-                      color: i === 1 ? "#0a0a0a" : "#fff",
-                      fontSize: "0.9rem",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transition: "all 0.2s",
-                    }}
-                  >
-                    {a}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { bg: "linear-gradient(135deg, #ff6b35, #ff8c42)", tag: "Opening", title: "Grand Kick-Off", time: "2h : 30m : 22s" },
-              { bg: "linear-gradient(135deg, #06b6d4, #3b82f6)", tag: "Sprint", title: "48h Hack Marathon", time: "2h : 30m : 22s" },
-              { bg: "linear-gradient(135deg, #f59e0b, #ef4444)", tag: "Finale", title: "Pitch & Win", time: "2h : 30m : 22s" },
-            ].map((card, i) => (
-              <div
-                key={i}
-                className="card"
-                style={{ cursor: "pointer" }}
-              >
-                {/* Image area */}
-                <div
-                  style={{
-                    height: "260px",
-                    background: card.bg,
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  {/* Timer badge */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "14px",
-                      right: "14px",
-                      background: "rgba(0,0,0,0.7)",
-                      backdropFilter: "blur(8px)",
-                      borderRadius: "100px",
-                      padding: "5px 12px",
-                      fontSize: "0.7rem",
-                      fontWeight: 600,
-                      color: "#fff",
-                    }}
-                  >
-                    End in &nbsp;&nbsp;{card.time}
-                  </div>
-                  {/* Character placeholder */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "5rem",
-                        opacity: 0.15,
-                        filter: "grayscale(1)",
-                      }}
-                    >
-                      {["🚀", "⚡", "🏆"][i]}
-                    </span>
-                  </div>
-                </div>
-                {/* Card footer */}
-                <div
-                  style={{
-                    padding: "18px 20px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    background: "#161616",
-                  }}
-                >
-                  <div>
-                    <p style={{ color: "#555", fontSize: "0.7rem", marginBottom: "2px" }}>Current Bid</p>
-                    <p style={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem" }}>{card.title}</p>
-                  </div>
-                  <button
-                    style={{
-                      padding: "8px 18px",
-                      background: "#d4ff00",
-                      border: "none",
-                      borderRadius: "100px",
-                      fontWeight: 700,
-                      fontSize: "0.75rem",
-                      color: "#0a0a0a",
-                      cursor: "pointer",
-                    }}
-                  >
-                    JOIN NOW
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── STATS STRIP ── */}
-      <section style={{ background: "#111", padding: "60px 0", borderTop: "1px solid #1a1a1a", borderBottom: "1px solid #1a1a1a" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { val: "78K+", label: "Active Hackers" },
-              { val: "27K+", label: "Projects Built" },
-              { val: "44K+", label: "Tracks Completed" },
-              { val: "$50K+", label: "Prize Pool" },
-            ].map((s, i) => (
-              <div key={i} style={{ padding: "0 16px", borderLeft: i > 0 ? "1px solid #1a1a1a" : "none" }}>
-                <div
-                  style={{
-                    fontSize: "2.5rem",
-                    fontWeight: 800,
-                    color: "#fff",
-                    lineHeight: 1,
-                    letterSpacing: "-0.03em",
-                  }}
-                >
-                  {s.val}
-                </div>
-                <p style={{ color: "#555", fontSize: "0.8rem", marginTop: "6px" }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+      <section id="highlights" style={{ background: "#0a0a0a", padding: "80px 32px" }}>
+        <HighlightsGallery />
       </section>
 
       {/* ── CREW PREVIEW ── */}
-      <section style={{ background: "#0a0a0a", padding: "80px 0" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px", flexWrap: "wrap", gap: "16px" }}>
-            <div>
-              <p className="section-label" style={{ marginBottom: "6px" }}>The Team</p>
-              <h2 style={{ fontSize: "2.8rem", fontWeight: 800, color: "#fff", letterSpacing: "-0.03em" }}>Meet the Crew.</h2>
-            </div>
-            <Link
-              href="/crew"
-              style={{
-                padding: "10px 24px",
-                border: "1px solid #222",
-                borderRadius: "100px",
-                color: "#fff",
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                textDecoration: "none",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#d4ff00"; e.currentTarget.style.color = "#d4ff00"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#222"; e.currentTarget.style.color = "#fff"; }}
-            >
-              View All →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { name: "Alex Storm", role: "Lead Organizer", color: "#3b82f6" },
-              { name: "Priya Core", role: "Tech Director", color: "#a855f7" },
-              { name: "Marcus Blaze", role: "Design Lead", color: "#f59e0b" },
-              { name: "Zoe Flux", role: "Community", color: "#06b6d4" },
-            ].map((m, i) => (
-              <div
-                key={i}
-                className="card"
-                style={{ padding: "24px 20px", textAlign: "center" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#d4ff00"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#222"; }}
-              >
-                <div
-                  style={{
-                    width: "64px",
-                    height: "64px",
-                    borderRadius: "50%",
-                    background: `linear-gradient(135deg, ${m.color}, #000)`,
-                    margin: "0 auto 12px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.4rem",
-                    fontWeight: 800,
-                    color: "#fff",
-                  }}
-                >
-                  {m.name.charAt(0)}
-                </div>
-                <p style={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem" }}>{m.name}</p>
-                <p style={{ color: "#555", fontSize: "0.75rem", marginTop: "4px" }}>{m.role}</p>
-              </div>
-            ))}
-          </div>
+      <section id="crew" style={{ background: "#0a0a0a", padding: "80px 0" }}>
+        <div style={{ maxWidth: "1180px", margin: "0 auto", padding: "0 32px" }}>
+          <CrewContent />
         </div>
+      </section>
+
+      {/* ── PAST EVENTS ── */}
+      <section id="past-events" style={{ background: "#0a0a0a", padding: "80px 32px" }}>
+        <PastEventsContent />
+      </section>
+
+      <section id="why-sponsor-us" style={{ background: "#0a0a0a", padding: "80px 32px" }}>
+        <WhySponsorContent />
       </section>
 
       {/* ── CTA BANNER ── */}
       <section
+        id="contact"
         style={{
           background: "linear-gradient(135deg, #d4ff00 0%, #a8cc00 100%)",
           padding: "80px 32px",
@@ -573,6 +375,688 @@ export default function Home() {
         </div>
       </section>
 
+    </div>
+  );
+}
+
+
+const bodyText = {
+  color: "#888888",
+  fontFamily: "Georgia, 'Times New Roman', serif",
+  fontSize: "0.9rem",
+  lineHeight: 1.8,
+};
+
+const labelText = {
+  color: "#d4ff00",
+  fontSize: "0.68rem",
+  fontWeight: 700,
+  letterSpacing: "0.12em",
+  textTransform: "uppercase" as const,
+};
+
+function AboutContent() {
+  return (
+    <main
+      style={{
+        background: "#0a0a0a",
+        color: "#ffffff",
+        minHeight: "100vh",
+        padding: "72px 32px 88px",
+      }}
+    >
+      <header
+        style={{
+          maxWidth: "720px",
+          margin: "0 auto 58px",
+          textAlign: "center",
+        }}
+      >
+        <p style={{ ...labelText, margin: "0 0 14px" }}>
+          About KAHE &amp; Metaverse
+        </p>
+        <h1
+          style={{
+            fontSize: "clamp(2.2rem, 5vw, 3.8rem)",
+            fontWeight: 800,
+            letterSpacing: "-0.05em",
+            lineHeight: 1,
+            margin: "0 0 18px",
+          }}
+        >
+          The community behind
+          <br />
+          HackSprint 3.0
+        </h1>
+        <p style={{ ...bodyText, margin: 0 }}>
+          A place where academic learning, emerging technology, and student
+          collaboration come together to create meaningful impact.
+        </p>
+      </header>
+
+      <section
+        style={{
+          maxWidth: "1080px",
+          margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          gap: "56px",
+        }}
+      >
+        <article
+          style={{
+            padding: "26px 0",
+            borderTop: "1px solid #333333",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "26px",
+            }}
+          >
+            <h2
+              style={{
+                color: "#ffffff",
+                fontFamily: "Georgia, 'Times New Roman', serif",
+                fontSize: "clamp(1.5rem, 3vw, 2.2rem)",
+                fontWeight: 700,
+                letterSpacing: "-0.04em",
+                margin: 0,
+              }}
+            >
+              About Metaverse
+            </h2>
+            <span style={{ color: "#d4ff00", fontSize: "1.4rem" }}>↗</span>
+          </div>
+          <p style={{ ...bodyText, margin: "0 0 18px" }}>
+            The Metaverse Students Association is a student community under
+            the Department of Computer Science &amp; Engineering at Karpagam
+            Academy of Higher Education, focused on technology, creativity,
+            collaboration, and innovation.
+          </p>
+          <p style={{ ...bodyText, margin: 0 }}>
+            Through workshops, events, projects, and hackathons, students
+            explore ideas and turn technical knowledge into real-world
+            solutions.
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "28px",
+              marginTop: "28px",
+              paddingTop: "20px",
+              borderTop: "1px solid #222222",
+            }}
+          >
+            <div>
+              <strong style={{ color: "#d4ff00", fontSize: "1.8rem" }}>01</strong>
+              <p style={{ color: "#666666", fontSize: "0.68rem", margin: "4px 0 0" }}>
+                Student community
+              </p>
+            </div>
+            <div>
+              <strong style={{ color: "#d4ff00", fontSize: "1.8rem" }}>∞</strong>
+              <p style={{ color: "#666666", fontSize: "0.68rem", margin: "4px 0 0" }}>
+                Ideas to explore
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article
+          style={{
+            padding: "26px 0",
+            borderTop: "1px solid #333333",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "26px",
+            }}
+          >
+            <h2
+              style={{
+                color: "#ffffff",
+                fontFamily: "Georgia, 'Times New Roman', serif",
+                fontSize: "clamp(1.5rem, 3vw, 2.2rem)",
+                fontWeight: 700,
+                letterSpacing: "-0.04em",
+                margin: 0,
+              }}
+            >
+              About KAHE
+            </h2>
+            <span style={{ color: "#d4ff00", fontSize: "1.4rem" }}>↗</span>
+          </div>
+          <p style={{ ...bodyText, margin: "0 0 18px" }}>
+            Karpagam Academy of Higher Education (KAHE), located in Coimbatore,
+            Tamil Nadu, is committed to academic excellence, research,
+            innovation, and holistic student development.
+          </p>
+          <p style={{ ...bodyText, margin: 0 }}>
+            KAHE connects classroom learning with creativity, practical skills,
+            entrepreneurship, and emerging technology to prepare students for a
+            rapidly evolving digital world.
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "28px",
+              marginTop: "28px",
+              paddingTop: "20px",
+              borderTop: "1px solid #222222",
+            }}
+          >
+            <div>
+              <strong style={{ color: "#d4ff00", fontSize: "1.8rem" }}>01</strong>
+              <p style={{ color: "#666666", fontSize: "0.68rem", margin: "4px 0 0" }}>
+                Learning ecosystem
+              </p>
+            </div>
+            <div>
+              <strong style={{ color: "#d4ff00", fontSize: "1.8rem" }}>✦</strong>
+              <p style={{ color: "#666666", fontSize: "0.68rem", margin: "4px 0 0" }}>
+                Innovation focused
+              </p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section
+        style={{
+          maxWidth: "1080px",
+          margin: "58px auto 0",
+          paddingTop: "28px",
+          borderTop: "1px solid #222222",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gap: "40px",
+        }}
+      >
+        <div>
+          <p style={{ ...labelText, margin: "0 0 12px" }}>Our Vision</p>
+          <p style={{ ...bodyText, margin: 0 }}>
+            To build a collaborative student community where innovation
+            thrives, ideas become reality, and future-ready creators emerge.
+          </p>
+        </div>
+        <div>
+          <p style={{ ...labelText, margin: "0 0 12px" }}>Our Mission</p>
+          <p style={{ ...bodyText, margin: 0 }}>
+            Innovate, collaborate, empower, and build through hands-on learning
+            and meaningful technology projects.
+          </p>
+        </div>
+        <div>
+          <p style={{ ...labelText, margin: "0 0 12px" }}>
+            Metaverse × HackSprint 3.0
+          </p>
+          <p style={{ color: "#ffffff", fontSize: "1rem", lineHeight: 1.5, margin: 0 }}>
+            We don&apos;t just imagine the future. We build it together.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+
+
+const galleryImages = [
+  {
+    src: "/2.0/WhatsApp%20Image%202026-10-14%20at%206.45.25%20PM.jpeg",
+    alt: "Students participating in a HackSprint event",
+    className: "gallery-photo-one",
+  },
+  {
+    src: "/2.0/WhatsApp%20Image%202026-10-14%20at%206.45.26%20PM%20(1).jpeg",
+    alt: "Students collaborating during HackSprint",
+    className: "gallery-photo-two",
+  },
+  {
+    src: "/2.0/WhatsApp%20Image%202026-10-14%20at%206.45.26%20PM.jpeg",
+    alt: "HackSprint event activity",
+    className: "gallery-photo-three",
+  },
+  {
+    src: "/2.0/WhatsApp%20Image%202026-10-14%20at%206.45.27%20PM%20(1).jpeg",
+    alt: "Students gathered at a HackSprint event",
+    className: "gallery-photo-four",
+  },
+  {
+    src: "/2.0/WhatsApp%20Image%202026-10-14%20at%206.45.27%20PM.jpeg",
+    alt: "Participants working in a computer laboratory",
+    className: "gallery-photo-five",
+  },
+  {
+    src: "/2.0/WhatsApp%20Image%202026-10-14%20at%206.45.28%20PM.jpeg",
+    alt: "HackSprint workshop participants",
+    className: "gallery-photo-six",
+  },
+];
+
+function HighlightsGallery() {
+  return (
+    <div style={{ maxWidth: "940px", margin: "0 auto" }}>
+      <header style={{ margin: "0 auto 42px", textAlign: "center" }}>
+        <p
+          style={{
+            color: "#d4ff00",
+            fontSize: "0.7rem",
+            fontWeight: 800,
+            letterSpacing: "0.16em",
+            marginBottom: "12px",
+            textTransform: "uppercase",
+          }}
+        >
+          HackSprint 2.0
+        </p>
+        <h2
+          style={{
+            color: "#fff",
+            fontSize: "clamp(2rem, 4.8vw, 3.5rem)",
+            fontWeight: 800,
+            letterSpacing: "-0.06em",
+            lineHeight: 1.05,
+          }}
+        >
+          Highlights.
+        </h2>
+        <div
+          style={{
+            width: "48px",
+            height: "3px",
+            margin: "16px auto 0",
+            background: "#d4ff00",
+            boxShadow: "0 0 14px #d4ff0088",
+          }}
+        />
+        <p style={{ color: "#777", fontSize: "0.8rem", lineHeight: 1.6, margin: "16px auto 0", maxWidth: "460px" }}>
+          A glimpse of the events, workshops, and moments from the past year.
+        </p>
+      </header>
+
+      <div
+        className="highlights-gallery"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1.12fr 1fr",
+          gridTemplateRows: "170px 170px",
+          gap: "16px",
+        }}
+      >
+        {galleryImages.map((image) => (
+          <div
+            key={image.src}
+            className={image.className}
+            style={{
+              position: "relative",
+              minHeight: 0,
+              overflow: "hidden",
+              border: "1px solid #304700",
+              borderRadius: "9px",
+              background: "#161616",
+            }}
+          >
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              sizes="(max-width: 700px) 100vw, 33vw"
+              style={{ objectFit: "cover" }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+
+
+const crew = [
+  {
+    image: "/surya.png",
+    initials: "BS",
+    name: "Bala Surya S",
+    role: "Organizer · HackSprint 2.0 & 3.0",
+    detail: "Final Year · Computer Science and Engineering",
+    contact: {
+      phone: "9597075831",
+      whatsapp: "9597075831",
+      linkedin: "https://www.linkedin.com/in/balasurya06/",
+    },
+    accent: "#d4ff00",
+    className: "crew-profile-one",
+  },
+  { initials: "D", name: "Deepa", role: "Organizer · HackSprint 3.0", detail: "Coordinator · HackSprint 2.0 · Third Year · Computer Science and Engineering", accent: "#b9c4c4", className: "crew-profile-two" },
+  { initials: "K", name: "Kavinya", role: "Organizer · HackSprint 3.0", detail: "Coordinator · HackSprint 2.0 · Third Year · Computer Science and Engineering", accent: "#758300", className: "crew-profile-three" },
+];
+
+function CrewContent() {
+  return (
+    <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
+      <div className="crew-intro" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "70px", alignItems: "end", marginBottom: "72px" }}>
+        <div>
+          <p style={{ color: "#d4ff00", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", marginBottom: "16px", textTransform: "uppercase" }}>
+            The people behind the sprint
+          </p>
+          <h1 style={{ color: "#fff", fontSize: "clamp(2.7rem, 6vw, 5.2rem)", fontWeight: 800, letterSpacing: "-0.07em", lineHeight: 0.95 }}>
+            Meet the <span style={{ color: "#d4ff00" }}>crew</span>.
+          </h1>
+        </div>
+        <div>
+          <p style={{ color: "#888", fontSize: "0.95rem", lineHeight: 1.7, maxWidth: "430px" }}>
+            The organizers, builders, and community leaders creating a space where ideas become real-world projects.
+          </p>
+          <a href="#crew-profiles" style={{ display: "inline-flex", marginTop: "22px", padding: "10px 18px", border: "1px solid #d4ff00", borderRadius: "999px", color: "#d4ff00", fontSize: "0.75rem", fontWeight: 700, textDecoration: "none" }}>
+            Meet the team ↓
+          </a>
+        </div>
+      </div>
+
+      <section style={{ marginBottom: "64px" }} aria-labelledby="conveners-title">
+        <p
+          id="conveners-title"
+          style={{
+            color: "#d4ff00",
+            fontSize: "0.7rem",
+            fontWeight: 800,
+            letterSpacing: "0.16em",
+            marginBottom: "18px",
+            textTransform: "uppercase",
+          }}
+        >
+          Conveners
+        </p>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: "18px",
+          }}
+        >
+          {[
+            ["Dr. R. Santhosh", "Head of Department", "Computer Science and Engineering"],
+            ["Ramaya", "Assistant Professor", "Department of Computer Science and Engineering"],
+          ].map(([name, role, department]) => (
+            <article
+              key={name}
+              style={{
+                borderTop: "1px solid #d4ff00",
+                borderBottom: "1px solid #222",
+                padding: "22px 0",
+              }}
+            >
+              <h2 style={{ color: "#fff", fontSize: "1.2rem", letterSpacing: "-0.03em" }}>{name}</h2>
+              <p style={{ color: "#d4ff00", fontSize: "0.78rem", fontWeight: 700, marginTop: "8px" }}>{role}</p>
+              <p style={{ color: "#777", fontSize: "0.8rem", lineHeight: 1.5, marginTop: "4px" }}>{department}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <div
+        id="crew-profiles"
+        className="crew-profiles"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "18px",
+          alignItems: "end",
+        }}
+      >
+        {crew.map((member) => (
+          <article
+            key={member.name}
+            className={member.className}
+            style={{
+              minHeight: "450px",
+              position: "relative",
+              overflow: "hidden",
+              border: "1px solid #222",
+              borderRadius: "190px 190px 0 0",
+              background: `linear-gradient(180deg, ${member.accent} 0%, ${member.accent}cc 44%, #161616 100%)`,
+              padding: "42px 18px 24px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <h2 style={{ color: "#0a0a0a", fontSize: "1.15rem", fontWeight: 800 }}>{member.name}</h2>
+              <p style={{ color: "#0a0a0acc", fontSize: "0.7rem", lineHeight: 1.4, marginTop: "6px" }}>{member.role}</p>
+              {"detail" in member && <p style={{ color: "#0a0a0a99", fontSize: "0.62rem", lineHeight: 1.4, marginTop: "5px" }}>{member.detail}</p>}
+              {"contact" in member && member.contact && (
+                <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "14px" }}>
+                  <a
+                    href={`tel:${member.contact.phone}`}
+                    aria-label={`Call ${member.name}`}
+                    style={{ color: "#0a0a0a", fontSize: "0.68rem", fontWeight: 800, textDecoration: "none" }}
+                  >
+                    Call
+                  </a>
+                  <a
+                    href={`https://wa.me/${member.contact.whatsapp}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`WhatsApp ${member.name}`}
+                    style={{ color: "#0a0a0a", fontSize: "0.68rem", fontWeight: 800, textDecoration: "none" }}
+                  >
+                    WhatsApp
+                  </a>
+                  <a
+                    href={member.contact.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${member.name} on LinkedIn`}
+                    style={{ color: "#0a0a0a", fontSize: "0.68rem", fontWeight: 800, textDecoration: "none" }}
+                  >
+                    LinkedIn
+                  </a>
+                </div>
+              )}
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                bottom: "-24px",
+                transform: "translateX(-50%)",
+                width: "250px",
+                height: "310px",
+                borderRadius: "130px 130px 0 0",
+                background: "linear-gradient(160deg, #222, #080808)",
+                display: "grid",
+                placeItems: "center",
+                color: member.accent,
+                fontSize: "3.6rem",
+                fontWeight: 900,
+                letterSpacing: "-0.1em",
+                boxShadow: "0 -10px 30px #00000033",
+              }}
+            >
+              {"image" in member && member.image ? (
+                <Image
+                  src={member.image}
+                  alt={`${member.name} profile`}
+                  fill
+                  sizes="250px"
+                  style={{ objectFit: "cover", objectPosition: "center top" }}
+                />
+              ) : (
+                member.initials
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+const tracks = ["Agrotech", "Medtech", "Edutech", "WildVisionTech", "Open Innovation"];
+const partners = ["Cognizant", "Rentr UK", "StartupTN", "Devfolio", "ETHIndia", "JetBrains", "Balsamiq", "Intel", "Dell"];
+
+const stats = [
+  ["3,600+", "Participants"],
+  ["150+", "Teams"],
+  ["36 hrs", "Build duration"],
+  ["₹1 lakh", "Advertised prize pool"],
+];
+
+function PastEventsContent() {
+  return (
+    <div style={{ maxWidth: "1120px", margin: "0 auto" }}>
+      <header style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "60px", alignItems: "end", marginBottom: "58px" }}>
+        <div>
+          <p style={{ color: "#d4ff00", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", marginBottom: "14px", textTransform: "uppercase" }}>
+            The legacy · 2026
+          </p>
+          <h1 style={{ color: "#fff", fontSize: "clamp(2.7rem, 6vw, 5rem)", fontWeight: 800, letterSpacing: "-0.08em", lineHeight: 0.94 }}>
+            HackSprint <span style={{ color: "#d4ff00" }}>2.0.</span>
+          </h1>
+        </div>
+        <p style={{ color: "#888", fontSize: "0.95rem", lineHeight: 1.7 }}>
+          A national-level hackathon organized by the Department of Computer Science &amp; Engineering, KAHE, in association with the Metaverse Students Association.
+        </p>
+      </header>
+
+      <section style={{ borderTop: "1px solid #d4ff00", borderBottom: "1px solid #222", padding: "22px 0", marginBottom: "42px" }}>
+        <div className="legacy-stats" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "18px" }}>
+          {stats.map(([value, label]) => (
+            <div key={label}>
+              <strong style={{ color: "#d4ff00", fontSize: "clamp(1.5rem, 3vw, 2.4rem)", fontWeight: 900, letterSpacing: "-0.06em" }}>{value}</strong>
+              <p style={{ color: "#777", fontSize: "0.7rem", letterSpacing: "0.08em", marginTop: "5px", textTransform: "uppercase" }}>{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="legacy-content-grid" style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: "22px", marginBottom: "22px" }}>
+        <section style={{ background: "#111", border: "1px solid #222", borderRadius: "12px", padding: "28px" }}>
+          <p style={{ color: "#d4ff00", fontSize: "0.68rem", fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase" }}>Event snapshot</p>
+          <h2 style={{ color: "#fff", fontSize: "1.5rem", marginTop: "14px" }}>January 21–22, 2026</h2>
+          <p style={{ color: "#888", lineHeight: 1.7, marginTop: "12px" }}>
+            Teams had 36 hours to turn bold ideas into working solutions across five challenge tracks. The event brought together students, mentors, builders, and industry collaborators at KAHE.
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "22px" }}>
+            {tracks.map((track) => (
+              <span key={track} style={{ border: "1px solid #304700", borderRadius: "999px", color: "#d4ff00", fontSize: "0.68rem", padding: "7px 11px" }}>{track}</span>
+            ))}
+          </div>
+        </section>
+
+        <section style={{ background: "#d4ff00", borderRadius: "12px", color: "#0a0a0a", padding: "28px" }}>
+          <p style={{ fontSize: "0.68rem", fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase" }}>What stood out</p>
+          <h2 style={{ fontSize: "1.5rem", marginTop: "14px" }}>Built beyond the shortlist.</h2>
+          <p style={{ color: "#304700", lineHeight: 1.7, marginTop: "12px" }}>
+            The final-round highlights featured nearly 50 teams and 250 participants, alongside an advertised foreign internship opportunity through Rentr (UK).
+          </p>
+        </section>
+      </div>
+
+      <section style={{ background: "#111", border: "1px solid #222", borderRadius: "12px", padding: "28px", marginBottom: "22px" }}>
+        <div className="legacy-achievements" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "28px" }}>
+          <div>
+            <p style={{ color: "#d4ff00", fontSize: "0.68rem", fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase" }}>Association achievements</p>
+            <h2 style={{ color: "#fff", fontSize: "1.4rem", marginTop: "12px" }}>A community that keeps building.</h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px" }}>
+            {[["350+", "Innovators"], ["15+", "Events"], ["100+", "Projects shipped"]].map(([value, label]) => (
+              <div key={label}>
+                <strong style={{ color: "#d4ff00", fontSize: "1.5rem" }}>{value}</strong>
+                <p style={{ color: "#777", fontSize: "0.68rem", marginTop: "4px" }}>{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section style={{ borderTop: "1px solid #d4ff00", borderBottom: "1px solid #222", padding: "28px 0", marginBottom: "30px" }}>
+        <div className="legacy-dedication" style={{ display: "grid", gridTemplateColumns: "0.9fr 1.1fr", gap: "28px", alignItems: "start" }}>
+          <div>
+            <p style={{ color: "#d4ff00", fontSize: "0.68rem", fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase" }}>With gratitude</p>
+            <h2 style={{ color: "#fff", fontSize: "1.5rem", lineHeight: 1.2, marginTop: "12px" }}>Built through dedication.</h2>
+          </div>
+          <div>
+            <p style={{ color: "#888", lineHeight: 1.7 }}>
+              HackSprint 2.0 was made possible by the dedication of the faculty, organizers, mentors, volunteers, and student coordinators who worked together to create a meaningful national-level platform for innovation.
+            </p>
+            <p style={{ color: "#d4ff00", fontSize: "0.76rem", fontWeight: 700, lineHeight: 1.6, marginTop: "16px" }}>
+              Student coordinators: Mukilan T · Lokesh P · Natesan K · Balasurya S
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: "12px 0 0" }}>
+        <p style={{ color: "#d4ff00", fontSize: "0.68rem", fontWeight: 800, letterSpacing: "0.14em", marginBottom: "14px", textTransform: "uppercase" }}>Previous edition partners</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "9px" }}>
+          {partners.map((partner) => (
+            <span key={partner} style={{ color: "#777", border: "1px solid #222", borderRadius: "999px", fontSize: "0.7rem", padding: "8px 12px" }}>{partner}</span>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+
+
+const benefits = [
+  ["01", "Reach a growing community", "Connect your brand with 3,600+ participants, 150+ teams, and a wider community of 350+ innovators from KAHE and the Metaverse Students Association.", "#d4ff00", "◎"],
+  ["02", "Meet future talent", "Engage with student builders who spend 36 hours developing practical solutions across Agrotech, Medtech, Edutech, WildVisionTech, and Open Innovation.", "#00c2ff", "✦"],
+  ["03", "Join a proven ecosystem", "Build meaningful relationships with KAHE, student organizers, mentors, and a strong partner network shaped by HackSprint 2.0.", "#9b6cff", "⌘"],
+  ["04", "Enable real innovation", "Support hands-on projects, workshops, and opportunities that help students move from ideas to solutions with measurable impact.", "#ff4bd8", "✧"],
+];
+
+function WhySponsorContent() {
+  return (
+    <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
+      <header style={{ maxWidth: "760px", margin: "0 auto 58px", textAlign: "center" }}>
+        <p style={{ color: "#d4ff00", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", textTransform: "uppercase" }}>
+          Partner with the next generation
+        </p>
+        <h2 style={{ fontSize: "clamp(2.8rem, 7vw, 5.8rem)", fontWeight: 900, letterSpacing: "-0.08em", lineHeight: 0.92, marginTop: "16px" }}>
+          Why sponsor <span style={{ color: "#d4ff00" }}>us?</span>
+        </h2>
+        <div style={{ width: "58px", height: "4px", background: "#d4ff00", margin: "22px auto 0", boxShadow: "0 0 18px #d4ff0088" }} />
+        <p style={{ color: "#888", lineHeight: 1.7, margin: "22px auto 0", maxWidth: "590px" }}>
+          Support the next chapter of a community that has already conducted 15+ events and shipped 100+ projects through learning, collaboration, and hands-on innovation.
+        </p>
+      </header>
+
+      <section className="sponsor-benefits" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "18px" }}>
+        {benefits.map(([number, title, description, accent, symbol]) => (
+          <article key={number} style={{ minHeight: "280px", position: "relative", overflow: "hidden", background: "#11131f", border: "1px solid #25283a", borderTop: `3px solid ${accent}`, padding: "24px 22px", clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ color: accent, fontSize: "2rem", lineHeight: 1 }}>{symbol}</span>
+              <span style={{ color: "#555", fontSize: "0.65rem", fontWeight: 800, letterSpacing: "0.12em" }}>{number}</span>
+            </div>
+            <h3 style={{ color: "#fff", fontSize: "1.1rem", lineHeight: 1.2, marginTop: "34px", textTransform: "uppercase" }}>{title}</h3>
+            <div style={{ height: "1px", background: "#303345", margin: "16px 0" }} />
+            <p style={{ color: "#9094a5", fontSize: "0.8rem", lineHeight: 1.65 }}>{description}</p>
+          </article>
+        ))}
+      </section>
+
+      <p style={{ color: "#666", fontSize: "0.72rem", lineHeight: 1.6, margin: "22px auto 0", maxWidth: "720px", textAlign: "center" }}>
+        Previous HackSprint editions have connected students with organizations including Cognizant, Rentr UK, StartupTN, Devfolio, ETHIndia, JetBrains, Balsamiq, Intel, and Dell.
+      </p>
+
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "52px" }}>
+        <Link href="/contact" style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "15px 28px", background: "#d4ff00", color: "#0a0a0a", fontSize: "0.78rem", fontWeight: 900, letterSpacing: "0.08em", textDecoration: "none", textTransform: "uppercase", clipPath: "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)" }}>
+          Discuss sponsorship <span aria-hidden="true" style={{ fontSize: "1.1rem" }}>→</span>
+        </Link>
+      </div>
     </div>
   );
 }
