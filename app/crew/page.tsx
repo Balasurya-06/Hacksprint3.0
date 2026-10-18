@@ -72,6 +72,26 @@ const organizers: TeamMember[] = [
     bio: "Directing attendee outreach, judge and mentor relations, community partnerships, and stage coordination.",
     initials: "K",
   },
+  {
+    id: "harini",
+    name: "HARINI",
+    role: "Organizer · HackSprint 3.0",
+    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
+    tagRole: "ORGANIZER",
+    tagYear: "THIRD YEAR · CSE",
+    bio: "Coordinating event administration, participant hospitality, schedule management, and stage operations.",
+    initials: "H",
+  },
+  {
+    id: "aravind",
+    name: "ARAVIND",
+    role: "Organizer · HackSprint 3.0",
+    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
+    tagRole: "ORGANIZER",
+    tagYear: "THIRD YEAR · CSE",
+    bio: "Managing technical operations, hackathon infrastructure, platform workflows, and track logistics.",
+    initials: "A",
+  },
 ];
 
 const coordinators: TeamMember[] = [
@@ -563,6 +583,18 @@ export default function CrewPage() {
             color: #d4ff00 !important;
             transform: translateY(-1px);
           }
+          @media (max-width: 960px) {
+            .crew-org-row-1 {
+              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+            .crew-org-row-2 {
+              max-width: 100% !important;
+              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+            .crew-coordinators-grid {
+              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+          }
           @media (max-width: 900px) {
             .crew-header-box {
               flex-direction: column !important;
@@ -573,20 +605,16 @@ export default function CrewPage() {
             .crew-header-slash-col {
               display: none !important;
             }
-            .crew-organizers-grid {
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-            .crew-coordinators-grid {
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
             .crew-conveners-grid {
               grid-template-columns: 1fr !important;
             }
           }
-          @media (max-width: 600px) {
-            .crew-organizers-grid,
+          @media (max-width: 580px) {
+            .crew-org-row-1,
+            .crew-org-row-2,
             .crew-coordinators-grid {
               grid-template-columns: 1fr !important;
+              max-width: 100% !important;
             }
           }
         `}</style>
@@ -757,7 +785,7 @@ export default function CrewPage() {
 
         {/* ── TEAM PROFILES CONTAINER ── */}
         <div id="crew-profiles">
-          {/* ── 1ST LINE: 3 ORGANIZERS ── */}
+          {/* ── 1ST LINE: 5 ORGANIZERS ── */}
           <section id="crew-organizers" aria-labelledby="organizers-heading" style={{ marginBottom: "48px" }}>
             <div
               style={{
@@ -804,19 +832,38 @@ export default function CrewPage() {
                 }}
               />
               <span style={{ color: "#666666", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                3 Organizers
+                5 Organizers
               </span>
             </div>
 
+            {/* 1st Line: 3 Organizers */}
             <div
-              className="crew-organizers-grid"
+              className="crew-org-row-1"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                gap: "22px",
+                gap: "20px",
+                marginBottom: "20px",
               }}
             >
-              {organizers.map((member) => (
+              {organizers.slice(0, 3).map((member) => (
+                <CrewCard key={member.id} member={member} />
+              ))}
+            </div>
+
+            {/* 2nd Line: 2 Organizers */}
+            <div
+              className="crew-org-row-2"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                gap: "20px",
+                maxWidth: "calc((100% - 40px) * 2 / 3 + 20px)",
+                margin: "0 auto",
+                width: "100%",
+              }}
+            >
+              {organizers.slice(3).map((member) => (
                 <CrewCard key={member.id} member={member} />
               ))}
             </div>
