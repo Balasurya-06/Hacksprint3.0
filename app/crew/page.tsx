@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 interface ContactInfo {
   phone?: string;
@@ -12,929 +14,892 @@ interface TeamMember {
   id: string;
   name: string;
   role: string;
+  designation?: string;
   detail: string;
-  tagRole: string;
-  tagYear: string;
   bio: string;
+  badge?: string;
   image?: string;
-  initials: string;
-  isTba?: boolean;
+  objectPosition?: string;
+  imageScale?: number;
+  imageOrigin?: string;
   contact?: ContactInfo;
 }
 
-const conveners = [
+/* ── 1. CONVENERS (HOD & FACULTY LEADERSHIP · TEXT ONLY) ── */
+const facultyMembers: TeamMember[] = [
   {
+    id: "santhosh",
     name: "Dr. R. Santhosh",
     role: "Head of Department",
-    department: "Computer Science and Engineering",
-  },
-  {
-    name: "Ramya",
-    role: "Assistant Professor",
-    department: "Department of Computer Science and Engineering",
-  },
-];
-
-const organizers: TeamMember[] = [
-  {
-    id: "surya",
-    name: "BALA SURYA S",
-    role: "Lead Organizer · HackSprint 2.0 & 3.0",
-    detail: "Final Year · Computer Science and Engineering",
-    tagRole: "LEAD ORGANIZER",
-    tagYear: "FINAL YEAR · CSE",
-    bio: "Spearheading the overarching vision, platform architecture, ecosystem sponsorships, and builder experience for HackSprint.",
-    image: "/surya.png",
-    initials: "BS",
+    designation: "Professor & Head of Department",
+    detail: "Computer Science and Engineering",
+    bio: "Head of the Department of Computer Science & Engineering at Karpagam Academy of Higher Education. Guiding overarching institutional strategy, industry partnerships, research incubation, and student innovation initiatives for HackSprint 3.0.",
+    badge: "CONVENER · HOD",
     contact: {
-      phone: "9597075831",
-      whatsapp: "9597075831",
-      linkedin: "https://www.linkedin.com/in/balasurya06/",
+      linkedin: "https://www.linkedin.com/in/dr-r-santhosh-8373801a/",
     },
   },
   {
+    id: "ramya",
+    name: "Ramya",
+    role: "Assistant Professor",
+    designation: "Assistant Professor",
+    detail: "Department of Computer Science and Engineering",
+    bio: "Assistant Professor in the Department of Computer Science & Engineering at KAHE. Providing continuous mentorship, institutional coordination, academic alignment, and operational supervision for the hackathon.",
+    badge: "CONVENER · FACULTY ADVISOR",
+  },
+];
+
+/* ── 2. LEAD ORGANIZER (BALA SURYA S) ── */
+const leadOrganizer: TeamMember = {
+  id: "surya",
+  name: "BALA SURYA S",
+  role: "Lead Organizer · HackSprint 2.0 & 3.0",
+  designation: "Lead Organizer & Core Architect",
+  detail: "Final Year · Computer Science and Engineering",
+  bio: "Spearheading the overarching vision, platform architecture, ecosystem sponsorships, judge panels, and builder experience for HackSprint.",
+  badge: "LEAD ORGANIZER",
+  image: "/surya.png",
+  objectPosition: "center top",
+  imageScale: 1.05,
+  imageOrigin: "center center",
+  contact: {
+    phone: "9597075831",
+    whatsapp: "9597075831",
+    linkedin: "https://www.linkedin.com/in/balasurya06/",
+  },
+};
+
+/* ── 3. ORGANIZING COMMITTEE (AFTER THAT · REAL PHOTOS) ── */
+const organizingTeam: TeamMember[] = [
+  {
     id: "deepa",
     name: "DEEPA",
-    role: "Organizer · HackSprint 3.0",
-    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
-    tagRole: "ORGANIZER",
-    tagYear: "THIRD YEAR · CSE",
-    bio: "Spearheading operations, track scheduling, on-ground execution, and seamless participant engagement across all 24 hours.",
-    initials: "D",
+    role: "Organizer · Operations & Scheduling",
+    designation: "Operations & Scheduling Lead",
+    detail: "Third Year · Computer Science and Engineering",
+    bio: "Spearheading operations, track scheduling, on-ground execution, and seamless participant engagement across all 36 hours of the hackathon.",
+    badge: "OPERATIONS",
+    image: "/deepa.jpeg",
+    objectPosition: "center 30%",
+    imageScale: 1.35,
+    imageOrigin: "50% 30%",
   },
   {
     id: "kavinya",
     name: "KAVINYA",
-    role: "Organizer · HackSprint 3.0",
-    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
-    tagRole: "ORGANIZER",
-    tagYear: "THIRD YEAR · CSE",
-    bio: "Directing attendee outreach, judge and mentor relations, community partnerships, and stage coordination.",
-    initials: "K",
+    role: "Organizer · Outreach & Partnerships",
+    designation: "Outreach & Partnerships Lead",
+    detail: "Third Year · Computer Science and Engineering",
+    bio: "Directing attendee outreach, judge and mentor relations, community partnerships, and main arena stage coordination.",
+    badge: "OUTREACH",
+    image: "/kavinya.jpeg",
+    objectPosition: "center 28%",
+    imageScale: 1.25,
+    imageOrigin: "50% 28%",
   },
   {
     id: "harini",
     name: "HARINI",
-    role: "Organizer · HackSprint 3.0",
-    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
-    tagRole: "ORGANIZER",
-    tagYear: "THIRD YEAR · CSE",
-    bio: "Coordinating event administration, participant hospitality, schedule management, and stage operations.",
-    initials: "H",
+    role: "Organizer · Event Admin & Hospitality",
+    designation: "Event Admin & Hospitality Lead",
+    detail: "Third Year · Computer Science and Engineering",
+    bio: "Coordinating event administration, participant hospitality, schedule management, and round-the-clock arena logistics.",
+    badge: "ADMIN & HOSPITALITY",
+    image: "/harini.jpeg",
+    objectPosition: "53% 25%",
+    imageScale: 1.0,
+    imageOrigin: "53% 25%",
   },
   {
     id: "aravind",
     name: "ARAVIND",
-    role: "Organizer · HackSprint 3.0",
-    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
-    tagRole: "ORGANIZER",
-    tagYear: "THIRD YEAR · CSE",
-    bio: "Managing technical operations, hackathon infrastructure, platform workflows, and track logistics.",
-    initials: "A",
+    role: "Organizer · Technical Operations",
+    designation: "Technical Operations Lead",
+    detail: "Third Year · Computer Science and Engineering",
+    bio: "Managing technical operations, hackathon network infrastructure, platform workflows, and developer track logistics.",
+    badge: "TECH OPS",
+    image: "/aravind.jpeg",
+    objectPosition: "center 48%",
+    imageScale: 1.65,
+    imageOrigin: "50% 48%",
   },
 ];
 
-const coordinators: TeamMember[] = [
-  {
-    id: "vishal",
-    name: "VISHAL",
-    role: "Student Coordinator · HackSprint 3.0",
-    detail: "Second Year · Computer Science and Engineering",
-    tagRole: "COORDINATOR",
-    tagYear: "SECOND YEAR · CSE",
-    bio: "Facilitating on-ground technical assistance, participant logistics, track mentoring support, and operational flow.",
-    initials: "V",
-  },
-  {
-    id: "sudharshan",
-    name: "SUDHARSHAN",
-    role: "Student Coordinator · HackSprint 3.0",
-    detail: "Second Year · Computer Science and Engineering",
-    tagRole: "COORDINATOR",
-    tagYear: "SECOND YEAR · CSE",
-    bio: "Managing attendee support, campus outreach, registration flow, and hardware track arrangements.",
-    initials: "S",
-  },
-  {
-    id: "coord-3",
-    name: "COORDINATOR",
-    role: "Student Coordinator · HackSprint 3.0",
-    detail: "Second Year · Computer Science and Engineering",
-    tagRole: "COORDINATOR",
-    tagYear: "SECOND YEAR · CSE",
-    bio: "Second Year student coordinator joining the HackSprint 3.0 organizing force. Profile reveal coming soon.",
-    initials: "HS",
-    isTba: true,
-  },
-  {
-    id: "coord-4",
-    name: "COORDINATOR",
-    role: "Student Coordinator · HackSprint 3.0",
-    detail: "Second Year · Computer Science and Engineering",
-    tagRole: "COORDINATOR",
-    tagYear: "SECOND YEAR · CSE",
-    bio: "Second Year student coordinator joining the HackSprint 3.0 organizing force. Profile reveal coming soon.",
-    initials: "HS",
-    isTba: true,
-  },
-];
+/* ── ARCHED COMMITTEE CARD (ROMAN DOME WITH PHOTO & FLOATING PILL) ── */
+function ArchedCommitteeCard({
+  member,
+  onSelect,
+}: {
+  member: TeamMember;
+  onSelect: (m: TeamMember) => void;
+}) {
+  const isCutout = member.id === "surya";
 
-function SilhouetteAvatar({ initials, isTba }: { initials: string; isTba?: boolean }) {
   return (
     <div
+      onClick={() => onSelect(member)}
       style={{
         position: "relative",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "center",
-      }}
-    >
-      <svg
-        viewBox="0 0 200 240"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{
-          width: "160px",
-          height: "210px",
-          display: "block",
-          filter: "drop-shadow(0 10px 18px rgba(0,0,0,0.8))",
-        }}
-      >
-        <defs>
-          <radialGradient id={`glow-${initials}`} cx="50%" cy="30%" r="60%">
-            <stop offset="0%" stopColor="#d4ff00" stopOpacity="0.22" />
-            <stop offset="60%" stopColor="#d4ff00" stopOpacity="0.04" />
-            <stop offset="100%" stopColor="#0a0a0a" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id={`suit-${initials}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#222222" />
-            <stop offset="60%" stopColor="#151515" />
-            <stop offset="100%" stopColor="#0d0d0d" />
-          </linearGradient>
-          <linearGradient id={`rim-${initials}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#d4ff00" stopOpacity="0.75" />
-            <stop offset="60%" stopColor="#d4ff00" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#00c2ff" stopOpacity="0.3" />
-          </linearGradient>
-        </defs>
-
-        {/* Ambient Glow & Target Rings */}
-        <circle cx="100" cy="95" r="72" fill={`url(#glow-${initials})`} />
-        <circle cx="100" cy="95" r="62" stroke="#d4ff00" strokeWidth="0.8" strokeDasharray="3 4" opacity="0.25" />
-        <circle cx="100" cy="95" r="45" stroke="#ffffff" strokeWidth="0.6" strokeDasharray="2 3" opacity="0.15" />
-
-        {/* Head */}
-        <ellipse cx="100" cy="62" rx="22" ry="29" fill={`url(#suit-${initials})`} stroke={`url(#rim-${initials})`} strokeWidth="1.2" />
-
-        {/* Neck */}
-        <path d="M 93 88 L 93 104 L 107 104 L 107 88 Z" fill="#151515" />
-
-        {/* Torso & Shoulders */}
-        <path
-          d="M 42 240 L 48 145 C 52 124 66 109 87 105 L 100 103 L 113 105 C 134 109 148 124 152 145 L 158 240 Z"
-          fill={`url(#suit-${initials})`}
-          stroke={`url(#rim-${initials})`}
-          strokeWidth="1.2"
-        />
-
-        {/* Collar V lines */}
-        <path d="M 88 106 L 100 134 L 112 106" stroke="#d4ff00" strokeWidth="1" strokeOpacity="0.5" />
-        <path d="M 100 134 L 100 185" stroke="#d4ff00" strokeWidth="1" strokeDasharray="3 3" strokeOpacity="0.3" />
-
-        {/* Chest Hexagon Badge */}
-        <polygon
-          points="100,140 119,151 119,173 100,184 81,173 81,151"
-          fill="#101010"
-          stroke="#d4ff00"
-          strokeWidth="1.3"
-          filter="drop-shadow(0 0 6px rgba(212, 255, 0, 0.4))"
-        />
-
-        {/* Initials Text */}
-        <text
-          x="100"
-          y="167"
-          textAnchor="middle"
-          fill="#d4ff00"
-          fontSize={isTba ? "11" : "13"}
-          fontWeight="900"
-          letterSpacing="0.04em"
-          fontFamily="system-ui, sans-serif"
-        >
-          {initials}
-        </text>
-      </svg>
-    </div>
-  );
-}
-
-function CrewCard({ member }: { member: TeamMember }) {
-  const slashId = `card-slash-${member.id}`;
-
-  return (
-    <article
-      className="crew-member-card"
-      style={{
-        background: "transparent",
-        border: "none",
-        borderRadius: "0",
-        boxShadow: "none",
+        width: "250px",
+        height: "360px",
+        margin: "0 auto",
+        cursor: "pointer",
         display: "flex",
         flexDirection: "column",
-        position: "relative",
-        transition: "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        transition: "transform 0.25s ease",
       }}
+      onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-6px)")}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
     >
-      {/* Upper Figure Section */}
+      {/* 1. Roman Arch Dome Backdrop & Framed Image */}
       <div
         style={{
-          position: "relative",
-          height: "250px",
-          width: "100%",
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "center",
-          background: "transparent",
+          position: "absolute",
+          bottom: "35px",
+          width: "230px",
+          height: "285px",
+          borderRadius: "115px 115px 0 0",
+          background: isCutout
+            ? "linear-gradient(180deg, #990e14 0%, #3d0508 100%)"
+            : "#140a0c",
+          boxShadow: "0 14px 40px rgba(153, 14, 20, 0.4), 0 0 25px rgba(229, 27, 36, 0.2)",
           overflow: "hidden",
+          border: "1.5px solid rgba(229, 27, 36, 0.4)",
+          borderBottom: "none",
         }}
       >
-        {/* Clipped photo area */}
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 24px), 0 100%)",
-          }}
-        >
-          {member.image ? (
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "flex-end",
-                justifyContent: "center",
-              }}
-            >
-              <Image
-                src={member.image}
-                alt={`${member.name} - HackSprint 3.0`}
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                style={{
-                  objectFit: "contain",
-                  objectPosition: "center bottom",
-                  filter: "contrast(1.05) drop-shadow(0 12px 24px rgba(0,0,0,0.85))",
-                }}
-                priority={member.id === "surya"}
-              />
-            </div>
-          ) : (
-            <SilhouetteAvatar initials={member.initials} isTba={member.isTba} />
-          )}
-        </div>
-
-        {/* Small floating role tag in upper right (matching reference image) */}
+        {/* Subtle interior radial glow */}
         <div
           style={{
             position: "absolute",
-            right: "12px",
-            top: "34%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-            gap: "2px",
-            zIndex: 4,
+            inset: 0,
+            background: "radial-gradient(ellipse at 50% 25%, rgba(229, 27, 36, 0.35) 0%, transparent 70%)",
+            zIndex: 1,
             pointerEvents: "none",
           }}
-        >
-          <span
-            style={{
-              fontSize: "0.58rem",
-              fontWeight: 800,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "#d4ff00",
-              background: "rgba(10, 10, 10, 0.88)",
-              padding: "2px 7px",
-              borderRadius: "4px",
-              borderLeft: "2px solid #d4ff00",
-              backdropFilter: "blur(6px)",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
-            }}
-          >
-            {member.tagRole}
-          </span>
-          <span
-            style={{
-              fontSize: "0.52rem",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "#777777",
-            }}
-          >
-            {member.tagYear}
-          </span>
-        </div>
-      </div>
+        />
 
-      {/* Controlled Diagonal Slash Line (matching reference image) */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "26px",
-          marginTop: "-26px",
-          zIndex: 5,
-          pointerEvents: "none",
-        }}
-      >
-        <svg
-          viewBox="0 0 300 26"
-          preserveAspectRatio="none"
-          style={{
-            width: "100%",
-            height: "26px",
-            display: "block",
-            overflow: "visible",
-          }}
-        >
-          <defs>
-            <linearGradient id={slashId} x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#d4ff00" stopOpacity="0.95" />
-              <stop offset="55%" stopColor="#d4ff00" stopOpacity="0.5" />
-              <stop offset="90%" stopColor="#ffffff" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-            </linearGradient>
-            <filter id={`glow-${slashId}`}>
-              <feGaussianBlur stdDeviation="1.5" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          <line
-            x1="0"
-            y1="25"
-            x2="300"
-            y2="1"
-            stroke={`url(#${slashId})`}
-            strokeWidth="2"
-            strokeLinecap="round"
-            filter={`url(#glow-${slashId})`}
-          />
-        </svg>
-      </div>
-
-      {/* Card Info Body */}
-      <div
-        style={{
-          padding: "16px 2px 20px",
-          display: "flex",
-          flexDirection: "column",
-          flex: 1,
-          position: "relative",
-          zIndex: 6,
-        }}
-      >
-        {member.isTba && (
+        {/* Scaled & Positioned Member Photo */}
+        {member.image && (
           <div
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "0.6rem",
-              fontWeight: 800,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: "#d4ff00",
-              background: "rgba(212, 255, 0, 0.08)",
-              border: "1px dashed rgba(212, 255, 0, 0.4)",
-              padding: "2px 8px",
-              borderRadius: "999px",
-              width: "fit-content",
-              marginBottom: "8px",
+              position: "absolute",
+              inset: 0,
+              transform: member.imageScale ? `scale(${member.imageScale})` : "none",
+              transformOrigin: member.imageOrigin || "center center",
+              transition: "transform 0.3s ease",
+              zIndex: 2,
             }}
           >
-            <span
+            <Image
+              src={member.image}
+              alt={member.name}
+              fill
+              sizes="250px"
               style={{
-                width: 5,
-                height: 5,
-                borderRadius: "50%",
-                backgroundColor: "#d4ff00",
-                display: "inline-block",
-                boxShadow: "0 0 6px #d4ff00",
+                objectFit: isCutout ? "contain" : "cover",
+                objectPosition: member.objectPosition || "center top",
+                filter: isCutout
+                  ? "drop-shadow(0 14px 22px rgba(0, 0, 0, 0.95))"
+                  : "contrast(1.05) brightness(0.96)",
               }}
+              priority={member.id === "surya"}
             />
-            Announcing Soon
           </div>
         )}
 
-        <h3
-          className="crew-card-name"
+        {/* Dark crimson vignette mask to blend photo bottom into the card */}
+        <div
           style={{
-            color: "#d4ff00",
-            fontSize: "1.22rem",
-            fontWeight: 900,
-            letterSpacing: "-0.02em",
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(to top, rgba(14, 8, 9, 0.85) 0%, rgba(14, 8, 9, 0.2) 30%, transparent 60%)",
+            zIndex: 3,
+            pointerEvents: "none",
+          }}
+        />
+      </div>
+
+      {/* 2. Floating Dark Obsidian Pill Badge */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 4,
+          width: "250px",
+          background: "linear-gradient(135deg, #180d10 0%, #0b0708 100%)",
+          border: "1px solid #3d1b1f",
+          borderRadius: "10px",
+          padding: "10px 14px 12px",
+          boxShadow: "0 10px 28px rgba(0, 0, 0, 0.9), 0 0 16px rgba(229, 27, 36, 0.15)",
+          textAlign: "left",
+          transition: "border-color 0.2s, box-shadow 0.2s",
+        }}
+      >
+        {/* Name */}
+        <h3
+          style={{
+            color: "#f5f1ea",
+            fontFamily: "'Oswald', sans-serif",
+            fontSize: "1rem",
+            fontWeight: 700,
+            letterSpacing: "0.04em",
             textTransform: "uppercase",
-            lineHeight: 1.15,
-            margin: "0 0 5px 0",
-            transition: "color 0.2s ease, text-shadow 0.2s ease",
+            lineHeight: 1.2,
+            margin: 0,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
         >
           {member.name}
         </h3>
 
-        <p style={{ color: "#ffffff", fontSize: "0.74rem", fontWeight: 700, margin: "0 0 2px 0", lineHeight: 1.3 }}>
-          {member.role}
-        </p>
-
-        <p style={{ color: "#777777", fontSize: "0.68rem", lineHeight: 1.35, margin: "0 0 10px 0" }}>
-          {member.detail}
-        </p>
-
-        <p style={{ color: "#999999", fontSize: "0.76rem", lineHeight: 1.55, margin: "0 0 14px 0", flex: 1 }}>
-          {member.bio}
-        </p>
-
-        {/* Contact Links */}
-        {member.contact && (
-          <div
-            style={{
-              display: "flex",
-              gap: "7px",
-              alignItems: "center",
-              flexWrap: "wrap",
-              paddingTop: "10px",
-              borderTop: "1px solid rgba(255, 255, 255, 0.06)",
-            }}
-          >
-            {member.contact.phone && (
-              <a
-                href={`tel:${member.contact.phone}`}
-                className="crew-pill-link"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  padding: "5px 11px",
-                  borderRadius: "999px",
-                  background: "#181818",
-                  border: "1px solid #2c2c2c",
-                  color: "#cccccc",
-                  fontSize: "0.66rem",
-                  fontWeight: 700,
-                  textDecoration: "none",
-                  transition: "all 0.2s ease",
-                }}
-                aria-label={`Call ${member.name}`}
-              >
-                <span>📞</span> Call
-              </a>
-            )}
-            {member.contact.whatsapp && (
-              <a
-                href={`https://wa.me/${member.contact.whatsapp}`}
-                target="_blank"
-                rel="noreferrer"
-                className="crew-pill-link"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  padding: "5px 11px",
-                  borderRadius: "999px",
-                  background: "#181818",
-                  border: "1px solid #2c2c2c",
-                  color: "#cccccc",
-                  fontSize: "0.66rem",
-                  fontWeight: 700,
-                  textDecoration: "none",
-                  transition: "all 0.2s ease",
-                }}
-                aria-label={`WhatsApp ${member.name}`}
-              >
-                <span>💬</span> WhatsApp
-              </a>
-            )}
-            {member.contact.linkedin && (
-              <a
-                href={member.contact.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="crew-pill-link"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  padding: "5px 11px",
-                  borderRadius: "999px",
-                  background: "#181818",
-                  border: "1px solid #2c2c2c",
-                  color: "#cccccc",
-                  fontSize: "0.66rem",
-                  fontWeight: 700,
-                  textDecoration: "none",
-                  transition: "all 0.2s ease",
-                }}
-                aria-label={`${member.name} LinkedIn Profile`}
-              >
-                <span>↗</span> LinkedIn
-              </a>
-            )}
-          </div>
-        )}
+        {/* Role with crimson bullet */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "5px",
+            color: "#b0a89d",
+            fontSize: "0.72rem",
+            fontWeight: 500,
+            lineHeight: 1.3,
+            marginTop: "4px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <span style={{ color: "#e51b24", fontSize: "0.75rem" }}>•</span>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+            {member.role}
+          </span>
+        </div>
       </div>
-    </article>
+    </div>
   );
 }
 
 export default function CrewPage() {
-  return (
-    <main style={{ minHeight: "100vh", background: "#0a0a0a", color: "#ffffff", padding: "110px 24px 100px" }}>
-      <div style={{ maxWidth: "1220px", margin: "0 auto" }}>
-        {/* Responsive and hover styles */}
-        <style>{`
-          .crew-member-card:hover {
-            transform: translateY(-6px);
-          }
-          .crew-member-card:hover .crew-card-name {
-            color: #ffffff !important;
-            text-shadow: 0 0 12px rgba(212, 255, 0, 0.4) !important;
-          }
-          .crew-pill-btn:hover {
-            background: #d4ff00 !important;
-            color: #0a0a0a !important;
-            transform: translateY(-2px);
-          }
-          .crew-pill-link:hover {
-            background: rgba(212, 255, 0, 0.1) !important;
-            border-color: #d4ff00 !important;
-            color: #d4ff00 !important;
-            transform: translateY(-1px);
-          }
-          @media (max-width: 960px) {
-            .crew-org-row-1 {
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-            .crew-org-row-2 {
-              max-width: 100% !important;
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-            .crew-coordinators-grid {
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-          }
-          @media (max-width: 900px) {
-            .crew-header-box {
-              flex-direction: column !important;
-              align-items: flex-start !important;
-              gap: 24px !important;
-              margin-bottom: 40px !important;
-            }
-            .crew-header-slash-col {
-              display: none !important;
-            }
-            .crew-conveners-grid {
-              grid-template-columns: 1fr !important;
-            }
-          }
-          @media (max-width: 580px) {
-            .crew-org-row-1,
-            .crew-org-row-2,
-            .crew-coordinators-grid {
-              grid-template-columns: 1fr !important;
-              max-width: 100% !important;
-            }
-          }
-        `}</style>
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
-        {/* ── HEADER WITH SIGNATURE DIAGONAL SLASH ── */}
+  return (
+    <main
+      style={{
+        minHeight: "100vh",
+        background: "#070606",
+        color: "#f5f1ea",
+        padding: "80px 24px 120px",
+        fontFamily: "'Inter', sans-serif",
+      }}
+    >
+      <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* ── HEADER: "Meet the crew." (MATCHING USER SCREENSHOT) ─────────── */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
         <header
-          className="crew-header-box"
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: "36px",
-            marginBottom: "60px",
+            flexWrap: "wrap",
+            gap: "32px 48px",
+            marginBottom: "72px",
           }}
         >
-          {/* Left Column: Meet the crew */}
-          <div style={{ flex: "1 1 45%" }}>
+          {/* Left Title */}
+          <div>
             <p
               style={{
-                color: "#d4ff00",
-                fontSize: "0.72rem",
-                fontWeight: 800,
-                letterSpacing: "0.16em",
+                color: "#e51b24",
+                fontFamily: "'Oswald', sans-serif",
+                fontSize: "0.82rem",
+                fontWeight: 700,
+                letterSpacing: "0.14em",
                 textTransform: "uppercase",
-                marginBottom: "14px",
+                margin: "0 0 10px",
               }}
             >
-              The people behind the sprint
+              THE PEOPLE BEHIND THE SPRINT
             </p>
             <h1
               style={{
-                color: "#ffffff",
-                fontSize: "clamp(2.7rem, 5.5vw, 4.8rem)",
-                fontWeight: 900,
-                letterSpacing: "-0.05em",
-                lineHeight: 0.95,
+                fontSize: "clamp(2.8rem, 6vw, 4.5rem)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                lineHeight: 1.0,
                 margin: 0,
+                color: "#ffffff",
+                fontFamily: "'Inter', sans-serif",
               }}
             >
-              Meet the <span style={{ color: "#d4ff00" }}>crew</span>.
+              Meet the <span style={{ color: "#e51b24" }}>crew.</span>
             </h1>
           </div>
 
-          {/* Center Column: Controlled Diagonal Slash Divider */}
+          {/* Right: Diagonal Slash + Description + CTA */}
           <div
-            className="crew-header-slash-col"
-            aria-hidden="true"
             style={{
-              width: "42px",
-              height: "115px",
-              flexShrink: 0,
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
+              gap: "28px",
+              flex: "1 1 360px",
+              maxWidth: "520px",
             }}
           >
-            <svg
-              viewBox="0 0 42 115"
+            {/* Glowing Diagonal Slash */}
+            <div
+              aria-hidden="true"
               style={{
-                width: "42px",
-                height: "115px",
-                display: "block",
-                overflow: "visible",
+                width: "2px",
+                height: "68px",
+                background: "linear-gradient(180deg, #e51b24 0%, rgba(229, 27, 36, 0.05) 100%)",
+                transform: "rotate(20deg)",
+                flexShrink: 0,
               }}
-            >
-              <defs>
-                <linearGradient id="headerMainSlash" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#d4ff00" stopOpacity="0.1" />
-                  <stop offset="45%" stopColor="#d4ff00" stopOpacity="0.95" />
-                  <stop offset="85%" stopColor="#ffffff" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <line
-                x1="2"
-                y1="110"
-                x2="40"
-                y2="5"
-                stroke="url(#headerMainSlash)"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
+            />
 
-          {/* Right Column: Exact user intro & button */}
-          <div style={{ flex: "1 1 50%" }}>
-            <p
-              style={{
-                color: "#888888",
-                fontSize: "0.95rem",
-                lineHeight: 1.7,
-                maxWidth: "460px",
-                marginBottom: "20px",
-              }}
-            >
-              The organizers, builders, and community leaders creating a space where ideas become real-world projects.
-            </p>
-            <a
-              href="#crew-profiles"
-              className="crew-pill-btn"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "10px 20px",
-                border: "1px solid #d4ff00",
-                borderRadius: "999px",
-                color: "#d4ff00",
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                textDecoration: "none",
-                transition: "all 0.2s ease",
-              }}
-            >
-              Meet the team ↓
-            </a>
+            <div>
+              <p
+                style={{
+                  color: "#9e978d",
+                  fontSize: "0.95rem",
+                  lineHeight: 1.6,
+                  margin: "0 0 16px",
+                }}
+              >
+                The organizers, builders, and community leaders creating a space where ideas become real-world projects.
+              </p>
+
+              <a
+                href="#organizers"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "7px 18px",
+                  borderRadius: "9999px",
+                  border: "1px solid #e51b24",
+                  background: "transparent",
+                  color: "#e51b24",
+                  fontSize: "0.84rem",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#e51b24";
+                  e.currentTarget.style.color = "#ffffff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "#e51b24";
+                }}
+              >
+                <span>Meet the team</span>
+                <span>↓</span>
+              </a>
+            </div>
           </div>
         </header>
 
-        {/* ── CONVENERS SECTION (CLEAN, NO CONTAINER/CARD BORDERS) ── */}
-        <section aria-labelledby="conveners-title" style={{ marginBottom: "64px" }}>
-          <p
-            id="conveners-title"
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* ── CONVENERS (HOD & FACULTY LEADERSHIP · MATCHING SCREENSHOT) ──── */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        <section
+          style={{
+            marginBottom: "72px",
+            paddingBottom: "56px",
+            borderBottom: "1px solid #1f1416",
+          }}
+        >
+          {/* Section Kicker */}
+          <h2
             style={{
-              color: "#d4ff00",
-              fontSize: "0.75rem",
+              color: "#e51b24",
+              fontFamily: "'Oswald', sans-serif",
+              fontSize: "0.85rem",
               fontWeight: 800,
-              letterSpacing: "0.16em",
-              marginBottom: "18px",
+              letterSpacing: "0.14em",
               textTransform: "uppercase",
+              margin: "0 0 14px",
             }}
           >
-            Conveners
-          </p>
+            CONVENERS
+          </h2>
 
+          {/* Clean Horizontal Rule */}
           <div
-            className="crew-conveners-grid"
+            style={{
+              height: "1px",
+              background: "rgba(229, 27, 36, 0.45)",
+              marginBottom: "32px",
+            }}
+          />
+
+          {/* 2 Columns: Dr. R. Santhosh & Ramya */}
+          <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-              gap: "24px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "36px 48px",
             }}
           >
-            {conveners.map((convener) => (
-              <article
-                key={convener.name}
+            {/* Dr. R. Santhosh */}
+            <div
+              onClick={() => setSelectedMember(facultyMembers[0])}
+              style={{
+                cursor: "pointer",
+                padding: "8px 0",
+                transition: "transform 0.2s ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateX(4px)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+            >
+              <h3
                 style={{
-                  borderTop: "1px solid #d4ff00",
-                  borderBottom: "1px solid #222222",
-                  padding: "22px 0",
-                  background: "transparent",
+                  fontSize: "1.5rem",
+                  fontWeight: 700,
+                  color: "#ffffff",
+                  margin: "0 0 8px",
+                  fontFamily: "'Inter', sans-serif",
+                  letterSpacing: "-0.01em",
                 }}
               >
-                <h2 style={{ color: "#ffffff", fontSize: "1.25rem", fontWeight: 800, letterSpacing: "-0.03em", margin: 0 }}>
-                  {convener.name}
-                </h2>
-                <p style={{ color: "#d4ff00", fontSize: "0.78rem", fontWeight: 700, marginTop: "8px", marginBottom: "4px" }}>
-                  {convener.role}
-                </p>
-                <p style={{ color: "#777777", fontSize: "0.82rem", lineHeight: 1.5, margin: 0 }}>
-                  {convener.department}
-                </p>
-              </article>
-            ))}
+                Dr. R. Santhosh
+              </h3>
+              <p
+                style={{
+                  color: "#e51b24",
+                  fontSize: "0.95rem",
+                  fontWeight: 600,
+                  margin: "0 0 4px",
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
+                Head of Department
+              </p>
+              <p
+                style={{
+                  color: "#8a8276",
+                  fontSize: "0.88rem",
+                  margin: 0,
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
+                Computer Science and Engineering
+              </p>
+            </div>
+
+            {/* Ramya */}
+            <div
+              onClick={() => setSelectedMember(facultyMembers[1])}
+              style={{
+                cursor: "pointer",
+                padding: "8px 0",
+                transition: "transform 0.2s ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateX(4px)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+            >
+              <h3
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: 700,
+                  color: "#ffffff",
+                  margin: "0 0 8px",
+                  fontFamily: "'Inter', sans-serif",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                Ramya
+              </h3>
+              <p
+                style={{
+                  color: "#e51b24",
+                  fontSize: "0.95rem",
+                  fontWeight: 600,
+                  margin: "0 0 4px",
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
+                Assistant Professor
+              </p>
+              <p
+                style={{
+                  color: "#8a8276",
+                  fontSize: "0.88rem",
+                  margin: 0,
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
+                Department of Computer Science and Engineering
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* ── TEAM PROFILES CONTAINER ── */}
-        <div id="crew-profiles">
-          {/* ── 1ST LINE: 5 ORGANIZERS ── */}
-          <section id="crew-organizers" aria-labelledby="organizers-heading" style={{ marginBottom: "48px" }}>
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* ── 2. AFTER THAT: ORGANIZING COMMITTEE & LEAD ORGANIZER ─────────── */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        <section id="organizers" style={{ marginBottom: "60px", scrollMarginTop: "100px" }}>
+          {/* ROW A: BRACKET HEADER (LEFT) + LEAD ORGANIZER (RIGHT) */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              alignItems: "center",
+              gap: "48px 40px",
+              marginBottom: "56px",
+            }}
+          >
+            {/* LEFT: BRACKETED HEADER FOR ORGANIZING COMMITTEE */}
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "center",
                 gap: "14px",
-                margin: "0 0 24px",
-                paddingBottom: "10px",
-                borderBottom: "1px solid #1a1a1a",
+                padding: "20px 0",
               }}
             >
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "7px",
-                  background: "rgba(212, 255, 0, 0.08)",
-                  border: "1px solid rgba(212, 255, 0, 0.25)",
-                  padding: "5px 12px",
-                  borderRadius: "999px",
-                  color: "#d4ff00",
-                  fontSize: "0.7rem",
-                  fontWeight: 800,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                }}
+              {/* Left Bracket */}
+              <svg
+                width="28"
+                height="96"
+                viewBox="0 0 28 96"
+                fill="none"
+                style={{ flexShrink: 0 }}
               >
-                <span
-                  style={{
-                    width: 5,
-                    height: 5,
-                    borderRadius: "50%",
-                    backgroundColor: "#d4ff00",
-                    boxShadow: "0 0 6px #d4ff00",
-                  }}
+                <path
+                  d="M26 4 H10 C5.5 4 2 7.5 2 12 V84 C2 88.5 5.5 92 10 92 H26"
+                  stroke="#e51b24"
+                  strokeWidth="3.2"
+                  strokeLinecap="round"
                 />
-                01 // ORGANIZING LEADERSHIP
+              </svg>
+
+              {/* Title Texts */}
+              <div style={{ textAlign: "center", padding: "0 8px" }}>
+                <p
+                  className="rdr-kicker"
+                  style={{
+                    fontSize: "0.75rem",
+                    marginBottom: "6px",
+                    display: "block",
+                  }}
+                >
+                  THE CORE ORGANIZING POSSE
+                </p>
+                <h2
+                  style={{
+                    fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
+                    fontSize: "clamp(2.4rem, 5vw, 3.6rem)",
+                    fontWeight: 900,
+                    letterSpacing: "0.04em",
+                    color: "#f5f1ea",
+                    lineHeight: 0.95,
+                    margin: 0,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  ORGANIZING <span style={{ color: "#e51b24" }}>COMMITTEE</span>
+                </h2>
+                <p
+                  style={{
+                    color: "#a39d93",
+                    fontSize: "0.95rem",
+                    fontWeight: 600,
+                    letterSpacing: "0.04em",
+                    margin: "10px 0 0",
+                  }}
+                >
+                  HACKSPRINT 3.0 · COIMBATORE 2026
+                </p>
+                <p
+                  style={{
+                    color: "#6b655c",
+                    fontSize: "0.76rem",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    margin: "4px 0 0",
+                  }}
+                >
+                  METAVERSE STUDENTS ASSOCIATION
+                </p>
               </div>
-              <div
-                style={{
-                  flex: 1,
-                  height: "1px",
-                  background: "linear-gradient(90deg, rgba(212, 255, 0, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%)",
-                }}
-              />
-              <span style={{ color: "#666666", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                5 Organizers
-              </span>
+
+              {/* Right Bracket */}
+              <svg
+                width="28"
+                height="96"
+                viewBox="0 0 28 96"
+                fill="none"
+                style={{ flexShrink: 0 }}
+              >
+                <path
+                  d="M2 4 H18 C22.5 4 26 7.5 26 12 V84 C26 88.5 22.5 92 18 92 H2"
+                  stroke="#e51b24"
+                  strokeWidth="3.2"
+                  strokeLinecap="round"
+                />
+              </svg>
             </div>
 
-            {/* 1st Line: 3 Organizers */}
-            <div
-              className="crew-org-row-1"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                gap: "20px",
-                marginBottom: "20px",
-              }}
-            >
-              {organizers.slice(0, 3).map((member) => (
-                <CrewCard key={member.id} member={member} />
-              ))}
+            {/* RIGHT: SINGLE LEAD ORGANIZER (BALA SURYA S) */}
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <ArchedCommitteeCard member={leadOrganizer} onSelect={setSelectedMember} />
             </div>
+          </div>
 
-            {/* 2nd Line: 2 Organizers */}
-            <div
-              className="crew-org-row-2"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                gap: "20px",
-                maxWidth: "calc((100% - 40px) * 2 / 3 + 20px)",
-                margin: "0 auto",
-                width: "100%",
-              }}
-            >
-              {organizers.slice(3).map((member) => (
-                <CrewCard key={member.id} member={member} />
-              ))}
-            </div>
-          </section>
-
-          {/* ── 2ND LINE: 4 COORDINATORS ── */}
-          <section id="crew-coordinators" aria-labelledby="coordinators-heading">
+          {/* ROW B: THE 4 ORGANIZERS (DEEPA, KAVINYA, HARINI, ARAVIND) */}
+          <div>
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "14px",
-                margin: "0 0 24px",
-                paddingBottom: "10px",
-                borderBottom: "1px solid #1a1a1a",
+                justifyContent: "center",
+                gap: "12px",
+                marginBottom: "36px",
               }}
             >
-              <div
+              <div style={{ width: "40px", height: "1px", background: "#e51b24" }} />
+              <span
                 style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "7px",
-                  background: "rgba(212, 255, 0, 0.08)",
-                  border: "1px solid rgba(212, 255, 0, 0.25)",
-                  padding: "5px 12px",
-                  borderRadius: "999px",
-                  color: "#d4ff00",
-                  fontSize: "0.7rem",
-                  fontWeight: 800,
-                  letterSpacing: "0.12em",
+                  color: "#e51b24",
+                  fontFamily: "'Oswald', sans-serif",
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
                   textTransform: "uppercase",
                 }}
               >
-                <span
-                  style={{
-                    width: 5,
-                    height: 5,
-                    borderRadius: "50%",
-                    backgroundColor: "#d4ff00",
-                    boxShadow: "0 0 6px #d4ff00",
-                  }}
-                />
-                02 // STUDENT COORDINATORS · 2ND YEAR
-              </div>
-              <div
-                style={{
-                  flex: 1,
-                  height: "1px",
-                  background: "linear-gradient(90deg, rgba(212, 255, 0, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%)",
-                }}
-              />
-              <span style={{ color: "#666666", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                4 Coordinators
+                ★ ORGANIZERS POSSE ★
               </span>
+              <div style={{ width: "40px", height: "1px", background: "#e51b24" }} />
             </div>
 
             <div
-              className="crew-coordinators-grid"
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-                gap: "18px",
+                gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                justifyContent: "center",
+                gap: "36px 20px",
               }}
             >
-              {coordinators.map((member) => (
-                <CrewCard key={member.id} member={member} />
+              {organizingTeam.map((member) => (
+                <ArchedCommitteeCard key={member.id} member={member} onSelect={setSelectedMember} />
               ))}
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
+
+        {/* ── RETURN NAVIGATION / DISPATCH CTA ── */}
+        <section
+          style={{
+            marginTop: "80px",
+            background: "radial-gradient(ellipse at 50% 50%, rgba(153, 14, 20, 0.35) 0%, #0d0a0b 80%)",
+            border: "1px solid #381a1e",
+            padding: "48px 32px",
+            textAlign: "center",
+          }}
+        >
+          <p className="rdr-kicker" style={{ marginBottom: "10px" }}>
+            HACKSPRINT III COMMUNICATIONS
+          </p>
+
+          <h2
+            style={{
+              fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
+              fontSize: "clamp(2.2rem, 5vw, 3.4rem)",
+              letterSpacing: "0.04em",
+              color: "#f5f1ea",
+              textTransform: "uppercase",
+              marginBottom: "14px",
+            }}
+          >
+            HAVE QUESTIONS FOR THE CREW?
+          </h2>
+
+          <p style={{ color: "#9e978d", fontSize: "0.95rem", maxWidth: "580px", margin: "0 auto 28px" }}>
+            Connect with our organizers and faculty coordinators directly via WhatsApp or email for sponsorship, track guidelines,
+            and registration inquiries.
+          </p>
+
+          <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap" }}>
+            <a
+              href="https://chat.whatsapp.com/C9gawXXKFtr76gk6YoUe3K"
+              target="_blank"
+              rel="noreferrer"
+              className="rdr-btn-red"
+            >
+              <span>JOIN OFFICIAL WHATSAPP POSSE</span>
+              <span>↗</span>
+            </a>
+            <Link href="/why-sponsor-us" className="rdr-btn-ghost">
+              <span>EXPLORE SPONSORSHIP</span>
+              <span>&gt;</span>
+            </Link>
+            <Link href="/#home" className="rdr-btn-ghost">
+              <span>← RETURN TO ARENA</span>
+            </Link>
+          </div>
+        </section>
       </div>
+
+      {/* ── DETAIL MODAL (WHEN ANY MEMBER OR FACULTY IS CLICKED) ── */}
+      {selectedMember && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 400,
+            background: "rgba(5, 4, 4, 0.88)",
+            backdropFilter: "blur(12px)",
+            display: "grid",
+            placeItems: "center",
+            padding: "20px",
+          }}
+          onClick={() => setSelectedMember(null)}
+        >
+          <div
+            style={{
+              width: "min(480px, 100%)",
+              background: "#0e0b0c",
+              border: "2px solid #3d1b1f",
+              boxShadow: "0 25px 90px rgba(0, 0, 0, 0.95), 0 0 50px rgba(229, 27, 36, 0.25)",
+              overflow: "hidden",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with crimson gradient */}
+            <div
+              style={{
+                background: "linear-gradient(135deg, #7a0c10 0%, #1a0608 100%)",
+                borderBottom: "1px solid #3d1b1f",
+                padding: "26px 24px",
+                color: "#ffffff",
+                position: "relative",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setSelectedMember(null)}
+                style={{
+                  position: "absolute",
+                  top: "14px",
+                  right: "16px",
+                  background: "rgba(255, 255, 255, 0.12)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "28px",
+                  height: "28px",
+                  color: "#ffffff",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                  display: "grid",
+                  placeItems: "center",
+                  transition: "background 0.2s",
+                }}
+              >
+                ✕
+              </button>
+
+              <div
+                style={{
+                  color: "#ff8f94",
+                  fontFamily: "'Oswald', sans-serif",
+                  fontSize: "0.72rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  marginBottom: "4px",
+                }}
+              >
+                {selectedMember.badge || "HACKSPRINT III PROFILE"}
+              </div>
+
+              <h3
+                style={{
+                  fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
+                  fontSize: "1.9rem",
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                  margin: "0 0 4px",
+                }}
+              >
+                {selectedMember.name}
+              </h3>
+
+              <p style={{ color: "#f5f1ea", fontSize: "0.86rem", fontWeight: 600, margin: 0 }}>
+                • {selectedMember.role}
+              </p>
+              <p style={{ color: "#a39d93", fontSize: "0.78rem", margin: "4px 0 0" }}>
+                {selectedMember.detail}
+              </p>
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: "24px" }}>
+              <p style={{ color: "#9e978d", fontSize: "0.88rem", lineHeight: 1.65, margin: "0 0 24px" }}>
+                {selectedMember.bio}
+              </p>
+
+              {selectedMember.contact ? (
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", paddingTop: "16px", borderTop: "1px solid #221416" }}>
+                  {selectedMember.contact.phone && (
+                    <a
+                      href={`tel:${selectedMember.contact.phone}`}
+                      className="rdr-btn-red"
+                      style={{ fontSize: "0.75rem", padding: "8px 16px" }}
+                    >
+                      ☎ CALL {selectedMember.contact.phone}
+                    </a>
+                  )}
+                  {selectedMember.contact.whatsapp && (
+                    <a
+                      href={`https://wa.me/${selectedMember.contact.whatsapp}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rdr-btn-ghost"
+                      style={{ fontSize: "0.75rem", padding: "8px 16px" }}
+                    >
+                      💬 WHATSAPP
+                    </a>
+                  )}
+                  {selectedMember.contact.linkedin && (
+                    <a
+                      href={selectedMember.contact.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rdr-btn-ghost"
+                      style={{ fontSize: "0.75rem", padding: "8px 16px" }}
+                    >
+                      ↗ LINKEDIN
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <div style={{ paddingTop: "14px", borderTop: "1px solid #221416" }}>
+                  <a
+                    href="mailto:hacksprint.official@gmail.com"
+                    className="rdr-btn-ghost"
+                    style={{ fontSize: "0.75rem", padding: "8px 16px" }}
+                  >
+                    ✉ CONTACT VIA OFFICIAL DISPATCH
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -15,18 +15,19 @@ export default function PageHeader({
     <header
       style={{
         textAlign: "center",
-        maxWidth: "760px",
+        maxWidth: "820px",
         margin: "0 auto 56px",
       }}
     >
       <p
         style={{
-          color: "#d4ff00",
-          fontSize: "0.75rem",
+          color: "#e51b24",
+          fontFamily: "'Oswald', sans-serif",
+          fontSize: "0.8rem",
           fontWeight: 700,
-          letterSpacing: "0.12em",
+          letterSpacing: "0.16em",
           textTransform: "uppercase",
-          marginBottom: "14px",
+          marginBottom: "12px",
         }}
       >
         {eyebrow}
@@ -34,21 +35,36 @@ export default function PageHeader({
 
       <h1
         style={{
-          fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+          fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
+          fontSize: "clamp(2.8rem, 6vw, 4.8rem)",
           fontWeight: 800,
-          letterSpacing: "-0.05em",
-          lineHeight: 1.05,
-          marginBottom: "20px",
+          letterSpacing: "0.04em",
+          lineHeight: 1.02,
+          color: "#f5f1ea",
+          marginBottom: "18px",
+          textTransform: "uppercase",
         }}
       >
         {title}
       </h1>
 
+      <div
+        style={{
+          width: "48px",
+          height: "2px",
+          background: "#e51b24",
+          margin: "0 auto 18px",
+          boxShadow: "0 0 10px #e51b24",
+        }}
+      />
+
       <p
         style={{
-          color: "#777",
-          fontSize: "1rem",
+          color: "#9e978d",
+          fontSize: "0.95rem",
           lineHeight: 1.7,
+          maxWidth: "600px",
+          margin: "0 auto",
         }}
       >
         {description}
@@ -69,10 +85,10 @@ export function PageFrame({
   return (
     <div
       style={{
-        background: accent ? "#d4ff00" : "#0a0a0a",
-        color: accent ? "#0a0a0a" : "#fff",
+        background: accent ? "#8b0a0e" : "#070606",
+        color: accent ? "#ffffff" : "#f5f1ea",
         minHeight: "calc(100vh - 68px)",
-        padding: "120px 32px 100px",
+        padding: "80px 32px 100px",
       }}
     >
       {children}

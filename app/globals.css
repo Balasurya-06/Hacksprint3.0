@@ -1,15 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #0a0a0a;
-  --bg2: #111111;
-  --bg3: #161616;
-  --neon: #d4ff00;
-  --neon2: #c8f200;
-  --blue: #00c2ff;
-  --text: #ffffff;
-  --muted: #888888;
-  --border: #222222;
+  --bg: #070606;
+  --bg2: #0d0b0c;
+  --bg3: #130f11;
+  --rdr-red: #cc1118;
+  --rdr-red-bright: #e51b24;
+  --rdr-red-dark: #7a0a0e;
+  --rdr-red-glow: rgba(229, 27, 36, 0.45);
+  --rdr-bone: #f5f1ea;
+  --rdr-bone-muted: #c8c2b7;
+  --rdr-muted: #8e8880;
+  --rdr-border: #2a1b1d;
+  --rdr-border-light: #3d2629;
+  --neon: #e51b24;
+  --neon2: #ff2a34;
+  --blue: #cc1118;
+  --text: #f5f1ea;
+  --muted: #8e8880;
+  --border: #2a1b1d;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,9 +34,91 @@ body {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #0a0a0a; }
-::-webkit-scrollbar-thumb { background: #d4ff00; border-radius: 2px; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #070606; }
+::-webkit-scrollbar-thumb { background: #cc1118; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #e51b24; }
+
+/* RDR2 Typography */
+.font-rdr-title {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.font-rdr-serif {
+  font-family: 'Cinzel', serif;
+}
+
+.font-rdr-condensed {
+  font-family: 'Oswald', sans-serif;
+}
+
+/* RDR2 Kicker text */
+.rdr-kicker {
+  color: #e51b24;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* RDR2 Buttons */
+.rdr-btn-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #cc1118;
+  color: #ffffff;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border: 1px solid #990a0f;
+  border-radius: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.22s ease-in-out;
+  box-shadow: 0 4px 14px rgba(204, 17, 24, 0.35);
+}
+.rdr-btn-red:hover {
+  background: #e51b24;
+  border-color: #e51b24;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(229, 27, 36, 0.55);
+}
+
+.rdr-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(10, 8, 9, 0.6);
+  color: #ffffff;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px 26px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0;
+  cursor: pointer;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition: all 0.22s ease-in-out;
+}
+.rdr-btn-ghost:hover {
+  border-color: #e51b24;
+  color: #e51b24;
+  background: rgba(229, 27, 36, 0.1);
+  transform: translateY(-2px);
+}
 
 /* Pill button base */
 .pill-btn {
@@ -45,18 +136,18 @@ body {
 }
 
 .pill-btn-primary {
-  background: #d4ff00;
-  color: #0a0a0a;
+  background: #cc1118;
+  color: #ffffff;
   border: none;
 }
-.pill-btn-primary:hover { background: #c8f200; transform: translateY(-1px); }
+.pill-btn-primary:hover { background: #e51b24; transform: translateY(-1px); }
 
 .pill-btn-outline {
   background: transparent;
   color: #fff;
-  border: 1px solid #333;
+  border: 1px solid #3d2629;
 }
-.pill-btn-outline:hover { border-color: #d4ff00; color: #d4ff00; }
+.pill-btn-outline:hover { border-color: #e51b24; color: #e51b24; }
 
 /* Neon yellow section strip */
 .neon-strip {
@@ -151,24 +242,25 @@ body {
 }
 
 .venue-map {
-  border-top: 1px solid #222;
-  background: #050505;
+  border-top: 1px solid #2a1b1d;
+  background: #070606;
   padding: 0;
+  position: relative;
 }
 
 .venue-map-marquee {
   overflow: hidden;
-  background: #ff2029;
-  border-top: 2px solid #ff8990;
-  border-bottom: 2px solid #ff8990;
-  color: #080808;
-  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-  font-size: clamp(1rem, 2vw, 1.45rem);
-  letter-spacing: 0.04em;
+  background: #cc1118;
+  border-top: 2px solid #e51b24;
+  border-bottom: 2px solid #7a0a0e;
+  color: #f5f1ea;
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: clamp(1.1rem, 2.2vw, 1.55rem);
+  letter-spacing: 0.08em;
   line-height: 1;
-  padding: 14px 0;
-  transform: rotate(-0.4deg) scale(1.01);
+  padding: 12px 0;
   white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(204, 17, 24, 0.4);
 }
 
 .venue-map-marquee-track {
@@ -181,18 +273,18 @@ body {
 .venue-map-marquee-track span {
   display: block;
   flex: 0 0 auto;
-  padding-right: 24px;
+  padding-right: 28px;
 }
 
 .venue-map-marquee b {
   padding: 0 14px;
+  color: #ff9da2;
 }
 
 @keyframes venue-map-marquee-scroll {
   from {
     transform: translate3d(0, 0, 0);
   }
-
   to {
     transform: translate3d(-50%, 0, 0);
   }
@@ -209,50 +301,67 @@ body {
 }
 
 .venue-map-eyebrow {
-  color: #4d8dff;
-  font-size: 0.68rem;
+  color: #e51b24;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  margin-bottom: 10px;
+  letter-spacing: 0.16em;
+  margin-bottom: 8px;
   text-transform: uppercase;
 }
 
 .venue-map h2 {
-  color: #151515;
-  font-size: clamp(1.1rem, 2vw, 1.65rem);
-  letter-spacing: -0.04em;
+  color: #f5f1ea;
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  margin: 0;
 }
 
 .venue-map-card > p:not(.venue-map-eyebrow) {
-  color: #555;
-  font-size: 0.8rem;
+  color: #9e978d;
+  font-size: 0.82rem;
   line-height: 1.6;
   margin-top: 8px;
 }
 
 .venue-map-card {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   top: 24px;
   left: 24px;
-  width: min(320px, calc(100% - 48px));
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 12px 28px #00000044;
-  padding: 18px;
+  width: min(340px, calc(100% - 48px));
+  border: 1px solid #3d1b1f;
+  background: rgba(14, 11, 12, 0.94);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(229, 27, 36, 0.15);
+  padding: 24px 20px;
 }
 
 .venue-map-card a {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-top: 16px;
-  border: 1px solid #2478e5;
-  border-radius: 999px;
-  color: #2478e5;
-  font-size: 0.76rem;
+  border: 1px solid #cc1118;
+  background: #cc1118;
+  color: #ffffff;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.78rem;
   font-weight: 700;
-  padding: 9px 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 18px;
   text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.venue-map-card a:hover {
+  background: #e51b24;
+  border-color: #e51b24;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(229, 27, 36, 0.4);
 }
 
 .venue-map-frame {
@@ -1047,3 +1156,66 @@ body {
   }
 }
 
+
+/* ══════════════════════════════════════════════════════════
+   HISTORY-STYLE VERTICAL TIMELINE
+══════════════════════════════════════════════════════════ */
+
+/* Mobile: collapse to single left-aligned column */
+@media (max-width: 700px) {
+  #timeline .tl-grid {
+    grid-template-columns: 36px 1fr !important;
+  }
+  #timeline .tl-left-slot {
+    display: none !important;
+  }
+  #timeline .tl-node-col {
+    grid-column: 1 !important;
+    justify-content: flex-start !important;
+  }
+  #timeline .tl-right-slot {
+    grid-column: 2 !important;
+    padding-left: 20px !important;
+    padding-right: 0 !important;
+    justify-content: flex-start !important;
+  }
+  #timeline .tl-left-card {
+    padding-left: 20px !important;
+    justify-content: flex-start !important;
+  }
+}
+
+/* ── Hero right-side logo ── */
+.hero-logo-right {
+  display: flex;
+}
+
+@media (max-width: 860px) {
+  .hero-logo-right {
+    display: none !important;
+  }
+}
+
+/* ── Diagonal tape marquee strips ── */
+@keyframes marquee-tape-ltr {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marquee-tape-rtl {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+/* ── Trail carousel slide animations ── */
+@keyframes trail-slide-right {
+  from { opacity: 0; transform: translateX(60px) scale(0.96); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes trail-slide-left {
+  from { opacity: 0; transform: translateX(-60px) scale(0.96); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes track-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}

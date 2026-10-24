@@ -10,7 +10,7 @@ export default function EntryLoader() {
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setOpen(true), 450);
+    const timer = window.setTimeout(() => setOpen(true), 400);
     const updateTimer = () => setRemaining(Math.max(0, registrationStart - Date.now()));
     updateTimer();
     const interval = window.setInterval(updateTimer, 1000);
@@ -27,10 +27,10 @@ export default function EntryLoader() {
 
   const totalSeconds = Math.floor(remaining / 1000);
   const values = [
-    [Math.floor(totalSeconds / 86400), "Days"],
-    [Math.floor((totalSeconds % 86400) / 3600), "Hours"],
-    [Math.floor((totalSeconds % 3600) / 60), "Minutes"],
-    [totalSeconds % 60, "Seconds"],
+    [Math.floor(totalSeconds / 86400), "DAYS"],
+    [Math.floor((totalSeconds % 86400) / 3600), "HOURS"],
+    [Math.floor((totalSeconds % 3600) / 60), "MINUTES"],
+    [totalSeconds % 60, "SECONDS"],
   ];
 
   return (
@@ -38,32 +38,29 @@ export default function EntryLoader() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="registration-popup-title"
-      className="entry-loader"
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 200,
+        zIndex: 500,
         display: "grid",
         placeItems: "center",
-        background: "#000000aa",
+        background: "rgba(5, 4, 4, 0.88)",
         padding: "24px",
-        backdropFilter: "blur(8px)",
+        backdropFilter: "blur(12px)",
       }}
     >
       <div
-        className="entry-loader-card"
         style={{
           position: "relative",
-          width: "min(100%, 520px)",
-          overflow: "hidden",
-          border: "1px solid #d4ff00",
-          borderRadius: "18px",
-          background: "#101010",
-          boxShadow: "0 24px 80px #000",
-          padding: "34px 28px 28px",
+          width: "min(100%, 540px)",
+          background: "#0e0b0c",
+          border: "2px solid #3d1b1f",
+          boxShadow: "0 25px 90px rgba(0, 0, 0, 0.95), 0 0 50px rgba(229, 27, 36, 0.2)",
+          padding: "36px 32px 30px",
           textAlign: "center",
         }}
       >
+        {/* Close Button */}
         <button
           type="button"
           aria-label="Close registration popup"
@@ -74,51 +71,141 @@ export default function EntryLoader() {
             right: "16px",
             border: 0,
             background: "transparent",
-            color: "#777",
+            color: "#8a8276",
             cursor: "pointer",
-            fontSize: "1.4rem",
+            fontSize: "1.3rem",
             lineHeight: 1,
+            transition: "color 0.2s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#e51b24")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#8a8276")}
+        >
+          ✕
+        </button>
+
+        <p className="rdr-kicker" style={{ marginBottom: "8px" }}>
+          OFFICIAL DISPATCH · COIMBATORE 2026
+        </p>
+
+        {/* Logo */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "14px" }}>
+          <Image
+            src="/hack.png"
+            alt="HackSprint 3.0"
+            width={72}
+            height={72}
+            style={{ objectFit: "contain" }}
+          />
+        </div>
+
+        <h2
+          id="registration-popup-title"
+          style={{
+            fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
+            fontSize: "clamp(2rem, 5vw, 2.8rem)",
+            letterSpacing: "0.05em",
+            color: "#f5f1ea",
+            lineHeight: 1.05,
+            margin: "0 0 10px",
           }}
         >
-          ×
-        </button>
-        <Image
-          src="/logo.png"
-          alt="HACKSPRINT 3.0"
-          width={110}
-          height={110}
-          style={{ width: "110px", height: "110px", objectFit: "contain", margin: "0 auto 12px" }}
-        />
-        <p style={{ color: "#d4ff00", fontSize: "0.68rem", fontWeight: 800, letterSpacing: "0.16em", marginBottom: "12px", textTransform: "uppercase" }}>
-          HackSprint 3.0
-        </p>
-        <h2 id="registration-popup-title" style={{ color: "#fff", fontSize: "clamp(1.5rem, 4vw, 2.2rem)", letterSpacing: "-0.05em", margin: 0 }}>
-          Registration opens soon
+          HACKSPRINT <span style={{ color: "#e51b24" }}>III</span>
         </h2>
-        <p style={{ color: "#888", fontSize: "0.85rem", lineHeight: 1.6, margin: "12px auto 22px", maxWidth: "380px" }}>
-          Registration opens on November 4, 2026 at 12:00 AM IST.
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+            color: "#e51b24",
+            margin: "0 auto 16px",
+          }}
+        >
+          <div style={{ width: "36px", height: "1px", background: "#e51b24" }} />
+          <span style={{ fontSize: "0.9rem" }}>★</span>
+          <div style={{ width: "36px", height: "1px", background: "#e51b24" }} />
+        </div>
+
+        <p
+          style={{
+            color: "#a39d93",
+            fontSize: "0.88rem",
+            lineHeight: 1.6,
+            maxWidth: "420px",
+            margin: "0 auto 24px",
+          }}
+        >
+          The outlaw arena calls. Registration for India&apos;s largest student hackathon commences on{" "}
+          <strong style={{ color: "#f5f1ea" }}>November 4, 2026 at 12:00 AM IST</strong>.
         </p>
+
         {remaining === 0 ? (
-          <p style={{ color: "#d4ff00", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-            Registration is now open
+          <p style={{ color: "#e51b24", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+            REGISTRATION IS NOW LIVE
           </p>
         ) : (
-          <div className="entry-loader-timer" style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: "10px", flexWrap: "wrap" }}>
             {values.map(([value, label]) => (
-              <div key={label} style={{ minWidth: "68px", border: "1px solid #344800", borderRadius: "8px", background: "#151c00", padding: "10px 6px" }}>
-                <strong style={{ color: "#d4ff00", display: "block", fontFamily: "monospace", fontSize: "1.15rem" }}>{String(value).padStart(2, "0")}</strong>
-                <span style={{ color: "#71804f", display: "block", fontSize: "0.52rem", letterSpacing: "0.08em", marginTop: "5px", textTransform: "uppercase" }}>{label}</span>
+              <div
+                key={label}
+                style={{
+                  minWidth: "72px",
+                  border: "1px solid #361c20",
+                  background: "#161012",
+                  padding: "10px 8px",
+                  textAlign: "center",
+                }}
+              >
+                <strong
+                  style={{
+                    color: "#f5f1ea",
+                    display: "block",
+                    fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
+                    fontSize: "1.8rem",
+                    lineHeight: 1,
+                    textShadow: "0 0 10px rgba(229, 27, 36, 0.4)",
+                  }}
+                >
+                  {String(value).padStart(2, "0")}
+                </strong>
+                <span
+                  style={{
+                    color: "#e51b24",
+                    display: "block",
+                    fontSize: "0.58rem",
+                    fontFamily: "'Oswald', sans-serif",
+                    letterSpacing: "0.12em",
+                    marginTop: "4px",
+                    fontWeight: 700,
+                  }}
+                >
+                  {label}
+                </span>
               </div>
             ))}
           </div>
         )}
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          style={{ marginTop: "24px", border: "1px solid #333", borderRadius: "999px", background: "transparent", color: "#aaa", cursor: "pointer", fontSize: "0.76rem", fontWeight: 700, padding: "10px 20px" }}
-        >
-          Continue to website
-        </button>
+
+        <div style={{ marginTop: "28px", display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="rdr-btn-red"
+            style={{ fontSize: "0.82rem", padding: "10px 22px" }}
+          >
+            ENTER THE ARENA &gt;
+          </button>
+          <a
+            href="https://chat.whatsapp.com/C9gawXXKFtr76gk6YoUe3K"
+            target="_blank"
+            rel="noreferrer"
+            className="rdr-btn-ghost"
+            style={{ fontSize: "0.82rem", padding: "10px 20px" }}
+          >
+            JOIN POSSE ↗
+          </a>
+        </div>
       </div>
     </div>
   );

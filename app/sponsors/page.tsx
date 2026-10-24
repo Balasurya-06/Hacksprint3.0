@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation";
+import WhySponsorUsPage from "../why-sponsor-us/page";
 
 export default function SponsorsPage() {
-  notFound();
+  return <WhySponsorUsPage />;
 }
