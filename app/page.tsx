@@ -764,6 +764,51 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── DEVFOLIO SUPPORTED BY STRIP (required branding) ── */}
+      <div style={{
+        background: "#0a0708",
+        borderBottom: "1px solid #1a1214",
+        padding: "14px 24px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 20,
+      }}>
+        <span style={{
+          fontFamily: "'Oswald', sans-serif",
+          fontSize: "0.68rem",
+          fontWeight: 700,
+          letterSpacing: "0.22em",
+          color: "#3d2829",
+          textTransform: "uppercase",
+          whiteSpace: "nowrap",
+        }}>
+          SUPPORTED BY
+        </span>
+
+        {/* thin divider */}
+        <div style={{ width: 1, height: 22, background: "#2a1b1d", flexShrink: 0 }} />
+
+        {/* Devfolio logo — white on dark bg */}
+        <a
+          href="https://devfolio.co"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Devfolio"
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <Image
+            src="/Sponsors/devfolio.png"
+            alt="Devfolio — Supported By"
+            width={110}
+            height={23}
+            style={{ objectFit: "contain", opacity: 0.75, transition: "opacity 0.2s" }}
+            onMouseOver={e => ((e.currentTarget as HTMLImageElement).style.opacity = "1")}
+            onMouseOut={e => ((e.currentTarget as HTMLImageElement).style.opacity = "0.75")}
+          />
+        </a>
+      </div>
+
       {/* ── 2. FOUR FEATURE CARDS (LIVING WORLD / RICH STORY / DYNAMIC GAMEPLAY / RED DEAD ONLINE) ── */}
       <section
         id="gameplay"
