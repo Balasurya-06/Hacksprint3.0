@@ -800,7 +800,7 @@ export default function Home() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://assets.devfolio.co/hackathons/default/assets/logo/logo.svg"
+            src="/Sponsors/devfolio.png"
             alt="Devfolio"
             width={120}
             height={28}
@@ -1569,7 +1569,7 @@ export default function Home() {
                 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="https://assets.devfolio.co/hackathons/default/assets/logo/logo.svg"
+                    src="/Sponsors/devfolio.png"
                     alt="Devfolio"
                     width={160}
                     height={36}
