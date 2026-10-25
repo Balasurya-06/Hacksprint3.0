@@ -460,6 +460,18 @@ export default function Home() {
     description: string;
   } | null>(null);
 
+  /* ── Load Devfolio SDK dynamically (per official docs) ── */
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://apply.devfolio.co/v2/sdk.js";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   const mediaItems = [
     {
       title: "Official HackSprint 3.0 Teaser",
@@ -679,11 +691,13 @@ export default function Home() {
             {/* CTA Buttons */}
             <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
 
-              {/* Register Now — primary red */}
-              <a href="#registration" className="rdr-btn-red">
-                <span>REGISTER NOW</span>
-                <span style={{ fontSize: "1.1rem", fontWeight: 900 }}>&gt;</span>
-              </a>
+              {/* ── Official Apply with Devfolio button ── */}
+              <div
+                className="apply-button"
+                data-hackathon-slug="hacksprint-3-0"
+                data-button-theme="dark"
+                style={{ height: "44px", width: "312px" }}
+              />
 
               {/* Join WhatsApp — ghost */}
               <a
