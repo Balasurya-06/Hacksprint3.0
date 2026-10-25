@@ -786,25 +786,25 @@ export default function Home() {
           SUPPORTED BY
         </span>
 
-        {/* thin divider */}
         <div style={{ width: 1, height: 22, background: "#2a1b1d", flexShrink: 0 }} />
 
-        {/* Devfolio logo — white on dark bg */}
+        {/*
+          Devfolio verification requires an <img> with src pointing to
+          their CDN and alt="Devfolio" — using official white logo on dark bg
+        */}
         <a
           href="https://devfolio.co"
           target="_blank"
           rel="noreferrer"
-          aria-label="Devfolio"
           style={{ display: "flex", alignItems: "center" }}
         >
-          <Image
-            src="/Sponsors/devfolio.png"
-            alt="Devfolio — Supported By"
-            width={110}
-            height={23}
-            style={{ objectFit: "contain", opacity: 0.75, transition: "opacity 0.2s" }}
-            onMouseOver={e => ((e.currentTarget as HTMLImageElement).style.opacity = "1")}
-            onMouseOut={e => ((e.currentTarget as HTMLImageElement).style.opacity = "0.75")}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://assets.devfolio.co/hackathons/default/assets/logo/logo.svg"
+            alt="Devfolio"
+            width={120}
+            height={28}
+            style={{ objectFit: "contain" }}
           />
         </a>
       </div>
@@ -1567,17 +1567,13 @@ export default function Home() {
                   alignItems: "center",
                   justifyContent: "center",
                 }}>
-                  <Image
-                    src="/Sponsors/devfolio.png"
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="https://assets.devfolio.co/hackathons/default/assets/logo/logo.svg"
                     alt="Devfolio"
-                    width={220}
-                    height={46}
-                    style={{
-                      objectFit: "contain",
-                      width: "100%",
-                      height: "100%",
-                      filter: "brightness(1) invert(0)",
-                    }}
+                    width={160}
+                    height={36}
+                    style={{ objectFit: "contain", width: "100%", height: "100%" }}
                   />
                 </div>
 
