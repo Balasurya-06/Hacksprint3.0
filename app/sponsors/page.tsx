@@ -8,7 +8,7 @@ const goldSponsors = [
   {
     name: "Devfolio",
     tagline: "Official Hackathon Platform",
-    logo: "/Sponsor/devfolio-white.svg",
+    logo: "/Sponsor/_Dark.png",
     bg: "none",
     accent: "#3770ff",
     url: "https://devfolio.co",
