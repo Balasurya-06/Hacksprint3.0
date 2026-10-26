@@ -17,7 +17,7 @@ function DevfolioApplyButton({ className = "" }: { className?: string }) {
   return (
     <div
       className={`apply-button devfolio-apply-button ${className}`.trim()}
-      data-hackathon-slug="hacksprint3"
+      data-hackathon-slug="hacksprint3-0"
       data-button-theme="light"
       style={{ height: "44px", width: "312px" }}
     />
