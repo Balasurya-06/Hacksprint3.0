@@ -11,6 +11,7 @@ const goldSponsors = [
     logo: "/Sponsor/devfolio-logo.png",
     bg: "#ffffff",
     accent: "#3770ff",
+    url: "https://devfolio.co",
   },
 ];
 
@@ -27,12 +28,13 @@ interface LogoCard {
   logo?: string;
   bg?: string;
   accent: string;
+  url?: string;
 }
 
 function SponsorCard({ card, size = "md" }: { card: LogoCard; size?: "lg" | "md" | "sm" }) {
   const height = size === "lg" ? "150px" : size === "md" ? "110px" : "88px";
 
-  return (
+  const content = (
     <div
       style={{
         background: "rgba(18,10,14,0.9)",
@@ -46,7 +48,7 @@ function SponsorCard({ card, size = "md" }: { card: LogoCard; size?: "lg" | "md"
         gap: "10px",
         padding: "20px 28px",
         transition: "all 0.25s ease",
-        cursor: "default",
+        cursor: card.url ? "pointer" : "default",
         backdropFilter: "blur(8px)",
         boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
         position: "relative",
@@ -125,6 +127,22 @@ function SponsorCard({ card, size = "md" }: { card: LogoCard; size?: "lg" | "md"
       </div>
     </div>
   );
+
+  if (card.url) {
+    return (
+      <a
+        href={card.url}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`${card.name} website`}
+        style={{ textDecoration: "none", display: "block" }}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return content;
 }
 
 /* ── Tier heading ─────────────────────────────────────────────── */

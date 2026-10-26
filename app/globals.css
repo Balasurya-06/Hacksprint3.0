@@ -28,7 +28,8 @@
   --border: var(--border-grey);
 }
 
-.homepage-hero-actions .devfolio-apply-button {
+.homepage-hero-actions .devfolio-apply-button,
+.homepage-hero-actions .devfolio-button-iframe {
   grid-column: 1 / -1;
   justify-self: center;
   width: min(100%, 312px) !important;
@@ -1649,7 +1650,8 @@ a {
   border-color: #0a0a0a !important;
 }
 
-.devfolio-apply-button {
+.devfolio-apply-button,
+.devfolio-button-iframe {
   flex: 0 0 auto;
   overflow: hidden;
 }
