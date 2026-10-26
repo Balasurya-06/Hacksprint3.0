@@ -1,51 +1,75 @@
 "use client";
 
 import Image from "next/image";
-
-interface ContactInfo {
-  phone?: string;
-  whatsapp?: string;
-  linkedin?: string;
-}
+import { useState } from "react";
 
 interface TeamMember {
   id: string;
+  number: string;
   name: string;
   role: string;
+  positionCode: string;
   detail: string;
   tagRole: string;
   tagYear: string;
   bio: string;
-  image?: string;
-  initials: string;
-  isTba?: boolean;
-  contact?: ContactInfo;
+  image: string;
+  contact?: {
+    phone?: string;
+    whatsapp?: string;
+    linkedin?: string;
+  };
 }
 
 const conveners = [
   {
+    kicker: "CONVENER & HEAD OF DEPARTMENT",
     name: "Dr. R. Santhosh",
-    role: "Head of Department",
-    department: "Computer Science and Engineering",
+    subtitle: "Head of Department · Computer Science and Engineering, KAHE",
   },
   {
+    kicker: "FACULTY CONVENER",
     name: "Ramya",
-    role: "Assistant Professor",
-    department: "Department of Computer Science and Engineering",
+    subtitle: "Assistant Professor · Department of Computer Science and Engineering, KAHE",
   },
 ];
 
-const organizers: TeamMember[] = [
+const startingFive: TeamMember[] = [
+  {
+    id: "deepa",
+    number: "04",
+    name: "DEEPA",
+    role: "Organizer · Operations & Logistics",
+    positionCode: "04",
+    detail: "Third Year · Computer Science and Engineering",
+    tagRole: "ORGANIZER",
+    tagYear: "THIRD YEAR · CSE",
+    bio: "Spearheading operations, track scheduling, on-ground execution, and seamless participant engagement across all 36 hours.",
+    image: "/deepa.jpeg",
+  },
+  {
+    id: "kavinya",
+    number: "02",
+    name: "KAVINYA",
+    role: "Organizer · Outreach & Partnerships",
+    positionCode: "02",
+    detail: "Third Year · Computer Science and Engineering",
+    tagRole: "ORGANIZER",
+    tagYear: "THIRD YEAR · CSE",
+    bio: "Directing attendee outreach, judge and mentor relations, community partnerships, and mainstage coordination.",
+    image: "/kavinya.jpeg",
+  },
   {
     id: "surya",
+    number: "01",
     name: "BALA SURYA S",
     role: "Lead Organizer · HackSprint 2.0 & 3.0",
+    positionCode: "01",
     detail: "Final Year · Computer Science and Engineering",
-    tagRole: "LEAD ORGANIZER",
+    tagRole: "LEAD ORGANIZER (C)",
     tagYear: "FINAL YEAR · CSE",
-    bio: "Spearheading the overarching vision, platform architecture, ecosystem sponsorships, and builder experience for HackSprint.",
+    bio: "Spearheading overarching vision, platform architecture, ecosystem sponsorships, and builder experience for HackSprint.",
     image: "/surya.png",
-    initials: "BS",
     contact: {
       phone: "9597075831",
       whatsapp: "9597075831",
@@ -53,572 +77,45 @@ const organizers: TeamMember[] = [
     },
   },
   {
-    id: "deepa",
-    name: "DEEPA",
-    role: "Organizer · HackSprint 3.0",
-    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
-    tagRole: "ORGANIZER",
-    tagYear: "THIRD YEAR · CSE",
-    bio: "Spearheading operations, track scheduling, on-ground execution, and seamless participant engagement across all 24 hours.",
-    initials: "D",
-  },
-  {
-    id: "kavinya",
-    name: "KAVINYA",
-    role: "Organizer · HackSprint 3.0",
-    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
-    tagRole: "ORGANIZER",
-    tagYear: "THIRD YEAR · CSE",
-    bio: "Directing attendee outreach, judge and mentor relations, community partnerships, and stage coordination.",
-    initials: "K",
-  },
-  {
     id: "harini",
+    number: "03",
     name: "HARINI",
-    role: "Organizer · HackSprint 3.0",
-    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
+    role: "Organizer · Admin & Participant Hospitality",
+    positionCode: "03",
+    detail: "Third Year · Computer Science and Engineering",
     tagRole: "ORGANIZER",
     tagYear: "THIRD YEAR · CSE",
     bio: "Coordinating event administration, participant hospitality, schedule management, and stage operations.",
-    initials: "H",
+    image: "/harini.jpeg",
   },
   {
     id: "aravind",
+    number: "05",
     name: "ARAVIND",
-    role: "Organizer · HackSprint 3.0",
-    detail: "Coordinator · HackSprint 2.0 · Third Year · CSE",
+    role: "Organizer · Technical Infrastructure",
+    positionCode: "05",
+    detail: "Third Year · Computer Science and Engineering",
     tagRole: "ORGANIZER",
     tagYear: "THIRD YEAR · CSE",
-    bio: "Managing technical operations, hackathon infrastructure, platform workflows, and track logistics.",
-    initials: "A",
+    bio: "Managing technical operations, hackathon cloud infrastructure, platform workflows, and track logistics.",
+    image: "/aravind.jpeg",
   },
 ];
-
-const coordinators: TeamMember[] = [
-  {
-    id: "vishal",
-    name: "VISHAL",
-    role: "Student Coordinator · HackSprint 3.0",
-    detail: "Second Year · Computer Science and Engineering",
-    tagRole: "COORDINATOR",
-    tagYear: "SECOND YEAR · CSE",
-    bio: "Facilitating on-ground technical assistance, participant logistics, track mentoring support, and operational flow.",
-    initials: "V",
-  },
-  {
-    id: "sudharshan",
-    name: "SUDHARSHAN",
-    role: "Student Coordinator · HackSprint 3.0",
-    detail: "Second Year · Computer Science and Engineering",
-    tagRole: "COORDINATOR",
-    tagYear: "SECOND YEAR · CSE",
-    bio: "Managing attendee support, campus outreach, registration flow, and hardware track arrangements.",
-    initials: "S",
-  },
-  {
-    id: "coord-3",
-    name: "COORDINATOR",
-    role: "Student Coordinator · HackSprint 3.0",
-    detail: "Second Year · Computer Science and Engineering",
-    tagRole: "COORDINATOR",
-    tagYear: "SECOND YEAR · CSE",
-    bio: "Second Year student coordinator joining the HackSprint 3.0 organizing force. Profile reveal coming soon.",
-    initials: "HS",
-    isTba: true,
-  },
-  {
-    id: "coord-4",
-    name: "COORDINATOR",
-    role: "Student Coordinator · HackSprint 3.0",
-    detail: "Second Year · Computer Science and Engineering",
-    tagRole: "COORDINATOR",
-    tagYear: "SECOND YEAR · CSE",
-    bio: "Second Year student coordinator joining the HackSprint 3.0 organizing force. Profile reveal coming soon.",
-    initials: "HS",
-    isTba: true,
-  },
-];
-
-function SilhouetteAvatar({ initials, isTba }: { initials: string; isTba?: boolean }) {
-  return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "center",
-      }}
-    >
-      <svg
-        viewBox="0 0 200 240"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{
-          width: "160px",
-          height: "210px",
-          display: "block",
-          filter: "drop-shadow(0 10px 18px rgba(0,0,0,0.8))",
-        }}
-      >
-        <defs>
-          <radialGradient id={`glow-${initials}`} cx="50%" cy="30%" r="60%">
-            <stop offset="0%" stopColor="#d4ff00" stopOpacity="0.22" />
-            <stop offset="60%" stopColor="#d4ff00" stopOpacity="0.04" />
-            <stop offset="100%" stopColor="#0a0a0a" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id={`suit-${initials}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#222222" />
-            <stop offset="60%" stopColor="#151515" />
-            <stop offset="100%" stopColor="#0d0d0d" />
-          </linearGradient>
-          <linearGradient id={`rim-${initials}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#d4ff00" stopOpacity="0.75" />
-            <stop offset="60%" stopColor="#d4ff00" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#00c2ff" stopOpacity="0.3" />
-          </linearGradient>
-        </defs>
-
-        {/* Ambient Glow & Target Rings */}
-        <circle cx="100" cy="95" r="72" fill={`url(#glow-${initials})`} />
-        <circle cx="100" cy="95" r="62" stroke="#d4ff00" strokeWidth="0.8" strokeDasharray="3 4" opacity="0.25" />
-        <circle cx="100" cy="95" r="45" stroke="#ffffff" strokeWidth="0.6" strokeDasharray="2 3" opacity="0.15" />
-
-        {/* Head */}
-        <ellipse cx="100" cy="62" rx="22" ry="29" fill={`url(#suit-${initials})`} stroke={`url(#rim-${initials})`} strokeWidth="1.2" />
-
-        {/* Neck */}
-        <path d="M 93 88 L 93 104 L 107 104 L 107 88 Z" fill="#151515" />
-
-        {/* Torso & Shoulders */}
-        <path
-          d="M 42 240 L 48 145 C 52 124 66 109 87 105 L 100 103 L 113 105 C 134 109 148 124 152 145 L 158 240 Z"
-          fill={`url(#suit-${initials})`}
-          stroke={`url(#rim-${initials})`}
-          strokeWidth="1.2"
-        />
-
-        {/* Collar V lines */}
-        <path d="M 88 106 L 100 134 L 112 106" stroke="#d4ff00" strokeWidth="1" strokeOpacity="0.5" />
-        <path d="M 100 134 L 100 185" stroke="#d4ff00" strokeWidth="1" strokeDasharray="3 3" strokeOpacity="0.3" />
-
-        {/* Chest Hexagon Badge */}
-        <polygon
-          points="100,140 119,151 119,173 100,184 81,173 81,151"
-          fill="#101010"
-          stroke="#d4ff00"
-          strokeWidth="1.3"
-          filter="drop-shadow(0 0 6px rgba(212, 255, 0, 0.4))"
-        />
-
-        {/* Initials Text */}
-        <text
-          x="100"
-          y="167"
-          textAnchor="middle"
-          fill="#d4ff00"
-          fontSize={isTba ? "11" : "13"}
-          fontWeight="900"
-          letterSpacing="0.04em"
-          fontFamily="system-ui, sans-serif"
-        >
-          {initials}
-        </text>
-      </svg>
-    </div>
-  );
-}
-
-function CrewCard({ member }: { member: TeamMember }) {
-  const slashId = `card-slash-${member.id}`;
-
-  return (
-    <article
-      className="crew-member-card"
-      style={{
-        background: "transparent",
-        border: "none",
-        borderRadius: "0",
-        boxShadow: "none",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
-        transition: "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
-      }}
-    >
-      {/* Upper Figure Section */}
-      <div
-        style={{
-          position: "relative",
-          height: "250px",
-          width: "100%",
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "center",
-          background: "transparent",
-          overflow: "hidden",
-        }}
-      >
-        {/* Clipped photo area */}
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 24px), 0 100%)",
-          }}
-        >
-          {member.image ? (
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "flex-end",
-                justifyContent: "center",
-              }}
-            >
-              <Image
-                src={member.image}
-                alt={`${member.name} - HackSprint 3.0`}
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                style={{
-                  objectFit: "contain",
-                  objectPosition: "center bottom",
-                  filter: "contrast(1.05) drop-shadow(0 12px 24px rgba(0,0,0,0.85))",
-                }}
-                priority={member.id === "surya"}
-              />
-            </div>
-          ) : (
-            <SilhouetteAvatar initials={member.initials} isTba={member.isTba} />
-          )}
-        </div>
-
-        {/* Small floating role tag in upper right (matching reference image) */}
-        <div
-          style={{
-            position: "absolute",
-            right: "12px",
-            top: "34%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-            gap: "2px",
-            zIndex: 4,
-            pointerEvents: "none",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "0.58rem",
-              fontWeight: 800,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "#d4ff00",
-              background: "rgba(10, 10, 10, 0.88)",
-              padding: "2px 7px",
-              borderRadius: "4px",
-              borderLeft: "2px solid #d4ff00",
-              backdropFilter: "blur(6px)",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
-            }}
-          >
-            {member.tagRole}
-          </span>
-          <span
-            style={{
-              fontSize: "0.52rem",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "#777777",
-            }}
-          >
-            {member.tagYear}
-          </span>
-        </div>
-      </div>
-
-      {/* Controlled Diagonal Slash Line (matching reference image) */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "26px",
-          marginTop: "-26px",
-          zIndex: 5,
-          pointerEvents: "none",
-        }}
-      >
-        <svg
-          viewBox="0 0 300 26"
-          preserveAspectRatio="none"
-          style={{
-            width: "100%",
-            height: "26px",
-            display: "block",
-            overflow: "visible",
-          }}
-        >
-          <defs>
-            <linearGradient id={slashId} x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#d4ff00" stopOpacity="0.95" />
-              <stop offset="55%" stopColor="#d4ff00" stopOpacity="0.5" />
-              <stop offset="90%" stopColor="#ffffff" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-            </linearGradient>
-            <filter id={`glow-${slashId}`}>
-              <feGaussianBlur stdDeviation="1.5" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          <line
-            x1="0"
-            y1="25"
-            x2="300"
-            y2="1"
-            stroke={`url(#${slashId})`}
-            strokeWidth="2"
-            strokeLinecap="round"
-            filter={`url(#glow-${slashId})`}
-          />
-        </svg>
-      </div>
-
-      {/* Card Info Body */}
-      <div
-        style={{
-          padding: "16px 2px 20px",
-          display: "flex",
-          flexDirection: "column",
-          flex: 1,
-          position: "relative",
-          zIndex: 6,
-        }}
-      >
-        {member.isTba && (
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "0.6rem",
-              fontWeight: 800,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: "#d4ff00",
-              background: "rgba(212, 255, 0, 0.08)",
-              border: "1px dashed rgba(212, 255, 0, 0.4)",
-              padding: "2px 8px",
-              borderRadius: "999px",
-              width: "fit-content",
-              marginBottom: "8px",
-            }}
-          >
-            <span
-              style={{
-                width: 5,
-                height: 5,
-                borderRadius: "50%",
-                backgroundColor: "#d4ff00",
-                display: "inline-block",
-                boxShadow: "0 0 6px #d4ff00",
-              }}
-            />
-            Announcing Soon
-          </div>
-        )}
-
-        <h3
-          className="crew-card-name"
-          style={{
-            color: "#d4ff00",
-            fontSize: "1.22rem",
-            fontWeight: 900,
-            letterSpacing: "-0.02em",
-            textTransform: "uppercase",
-            lineHeight: 1.15,
-            margin: "0 0 5px 0",
-            transition: "color 0.2s ease, text-shadow 0.2s ease",
-          }}
-        >
-          {member.name}
-        </h3>
-
-        <p style={{ color: "#ffffff", fontSize: "0.74rem", fontWeight: 700, margin: "0 0 2px 0", lineHeight: 1.3 }}>
-          {member.role}
-        </p>
-
-        <p style={{ color: "#777777", fontSize: "0.68rem", lineHeight: 1.35, margin: "0 0 10px 0" }}>
-          {member.detail}
-        </p>
-
-        <p style={{ color: "#999999", fontSize: "0.76rem", lineHeight: 1.55, margin: "0 0 14px 0", flex: 1 }}>
-          {member.bio}
-        </p>
-
-        {/* Contact Links */}
-        {member.contact && (
-          <div
-            style={{
-              display: "flex",
-              gap: "7px",
-              alignItems: "center",
-              flexWrap: "wrap",
-              paddingTop: "10px",
-              borderTop: "1px solid rgba(255, 255, 255, 0.06)",
-            }}
-          >
-            {member.contact.phone && (
-              <a
-                href={`tel:${member.contact.phone}`}
-                className="crew-pill-link"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  padding: "5px 11px",
-                  borderRadius: "999px",
-                  background: "#181818",
-                  border: "1px solid #2c2c2c",
-                  color: "#cccccc",
-                  fontSize: "0.66rem",
-                  fontWeight: 700,
-                  textDecoration: "none",
-                  transition: "all 0.2s ease",
-                }}
-                aria-label={`Call ${member.name}`}
-              >
-                <span>📞</span> Call
-              </a>
-            )}
-            {member.contact.whatsapp && (
-              <a
-                href={`https://wa.me/${member.contact.whatsapp}`}
-                target="_blank"
-                rel="noreferrer"
-                className="crew-pill-link"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  padding: "5px 11px",
-                  borderRadius: "999px",
-                  background: "#181818",
-                  border: "1px solid #2c2c2c",
-                  color: "#cccccc",
-                  fontSize: "0.66rem",
-                  fontWeight: 700,
-                  textDecoration: "none",
-                  transition: "all 0.2s ease",
-                }}
-                aria-label={`WhatsApp ${member.name}`}
-              >
-                <span>💬</span> WhatsApp
-              </a>
-            )}
-            {member.contact.linkedin && (
-              <a
-                href={member.contact.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="crew-pill-link"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  padding: "5px 11px",
-                  borderRadius: "999px",
-                  background: "#181818",
-                  border: "1px solid #2c2c2c",
-                  color: "#cccccc",
-                  fontSize: "0.66rem",
-                  fontWeight: 700,
-                  textDecoration: "none",
-                  transition: "all 0.2s ease",
-                }}
-                aria-label={`${member.name} LinkedIn Profile`}
-              >
-                <span>↗</span> LinkedIn
-              </a>
-            )}
-          </div>
-        )}
-      </div>
-    </article>
-  );
-}
 
 export default function CrewPage() {
-  return (
-    <main style={{ minHeight: "100vh", background: "#0a0a0a", color: "#ffffff", padding: "110px 24px 100px" }}>
-      <div style={{ maxWidth: "1220px", margin: "0 auto" }}>
-        {/* Responsive and hover styles */}
-        <style>{`
-          .crew-member-card:hover {
-            transform: translateY(-6px);
-          }
-          .crew-member-card:hover .crew-card-name {
-            color: #ffffff !important;
-            text-shadow: 0 0 12px rgba(212, 255, 0, 0.4) !important;
-          }
-          .crew-pill-btn:hover {
-            background: #d4ff00 !important;
-            color: #0a0a0a !important;
-            transform: translateY(-2px);
-          }
-          .crew-pill-link:hover {
-            background: rgba(212, 255, 0, 0.1) !important;
-            border-color: #d4ff00 !important;
-            color: #d4ff00 !important;
-            transform: translateY(-1px);
-          }
-          @media (max-width: 960px) {
-            .crew-org-row-1 {
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-            .crew-org-row-2 {
-              max-width: 100% !important;
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-            .crew-coordinators-grid {
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-          }
-          @media (max-width: 900px) {
-            .crew-header-box {
-              flex-direction: column !important;
-              align-items: flex-start !important;
-              gap: 24px !important;
-              margin-bottom: 40px !important;
-            }
-            .crew-header-slash-col {
-              display: none !important;
-            }
-            .crew-conveners-grid {
-              grid-template-columns: 1fr !important;
-            }
-          }
-          @media (max-width: 580px) {
-            .crew-org-row-1,
-            .crew-org-row-2,
-            .crew-coordinators-grid {
-              grid-template-columns: 1fr !important;
-              max-width: 100% !important;
-            }
-          }
-        `}</style>
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
+  return (
+    <main
+      style={{
+        minHeight: "100vh",
+        background: "#090909",
+        color: "#ffffff",
+        padding: "100px 24px 100px",
+        fontFamily: "'Inter', sans-serif",
+      }}
+    >
+      <div style={{ maxWidth: "1220px", margin: "0 auto" }}>
         {/* ── HEADER WITH SIGNATURE DIAGONAL SLASH ── */}
         <header
           className="crew-header-box"
@@ -627,14 +124,14 @@ export default function CrewPage() {
             alignItems: "center",
             justifyContent: "space-between",
             gap: "36px",
-            marginBottom: "60px",
+            marginBottom: "56px",
           }}
         >
           {/* Left Column: Meet the crew */}
           <div style={{ flex: "1 1 45%" }}>
             <p
               style={{
-                color: "#d4ff00",
+                color: "#E53935",
                 fontSize: "0.72rem",
                 fontWeight: 800,
                 letterSpacing: "0.16em",
@@ -654,7 +151,7 @@ export default function CrewPage() {
                 margin: 0,
               }}
             >
-              Meet the <span style={{ color: "#d4ff00" }}>crew</span>.
+              Meet the <span style={{ color: "#E53935" }}>crew</span>.
             </h1>
           </div>
 
@@ -671,19 +168,11 @@ export default function CrewPage() {
               justifyContent: "center",
             }}
           >
-            <svg
-              viewBox="0 0 42 115"
-              style={{
-                width: "42px",
-                height: "115px",
-                display: "block",
-                overflow: "visible",
-              }}
-            >
+            <svg viewBox="0 0 42 115" style={{ width: "42px", height: "115px", display: "block" }}>
               <defs>
                 <linearGradient id="headerMainSlash" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#d4ff00" stopOpacity="0.1" />
-                  <stop offset="45%" stopColor="#d4ff00" stopOpacity="0.95" />
+                  <stop offset="0%" stopColor="#E53935" stopOpacity="0.1" />
+                  <stop offset="45%" stopColor="#E53935" stopOpacity="0.95" />
                   <stop offset="85%" stopColor="#ffffff" stopOpacity="0.3" />
                   <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
                 </linearGradient>
@@ -700,11 +189,11 @@ export default function CrewPage() {
             </svg>
           </div>
 
-          {/* Right Column: Exact user intro & button */}
+          {/* Right Column: User Intro & Button */}
           <div style={{ flex: "1 1 50%" }}>
             <p
               style={{
-                color: "#888888",
+                color: "#B3B3B3",
                 fontSize: "0.95rem",
                 lineHeight: 1.7,
                 maxWidth: "460px",
@@ -714,16 +203,16 @@ export default function CrewPage() {
               The organizers, builders, and community leaders creating a space where ideas become real-world projects.
             </p>
             <a
-              href="#crew-profiles"
+              href="#starting-five"
               className="crew-pill-btn"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "6px",
-                padding: "10px 20px",
-                border: "1px solid #d4ff00",
+                padding: "10px 22px",
+                border: "1px solid #E53935",
                 borderRadius: "999px",
-                color: "#d4ff00",
+                color: "#E53935",
                 fontSize: "0.75rem",
                 fontWeight: 700,
                 textDecoration: "none",
@@ -735,12 +224,12 @@ export default function CrewPage() {
           </div>
         </header>
 
-        {/* ── CONVENERS SECTION (CLEAN, NO CONTAINER/CARD BORDERS) ── */}
+        {/* ── CONVENERS SECTION (PREVIOUS CLEAN BORDER STYLE MAINTAINED) ── */}
         <section aria-labelledby="conveners-title" style={{ marginBottom: "64px" }}>
           <p
             id="conveners-title"
             style={{
-              color: "#d4ff00",
+              color: "#E53935",
               fontSize: "0.75rem",
               fontWeight: 800,
               letterSpacing: "0.16em",
@@ -756,185 +245,722 @@ export default function CrewPage() {
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-              gap: "24px",
+              gap: "28px",
             }}
           >
             {conveners.map((convener) => (
               <article
                 key={convener.name}
                 style={{
-                  borderTop: "1px solid #d4ff00",
-                  borderBottom: "1px solid #222222",
-                  padding: "22px 0",
+                  borderTop: "1px solid #E53935",
+                  borderBottom: "1px solid #292929",
+                  padding: "24px 0",
                   background: "transparent",
                 }}
               >
-                <h2 style={{ color: "#ffffff", fontSize: "1.25rem", fontWeight: 800, letterSpacing: "-0.03em", margin: 0 }}>
+                <div
+                  style={{
+                    color: "#E53935",
+                    fontSize: "0.72rem",
+                    fontWeight: 800,
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    marginBottom: "8px",
+                  }}
+                >
+                  {convener.kicker}
+                </div>
+                <h2
+                  style={{
+                    color: "#ffffff",
+                    fontSize: "1.45rem",
+                    fontWeight: 800,
+                    letterSpacing: "-0.02em",
+                    margin: 0,
+                  }}
+                >
                   {convener.name}
                 </h2>
-                <p style={{ color: "#d4ff00", fontSize: "0.78rem", fontWeight: 700, marginTop: "8px", marginBottom: "4px" }}>
-                  {convener.role}
-                </p>
-                <p style={{ color: "#777777", fontSize: "0.82rem", lineHeight: 1.5, margin: 0 }}>
-                  {convener.department}
+                <p
+                  style={{
+                    color: "#888888",
+                    fontSize: "0.85rem",
+                    lineHeight: 1.5,
+                    marginTop: "8px",
+                    marginBottom: 0,
+                  }}
+                >
+                  {convener.subtitle}
                 </p>
               </article>
             ))}
           </div>
         </section>
 
-        {/* ── TEAM PROFILES CONTAINER ── */}
-        <div id="crew-profiles">
-          {/* ── 1ST LINE: 5 ORGANIZERS ── */}
-          <section id="crew-organizers" aria-labelledby="organizers-heading" style={{ marginBottom: "48px" }}>
+        {/* ── ORGANIZERS: STARTING FIVE (OUR DARK THEME) ── */}
+        <section id="starting-five" aria-label="Starting Five Lineup" style={{ marginBottom: "50px" }}>
+          {/* Section Divider Bar */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "14px",
+              margin: "0 0 28px",
+              paddingBottom: "10px",
+              borderBottom: "1px solid #1a1a1a",
+            }}
+          >
             <div
               style={{
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
-                gap: "14px",
-                margin: "0 0 24px",
-                paddingBottom: "10px",
-                borderBottom: "1px solid #1a1a1a",
+                gap: "7px",
+                background: "rgba(229, 57, 53, 0.08)",
+                border: "1px solid rgba(229, 57, 53, 0.3)",
+                padding: "5px 14px",
+                borderRadius: "999px",
+                color: "#E53935",
+                fontSize: "0.7rem",
+                fontWeight: 800,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
               }}
             >
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  backgroundColor: "#E53935",
+                  boxShadow: "0 0 6px #E53935",
+                }}
+              />
+              01 // ORGANIZING LEADERSHIP
+            </div>
+            <div
+              style={{
+                flex: 1,
+                height: "1px",
+                background: "linear-gradient(90deg, rgba(229, 57, 53, 0.3) 0%, rgba(255, 255, 255, 0.05) 100%)",
+              }}
+            />
+            <span
+              style={{
+                color: "#777777",
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              5 Organizers · Starting Five
+            </span>
+          </div>
+
+          {/* ── THE STARTING FIVE (CLEAN ON PAGE BACKGROUND) ── */}
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              color: "#f5f1ea",
+              padding: "12px 0 20px",
+            }}
+          >
+            {/* ── TOP HEADER (BADGE, TONIGHT, STARTING FIVE) ── */}
+            <header
+              style={{
+                position: "relative",
+                zIndex: 3,
+                textAlign: "center",
+                marginBottom: "38px",
+              }}
+            >
+              {/* Futsal League Style Top Dark Badge */}
               <div
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "7px",
-                  background: "rgba(212, 255, 0, 0.08)",
-                  border: "1px solid rgba(212, 255, 0, 0.25)",
-                  padding: "5px 12px",
-                  borderRadius: "999px",
-                  color: "#d4ff00",
-                  fontSize: "0.7rem",
+                  gap: "10px",
+                  background: "#080c18",
+                  border: "1px solid #281a1e",
+                  color: "#ffffff",
+                  padding: "7px 20px",
+                  borderRadius: "3px",
+                  marginBottom: "16px",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.5)",
+                }}
+              >
+                {/* Trophy Icon */}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#e51b24">
+                  <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V19H8v2h8v-2h-3v-3.1c1.94-.36 3.47-1.87 3.61-3.94C19.08 11.63 21 9.55 21 7V5c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
+                </svg>
+                <div style={{ textAlign: "left", lineHeight: 1.1 }}>
+                  <div
+                    style={{
+                      fontFamily: "'Oswald', sans-serif",
+                      fontSize: "0.76rem",
+                      fontWeight: 900,
+                      letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                      color: "#f5f1ea",
+                    }}
+                  >
+                    HACKSPRINT
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "'Oswald', sans-serif",
+                      fontSize: "0.62rem",
+                      fontWeight: 700,
+                      letterSpacing: "0.2em",
+                      color: "#e51b24",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    SEASON 3.0
+                  </div>
+                </div>
+              </div>
+
+              {/* Subtitle: TONIGHT */}
+              <p
+                style={{
+                  fontFamily: "'Oswald', sans-serif",
+                  color: "#e51b24",
+                  fontSize: "1.35rem",
                   fontWeight: 800,
-                  letterSpacing: "0.12em",
+                  letterSpacing: "0.22em",
                   textTransform: "uppercase",
+                  margin: "0 0 4px",
+                }}
+              >
+                TONIGHT
+              </p>
+
+              {/* Massive Heading: STARTING FIVE */}
+              <h2
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "14px",
+                  margin: 0,
+                  lineHeight: 0.95,
                 }}
               >
                 <span
                   style={{
-                    width: 5,
-                    height: 5,
-                    borderRadius: "50%",
-                    backgroundColor: "#d4ff00",
-                    boxShadow: "0 0 6px #d4ff00",
+                    fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
+                    fontSize: "clamp(3.4rem, 6.8vw, 5.2rem)",
+                    fontWeight: 900,
+                    letterSpacing: "0.04em",
+                    color: "#f5f1ea",
+                    textTransform: "uppercase",
                   }}
-                />
-                01 // ORGANIZING LEADERSHIP
-              </div>
-              <div
-                style={{
-                  flex: 1,
-                  height: "1px",
-                  background: "linear-gradient(90deg, rgba(212, 255, 0, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%)",
-                }}
-              />
-              <span style={{ color: "#666666", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                5 Organizers
-              </span>
-            </div>
+                >
+                  STARTING
+                </span>
 
-            {/* 1st Line: 3 Organizers */}
+                {/* Stylized Red "five" (Script / Brush Graphic matching reference) */}
+                <span
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    fontFamily: "'Playfair Display', 'Brush Script MT', cursive, serif",
+                    fontSize: "clamp(3.6rem, 7.2vw, 5.6rem)",
+                    fontWeight: 900,
+                    fontStyle: "italic",
+                    color: "#e51b24",
+                    letterSpacing: "-0.04em",
+                    transform: "rotate(-4deg)",
+                    textShadow: "0 0 20px rgba(229, 27, 36, 0.6)",
+                  }}
+                >
+                  five
+                </span>
+              </h2>
+            </header>
+
+            {/* ── 5 STAGGERED VERTICAL CARDS (OUR DARK THEME) ── */}
             <div
-              className="crew-org-row-1"
               style={{
+                position: "relative",
+                zIndex: 3,
                 display: "grid",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                gap: "20px",
-                marginBottom: "20px",
+                gridTemplateColumns: "repeat(5, 1fr)",
+                gap: "12px",
+                alignItems: "start",
+                maxWidth: "1060px",
+                margin: "0 auto 36px",
               }}
+              className="starting-five-grid"
             >
-              {organizers.slice(0, 3).map((member) => (
-                <CrewCard key={member.id} member={member} />
-              ))}
+              {startingFive.map((member, index) => {
+                let topOffset = 0;
+                let cardHeight = 390;
+                const isCaptain = member.id === "surya";
+
+                if (index === 0 || index === 4) {
+                  topOffset = 28;
+                  cardHeight = 365;
+                } else if (index === 1 || index === 3) {
+                  topOffset = 0;
+                  cardHeight = 395;
+                } else if (index === 2) {
+                  topOffset = 12;
+                  cardHeight = 430; // hangs lowest!
+                }
+
+                return (
+                  <div
+                    key={member.id}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      transform: `translateY(${topOffset}px)`,
+                      transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                    }}
+                  >
+                    {/* The Vertical Card Box in Dark Obsidian / Crimson theme */}
+                    <div
+                      onClick={() => setSelectedMember(member)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`View profile of ${member.name}`}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") setSelectedMember(member);
+                      }}
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        height: `${cardHeight}px`,
+                        background: "linear-gradient(180deg, #1c1518 0%, #120d0f 45%, #080607 100%)",
+                        borderRadius: "3px",
+                        overflow: "hidden",
+                        cursor: "pointer",
+                        boxShadow: isCaptain
+                          ? "0 18px 40px rgba(0,0,0,0.8), 0 0 25px rgba(229, 27, 36, 0.35)"
+                          : "0 14px 32px rgba(0,0,0,0.7)",
+                        border: isCaptain ? "1.5px solid #e51b24" : "1px solid #2a1619",
+                        transition: "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "translateY(-6px) scale(1.02)";
+                        e.currentTarget.style.boxShadow = "0 22px 50px rgba(229, 27, 36, 0.45)";
+                        e.currentTarget.style.borderColor = "#e51b24";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "none";
+                        e.currentTarget.style.boxShadow = isCaptain
+                          ? "0 18px 40px rgba(0,0,0,0.8), 0 0 25px rgba(229, 27, 36, 0.35)"
+                          : "0 14px 32px rgba(0,0,0,0.7)";
+                        e.currentTarget.style.borderColor = isCaptain ? "#e51b24" : "#2a1619";
+                      }}
+                    >
+                      {/* Top Watermark Tag: FLK / ANC / GK / ANC / PVT */}
+                      <div
+                        aria-hidden="true"
+                        style={{
+                          position: "absolute",
+                          top: "10px",
+                          left: 0,
+                          right: 0,
+                          textAlign: "center",
+                          fontFamily: "'Oswald', sans-serif",
+                          fontSize: "clamp(2.8rem, 4.2vw, 4.4rem)",
+                          fontWeight: 900,
+                          letterSpacing: "0.06em",
+                          lineHeight: 1,
+                          color: "rgba(229, 27, 36, 0.22)",
+                          textTransform: "uppercase",
+                          zIndex: 1,
+                          pointerEvents: "none",
+                          userSelect: "none",
+                        }}
+                      >
+                        {member.positionCode}
+                      </div>
+
+                      {/* Member Monochrome Photograph */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          height: "82%",
+                          zIndex: 2,
+                          display: "flex",
+                          alignItems: "flex-end",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Image
+                          src={member.image}
+                          alt={`${member.name} - HackSprint 3.0 Starting Five`}
+                          fill
+                          sizes="(max-width: 900px) 33vw, 20vw"
+                          style={{
+                            objectFit: "cover",
+                            objectPosition: "center top",
+                            filter: "grayscale(100%) contrast(1.18) brightness(0.92)",
+                          }}
+                          priority={member.id === "surya"}
+                        />
+                      </div>
+
+                      {/* Rich Crimson Red Gradient Wash (Signature starting five reference style) */}
+                      <div
+                        aria-hidden="true"
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          height: "56%",
+                          background:
+                            "linear-gradient(to top, #e51b24 0%, rgba(229, 27, 36, 0.9) 32%, rgba(229, 27, 36, 0.28) 60%, transparent 80%)",
+                          zIndex: 3,
+                          pointerEvents: "none",
+                        }}
+                      />
+
+                      {/* Captain Badge on center card */}
+                      {isCaptain && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "10px",
+                            right: "10px",
+                            zIndex: 4,
+                            background: "#e51b24",
+                            color: "#ffffff",
+                            fontFamily: "'Oswald', sans-serif",
+                            fontSize: "0.6rem",
+                            fontWeight: 900,
+                            padding: "2px 6px",
+                            borderRadius: "2px",
+                            letterSpacing: "0.1em",
+                            boxShadow: "0 0 10px rgba(229, 27, 36, 0.6)",
+                          }}
+                        >
+                          LEAD
+                        </div>
+                      )}
+                    </div>
+
+                    {/* ── CARD LABEL: NAME ── */}
+                    <div
+                      style={{
+                        marginTop: "14px",
+                        textAlign: "center",
+                        fontFamily: "'Oswald', sans-serif",
+                        fontSize: "clamp(0.85rem, 1.2vw, 1.05rem)",
+                        fontWeight: 800,
+                        letterSpacing: "0.08em",
+                        color: "#f5f1ea",
+                        textTransform: "uppercase",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      <span>{member.name} {member.id === "surya" ? "(LEAD)" : ""}</span>
+                      <span
+                        style={{
+                          display: "block",
+                          marginTop: "6px",
+                          color: "#b3b3b3",
+                          fontSize: "0.68em",
+                          fontWeight: 600,
+                          letterSpacing: "0.1em",
+                        }}
+                      >
+                        {member.tagYear}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* 2nd Line: 2 Organizers */}
+            {/* ── QUERIES & CONTACT BAR (BALA SURYA MOBILE NUMBER) ── */}
             <div
-              className="crew-org-row-2"
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                position: "relative",
+                zIndex: 3,
+                marginTop: "48px",
+                padding: "22px 28px",
+                background: "#120c0e",
+                border: "1px solid #281418",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
                 gap: "20px",
-                maxWidth: "calc((100% - 40px) * 2 / 3 + 20px)",
-                margin: "0 auto",
+                flexWrap: "wrap",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+              }}
+              className="crew-contact-bar"
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                <div
+                  style={{
+                    width: "44px",
+                    height: "44px",
+                    borderRadius: "50%",
+                    background: "#e51b24",
+                    color: "#ffffff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1.2rem",
+                    boxShadow: "0 0 16px rgba(229, 27, 36, 0.5)",
+                    flexShrink: 0,
+                  }}
+                >
+                  📞
+                </div>
+                <div>
+                  <div
+                    style={{
+                      color: "#e51b24",
+                      fontFamily: "'Oswald', sans-serif",
+                      fontSize: "0.74rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    FOR ANY QUERIES OR ASSISTANCE
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "'Oswald', sans-serif",
+                      fontSize: "1.15rem",
+                      fontWeight: 700,
+                      color: "#f5f1ea",
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    Bala Surya S <span style={{ color: "#8e8880", fontSize: "0.85rem", fontWeight: 400 }}>(Lead Organizer)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                <a
+                  href="tel:9597075831"
+                  className="rdr-btn-red"
+                  style={{
+                    fontSize: "0.85rem",
+                    padding: "10px 22px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <span>CALL: +91 9597075831</span>
+                  <span style={{ fontSize: "1rem" }}>&gt;</span>
+                </a>
+                <a
+                  href="https://wa.me/919597075831?text=Hi%20Bala,%20I%20have%20a%20query%20about%20HackSprint%203.0"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rdr-btn-ghost"
+                  style={{
+                    fontSize: "0.85rem",
+                    padding: "10px 20px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <span>WHATSAPP</span>
+                  <span style={{ color: "#e51b24" }}>💬</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── MODAL DRAWER FOR SELECTED MEMBER DETAILS ── */}
+        {selectedMember && (
+          <div
+            onClick={() => setSelectedMember(null)}
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.85)",
+              backdropFilter: "blur(8px)",
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px",
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "#100b0d",
+                border: "2px solid #e51b24",
+                borderRadius: "12px",
+                maxWidth: "520px",
                 width: "100%",
+                padding: "32px",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.9), 0 0 40px rgba(229, 27, 36, 0.3)",
+                color: "#f5f1ea",
+                position: "relative",
               }}
             >
-              {organizers.slice(3).map((member) => (
-                <CrewCard key={member.id} member={member} />
-              ))}
-            </div>
-          </section>
-
-          {/* ── 2ND LINE: 4 COORDINATORS ── */}
-          <section id="crew-coordinators" aria-labelledby="coordinators-heading">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
-                margin: "0 0 24px",
-                paddingBottom: "10px",
-                borderBottom: "1px solid #1a1a1a",
-              }}
-            >
-              <div
+              <button
+                type="button"
+                onClick={() => setSelectedMember(null)}
                 style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "7px",
-                  background: "rgba(212, 255, 0, 0.08)",
-                  border: "1px solid rgba(212, 255, 0, 0.25)",
-                  padding: "5px 12px",
-                  borderRadius: "999px",
-                  color: "#d4ff00",
-                  fontSize: "0.7rem",
-                  fontWeight: 800,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
+                  position: "absolute",
+                  top: "16px",
+                  right: "16px",
+                  background: "transparent",
+                  border: "none",
+                  color: "#8e8880",
+                  fontSize: "1.5rem",
+                  cursor: "pointer",
+                  lineHeight: 1,
                 }}
               >
-                <span
-                  style={{
-                    width: 5,
-                    height: 5,
-                    borderRadius: "50%",
-                    backgroundColor: "#d4ff00",
-                    boxShadow: "0 0 6px #d4ff00",
-                  }}
-                />
-                02 // STUDENT COORDINATORS · 2ND YEAR
-              </div>
-              <div
-                style={{
-                  flex: 1,
-                  height: "1px",
-                  background: "linear-gradient(90deg, rgba(212, 255, 0, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%)",
-                }}
-              />
-              <span style={{ color: "#666666", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                4 Coordinators
-              </span>
-            </div>
+                ✕
+              </button>
 
-            <div
-              className="crew-coordinators-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-                gap: "18px",
-              }}
-            >
-              {coordinators.map((member) => (
-                <CrewCard key={member.id} member={member} />
-              ))}
+              <div style={{ display: "flex", gap: "20px", alignItems: "center", marginBottom: "20px" }}>
+                <div
+                  style={{
+                    position: "relative",
+                    width: "80px",
+                    height: "100px",
+                    borderRadius: "6px",
+                    overflow: "hidden",
+                    border: "1px solid #e51b24",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Image
+                    src={selectedMember.image}
+                    alt={selectedMember.name}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div>
+                  <span
+                    style={{
+                      background: "#e51b24",
+                      color: "#fff",
+                      fontFamily: "'Oswald', sans-serif",
+                      fontSize: "0.68rem",
+                      fontWeight: 800,
+                      padding: "2px 8px",
+                      borderRadius: "2px",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    #{selectedMember.number} · {selectedMember.positionCode}
+                  </span>
+                  <h3
+                    style={{
+                      fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
+                      fontSize: "2rem",
+                      margin: "6px 0 2px",
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {selectedMember.name}
+                  </h3>
+                  <p style={{ color: "#e51b24", fontSize: "0.85rem", fontWeight: 700, margin: 0 }}>
+                    {selectedMember.role}
+                  </p>
+                  <p style={{ color: "#8e8880", fontSize: "0.78rem", margin: "2px 0 0" }}>
+                    {selectedMember.detail}
+                  </p>
+                </div>
+              </div>
+
+              <p style={{ color: "#c2b8ad", fontSize: "0.9rem", lineHeight: 1.65, marginBottom: "24px" }}>
+                {selectedMember.bio}
+              </p>
+
+              {selectedMember.contact && (
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  {selectedMember.contact.phone && (
+                    <a
+                      href={`tel:${selectedMember.contact.phone}`}
+                      className="rdr-btn-red"
+                      style={{ fontSize: "0.8rem", padding: "8px 16px" }}
+                    >
+                      <span>📞 CALL {selectedMember.contact.phone}</span>
+                    </a>
+                  )}
+                  {selectedMember.contact.whatsapp && (
+                    <a
+                      href={`https://wa.me/91${selectedMember.contact.whatsapp}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rdr-btn-red"
+                      style={{ fontSize: "0.8rem", padding: "8px 16px" }}
+                    >
+                      <span>💬 WHATSAPP</span>
+                    </a>
+                  )}
+                  {selectedMember.contact.linkedin && (
+                    <a
+                      href={selectedMember.contact.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rdr-btn-ghost"
+                      style={{ fontSize: "0.8rem", padding: "8px 16px" }}
+                    >
+                      <span>↗ LINKEDIN</span>
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
-          </section>
-        </div>
+          </div>
+        )}
       </div>
+
+      {/* ── RESPONSIVE MEDIA QUERIES ── */}
+      <style>{`
+        @media (max-width: 900px) {
+          .crew-header-box {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 20px !important;
+          }
+          .crew-header-slash-col {
+            display: none !important;
+          }
+          .crew-conveners-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .starting-five-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+          .starting-five-footer {
+            grid-template-columns: 1fr !important;
+            text-align: center !important;
+            gap: 16px !important;
+          }
+          .starting-five-footer > div {
+            text-align: center !important;
+          }
+        }
+        @media (max-width: 580px) {
+          .starting-five-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }

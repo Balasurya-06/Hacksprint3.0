@@ -32,7 +32,7 @@ export default function Footer() {
                   letterSpacing: "-0.03em",
                 }}
               >
-                HackSprint <span style={{ color: "#d4ff00" }}>3.0</span>
+                HackSprint <span style={{                 color: "var(--soft-red)" }}>3.0</span>
               </span>
             </Link>
 
@@ -50,7 +50,7 @@ export default function Footer() {
             {/* Social icon buttons in white rounded squares */}
             <div className="contelas-footer-socials">
               <a
-                href="https://www.instagram.com/"
+                href="https://www.instagram.com/hacksprint3.0?vrfl=eThtZjllMGpjM25r"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
@@ -85,7 +85,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://www.linkedin.com/in/balasurya06/"
+                href="https://www.linkedin.com/showcase/hacksprint3-0/"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
@@ -97,10 +97,10 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://x.com/"
+                href="mailto:hacksprint.official@gmail.com"
                 target="_blank"
                 rel="noreferrer"
-                aria-label="X (Twitter)"
+                aria-label="Email HackSprint"
                 className="contelas-social-btn"
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
@@ -124,7 +124,7 @@ export default function Footer() {
               <Link href="/highlights" className="contelas-nav-link">Challenge Tracks</Link>
               <Link href="/why-sponsor-us" className="contelas-nav-link">Why Sponsor Us</Link>
               <Link href="/#registration" className="contelas-nav-link">Registration</Link>
-              <a href="/brochure.pdf" download className="contelas-nav-link">Brochure PDF</a>
+              <a href="/pdf/HS3_Brochure.pdf" download className="contelas-nav-link">Brochure PDF</a>
               <Link href="/#venue-map-title" className="contelas-nav-link">Venue Map</Link>
             </div>
 

@@ -21,7 +21,7 @@ export default function PageHeader({
     >
       <p
         style={{
-          color: "#d4ff00",
+          color: "var(--soft-red)",
           fontSize: "0.75rem",
           fontWeight: 700,
           letterSpacing: "0.12em",
@@ -69,8 +69,8 @@ export function PageFrame({
   return (
     <div
       style={{
-        background: accent ? "#d4ff00" : "#0a0a0a",
-        color: accent ? "#0a0a0a" : "#fff",
+        background: accent ? "var(--primary-red)" : "var(--obsidian-black)",
+        color: accent ? "var(--white)" : "var(--primary-text)",
         minHeight: "calc(100vh - 68px)",
         padding: "120px 32px 100px",
       }}

@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import EntryLoader from "@/components/EntryLoader";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hacksprint3.devfolio.co";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -12,17 +13,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "HACKSPRINT 3.0 — India’s Largest Student Hackathon 2027",
+    default: "HACKSPRINT 3.0 | India’s Biggest & Largest Student Hackathon 2027",
     template: "%s | HACKSPRINT 3.0",
   },
   description:
-    "HACKSPRINT 3.0 is India’s largest student hackathon, organized by the Department of Computer Science & Engineering, KAHE, in association with the Metaverse Students Association.",
+    "HACKSPRINT 3.0 is India’s biggest and largest student hackathon 2027, organized by KAHE’s Department of Computer Science & Engineering with the Metaverse Students Association in Coimbatore, Tamil Nadu.",
   keywords: [
     "HackSprint 3.0",
+    "HACKSPRINT 3.0 2027",
+    "India's biggest student hackathon",
+    "India's largest student hackathon",
+    "biggest hackathon in India",
+    "largest hackathon in India",
     "student hackathon",
-    "India hackathon 2027",
+    "hackathon 2027 India",
+    "student coding competition India",
+    "national level hackathon",
+    "36 hour hackathon",
+    "hackathon Coimbatore",
     "KAHE",
     "Karpagam Academy of Higher Education",
     "Metaverse Students Association",
@@ -32,43 +42,111 @@ export const metadata: Metadata = {
   authors: [{ name: "HACKSPRINT 3.0 Organizing Team" }],
   creator: "HACKSPRINT 3.0 Organizing Team",
   publisher: "Karpagam Academy of Higher Education",
+  category: "Technology",
+  classification: "Student Hackathon",
+  robots: {
+    index: true,
+    follow: true,
+    "max-image-preview": "large",
+    "max-snippet": -1,
+    "max-video-preview": -1,
+  },
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "HACKSPRINT 3.0 — India’s Largest Student Hackathon 2027",
+    title: "HACKSPRINT 3.0 | India’s Biggest & Largest Student Hackathon 2027",
     description:
-      "Build, compete, and innovate at HACKSPRINT 3.0, organized by KAHE’s Department of Computer Science & Engineering with the Metaverse Students Association.",
+      "Build, compete, and innovate at India’s biggest and largest student hackathon 2027. Join HACKSPRINT 3.0 in Coimbatore, organized by KAHE and the Metaverse Students Association.",
     type: "website",
     locale: "en_IN",
-    siteName: "HACKSPRINT 3.0",
+    siteName: "HACKSPRINT 3.0 — India’s Biggest Student Hackathon",
     images: [
       {
-        url: "/logo.png",
-        width: 1280,
-        height: 1280,
+        url: "/3.0.png",
+        width: 404,
+        height: 161,
         alt: "HACKSPRINT 3.0",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HACKSPRINT 3.0 — India’s Largest Student Hackathon 2027",
+    title: "HACKSPRINT 3.0 | India’s Biggest Student Hackathon 2027",
     description:
-      "Join India’s largest student hackathon, organized by KAHE and the Metaverse Students Association.",
-    images: ["/logo.png"],
+      "Join India’s biggest and largest student hackathon 2027 in Coimbatore, Tamil Nadu.",
+    images: ["/3.0.png"],
   },
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/3.0.png",
+    shortcut: "/3.0.png",
+    apple: "/3.0.png",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteUrl}/#organization`,
+        name: "HACKSPRINT 3.0",
+        url: siteUrl,
+        logo: `${siteUrl}/3.0.png`,
+        email: "mailto:hacksprint.official@gmail.com",
+        sameAs: [
+          "https://www.instagram.com/hacksprint3.0?vrfl=eThtZjllMGpjM25r",
+          "https://www.linkedin.com/showcase/hacksprint3-0/",
+        ],
+        parentOrganization: {
+          "@type": "CollegeOrUniversity",
+          name: "Karpagam Academy of Higher Education",
+        },
+      },
+      {
+        "@type": "Event",
+        "@id": `${siteUrl}/#hacksprint-3`,
+        name: "HACKSPRINT 3.0 — India’s Biggest & Largest Student Hackathon 2027",
+        description:
+          "A national-level student hackathon organized by KAHE’s Department of Computer Science & Engineering with the Metaverse Students Association.",
+        url: siteUrl,
+        image: `${siteUrl}/3.0.png`,
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+        startDate: "2026-11-08T09:00:00+05:30",
+        endDate: "2026-12-28T18:00:00+05:30",
+        location: {
+          "@type": "Place",
+          name: "Karpagam Academy of Higher Education",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Salem–Kochi Highway, Eachanari",
+            addressLocality: "Coimbatore",
+            addressRegion: "Tamil Nadu",
+            postalCode: "641021",
+            addressCountry: "IN",
+          },
+        },
+        organizer: { "@id": `${siteUrl}/#organization` },
+        offers: {
+          "@type": "Offer",
+          url: "https://hacksprint3.devfolio.co",
+          availability: "https://schema.org/InStock",
+          price: "0",
+          priceCurrency: "INR",
+        },
+      },
+    ],
+  };
+
   return (
     <html lang="en" className={inter.variable}>
       <body>
-        <EntryLoader />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <Navbar />
         <main>{children}</main>
         <section className="venue-map" aria-labelledby="venue-map-title">

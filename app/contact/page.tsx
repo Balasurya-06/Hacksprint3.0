@@ -32,8 +32,8 @@ export default function ContactPage() {
             fontWeight: 600,
             fontSize: "0.85rem",
             textDecoration: "none",
-            background: "#0a0a0a",
-            color: "#d4ff00",
+            background: "#090909",
+            color: "#E53935",
             padding: "14px 36px",
           }}
         >
@@ -47,11 +47,11 @@ export default function ContactPage() {
             paddingTop: "28px",
           }}
         >
-          <p style={{ color: "#3a5a00", marginBottom: "14px" }}>
+          <p style={{ color: "#E53935", marginBottom: "14px" }}>
             Get in touch
           </p>
           <p style={{ fontSize: "0.9rem" }}>
-            hacksprint.official@gmail.com · discord.gg/hacksprint · @hacksprint
+            hacksprint.official@gmail.com · Instagram: @hacksprint3.0 · LinkedIn: HackSprint 3.0
           </p>
         </div>
       </div>

@@ -1,0 +1,14 @@
+[33mb770b50[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/backup-all-commits[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mbackup-all-commits[m[33m)[m feat(homepage): replace Devfolio CDN logo with local asset
+[33mb4eb938[m feat(homepage): replace Devfolio Image component with native img for verification badge
+[33m9b61ddd[m feat(homepage): add Devfolio branding footer with Stripe support badge
+[33ma03e72c[m feat(homepage): integrate Devfolio SDK for official hackathon registration
+[33mcad8044[m feat(website): restructure about, contact, and supporting pages with enhanced UI components and media assets
+[33m482ce1e[m feat: create crew page component with team member profiles and stylized avatars
+[33ma623768[m feat: add past events media, crew page, global styles, and homepage components
+[33m88eca66[m Refactor hero section styles and class names for improved clarity and consistency in layout
+[33m092f32f[m Enhance responsive design with new styles for navbar and hero sections, improving layout and user experience on smaller screens.
+[33mb0db15c[m Refactor code structure for improved readability and maintainability
+[33m851d91f[m Revamp homepage layout and content for HACKSPRINT 3.0, enhancing user engagement with updated sections and improved styling.
+[33me7727a1[m Merge remote repository history
+[33me0a266f[m Create HACKSPRINT website
+[33mbdf71c3[m Initial commit
