@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" fill="none">
+  <!-- Devfolio "D" icon mark -->
+  <g>
+    <!-- Outer D shape -->
+    <path d="M8 6 H22 C34 6 42 14 42 25 C42 36 34 44 22 44 H8 Z" fill="white"/>
+    <!-- Inner cutout -->
+    <path d="M16 14 H21 C28.5 14 33 18.5 33 25 C33 31.5 28.5 36 21 36 H16 Z" fill="#1a1a2e"/>
+  </g>
+  <!-- Wordmark: Devfolio -->
+  <text x="52" y="34" font-family="'Inter','Segoe UI',Arial,sans-serif" font-size="26" font-weight="700" fill="white" letter-spacing="-0.5">Devfolio</text>
+</svg>

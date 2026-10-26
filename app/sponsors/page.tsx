@@ -8,8 +8,8 @@ const goldSponsors = [
   {
     name: "Devfolio",
     tagline: "Official Hackathon Platform",
-    logo: "/Sponsor/devfolio-logo.png",
-    bg: "#ffffff",
+    logo: "/Sponsor/devfolio-white.svg",
+    bg: "none",
     accent: "#3770ff",
     url: "https://devfolio.co",
   },
@@ -81,9 +81,13 @@ function SponsorCard({ card, size = "md" }: { card: LogoCard; size?: "lg" | "md"
       {card.logo ? (
         <div
           style={{
-            background: card.bg || "#fff",
-            borderRadius: "8px",
-            padding: "10px 20px",
+            ...(card.bg && card.bg !== "none"
+              ? {
+                  background: card.bg,
+                  borderRadius: "8px",
+                  padding: "10px 20px",
+                }
+              : { padding: "10px 20px" }),
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
