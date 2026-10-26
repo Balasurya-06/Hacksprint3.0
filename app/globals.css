@@ -28,6 +28,12 @@
   --border: var(--border-grey);
 }
 
+.homepage-hero-actions .devfolio-apply-button {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: min(100%, 312px) !important;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -1641,6 +1647,11 @@ a {
 .homepage-hero-red-black .homepage-hero-actions > button > span:last-child {
   background: #e53935 !important;
   border-color: #0a0a0a !important;
+}
+
+.devfolio-apply-button {
+  flex: 0 0 auto;
+  overflow: hidden;
 }
 
 @media (max-width: 600px) {

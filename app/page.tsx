@@ -13,6 +13,17 @@ import PartnerBar from "@/components/PartnerBar";
 
 const hackathonDate = new Date("2026-11-08T09:00:00+05:30").getTime();
 
+function DevfolioApplyButton({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`apply-button devfolio-apply-button ${className}`.trim()}
+      data-hackathon-slug="hacksprint3"
+      data-button-theme="light"
+      style={{ height: "44px", width: "312px" }}
+    />
+  );
+}
+
 function HeroCountdown() {
   const [remaining, setRemaining] = useState<number | null>(null);
 
@@ -629,62 +640,8 @@ export default function Home() {
               </span>
             </a>
 
-            {/* 3. REGISTER BUTTON */}
-            <a
-              href="https://hacksprint3.devfolio.co"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                background: "#ffffff",
-                border: "2px solid #000000",
-                borderRadius: "999px",
-                padding: "5px 5px 5px 20px",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "12px",
-                textDecoration: "none",
-                boxShadow: "3px 3px 0px #000000",
-                transition: "transform 0.15s ease, box-shadow 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translate(-1px, -1px)";
-                e.currentTarget.style.boxShadow = "4.5px 4.5px 0px #000000";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translate(0, 0)";
-                e.currentTarget.style.boxShadow = "3px 3px 0px #000000";
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "'Oswald', sans-serif",
-                  fontSize: "0.82rem",
-                  fontWeight: 800,
-                  letterSpacing: "0.1em",
-                  color: "#000000",
-                  textTransform: "uppercase",
-                }}
-              >
-                REGISTER
-              </span>
-              <span
-                style={{
-                  width: "34px",
-                  height: "34px",
-                  borderRadius: "6px",
-                  background: "#82CDF4",
-                  border: "1.5px solid #000000",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="7" y1="17" x2="17" y2="7" />
-                  <polyline points="7 7 17 7 17 17" />
-                </svg>
-              </span>
-            </a>
+            {/* 3. APPLY WITH DEVFOLIO */}
+            <DevfolioApplyButton />
           </div>
 
           {/* ══ EXACT COUNTDOWN TIMER (FROM REFERENCE IMAGE) ══════════════ */}
@@ -868,27 +825,7 @@ export default function Home() {
             </div>
 
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "20px" }}>
-              <a
-                href="https://hacksprint3.devfolio.co"
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  flex: 1,
-                  textAlign: "center",
-                  padding: "12px 20px",
-                  background: "#000000",
-                  color: "#F7DC4E",
-                  border: "2px solid #000000",
-                  borderRadius: "999px",
-                  fontFamily: "'Oswald', sans-serif",
-                  fontWeight: 800,
-                  letterSpacing: "0.1em",
-                  textDecoration: "none",
-                  boxShadow: "3px 3px 0px rgba(0,0,0,0.3)",
-                }}
-              >
-                APPLY ON DEVFOLIO ↗
-              </a>
+              <DevfolioApplyButton />
               <button
                 type="button"
                 onClick={() => window.print()}
@@ -1007,12 +944,7 @@ export default function Home() {
           Ready to Sprint Into History?
         </h2>
         <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-          <Link
-            href="https://hacksprint3.devfolio.co"
-            style={{ padding: "14px 36px", background: "#E53935", color: "#ffffff", borderRadius: "100px", fontWeight: 700, fontSize: "0.9rem", textDecoration: "none" }}
-          >
-            Register Now →
-          </Link>
+          <DevfolioApplyButton />
           <Link
             href="#about"
             style={{ padding: "14px 36px", background: "transparent", border: "1px solid #292929", color: "#F5F5F5", borderRadius: "100px", fontWeight: 700, fontSize: "0.9rem", textDecoration: "none" }}

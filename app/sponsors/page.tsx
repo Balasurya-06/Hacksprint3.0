@@ -89,7 +89,7 @@ function SponsorCard({ card, size = "md" }: { card: LogoCard; size?: "lg" | "md"
         >
           <Image
             src={card.logo}
-            alt={card.name}
+            alt={card.name === "Devfolio" ? "DEVFOLIO LOGO" : card.name}
             width={160}
             height={56}
             style={{ objectFit: "contain", maxHeight: "56px" }}
