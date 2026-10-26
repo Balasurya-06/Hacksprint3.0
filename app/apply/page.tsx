@@ -76,7 +76,7 @@ export default function ApplyPage() {
         */}
         <div
           className="apply-button"
-          data-hackathon-slug="hacksprint3-0"
+          data-hackathon-slug="hacksprint-3"
           data-button-theme="blue"
           style={{ height: "44px", width: "312px" }}
         />
