@@ -4,7 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hacksprint3.devfolio.co";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.hacksprint.tech";
 
 const inter = Inter({
   subsets: ["latin"],
