@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply to HACKSPRINT 3.0 | Devfolio</title>
+  <meta name="description" content="Apply to HACKSPRINT 3.0 — India's biggest student hackathon 2027, via Devfolio." />
+  <meta name="robots" content="noindex, follow" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #070506;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 40px 24px;
+      color: #f5f1ea;
+    }
+    h1 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 800; text-align: center; }
+    p  { color: #888; font-size: 1rem; text-align: center; max-width: 480px; line-height: 1.6; }
+    a.back {
+      color: #e51b24;
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin-top: 12px;
+    }
+    a.back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>Apply to HACKSPRINT 3.0</h1>
+  <p>Click the button below to register for India's biggest student hackathon 2027 on Devfolio.</p>
+
+  <!--
+    DEVFOLIO APPLY BUTTON
+    Official integration per https://guide.devfolio.co/docs/guide/apply-with-devfolio-integration
+      - class="apply-button"          (required)
+      - data-hackathon-slug           (exact slug from Devfolio dashboard)
+      - data-button-theme="blue"      (blue for dark backgrounds)
+      - style height/width            (required, set explicitly)
+  -->
+  <div
+    class="apply-button"
+    data-hackathon-slug="hacksprint3-0"
+    data-button-theme="blue"
+    style="height: 44px; width: 312px;"
+  ></div>
+
+  <a class="back" href="/">← Back to HackSprint 3.0</a>
+
+  <!-- Devfolio SDK — official: https://apply.devfolio.co/v2/sdk.js -->
+  <script src="https://apply.devfolio.co/v2/sdk.js" async defer></script>
+</body>
+</html>
