@@ -131,7 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         organizer: { "@id": `${siteUrl}/#organization` },
         offers: {
           "@type": "Offer",
-          url: "https://hacksprint-3.devfolio.co",
+          url: "https://hacksprint-3.devfolio.co/overview",
           availability: "https://schema.org/InStock",
           price: "0",
           priceCurrency: "INR",

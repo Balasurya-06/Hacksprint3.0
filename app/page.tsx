@@ -15,12 +15,59 @@ const hackathonDate = new Date("2026-11-08T09:00:00+05:30").getTime();
 
 function DevfolioApplyButton({ className = "" }: { className?: string }) {
   return (
-    <div
-      className={`apply-button devfolio-apply-button ${className}`.trim()}
-      data-hackathon-slug="hacksprint-3"
-      data-button-theme="blue"
-      style={{ height: "44px", width: "312px" }}
-    />
+    <a
+      href="https://hacksprint-3.devfolio.co/overview"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Apply with Devfolio"
+      className={className}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "10px",
+        height: "44px",
+        width: "312px",
+        background: "#3770FF",
+        borderRadius: "8px",
+        textDecoration: "none",
+        cursor: "pointer",
+        border: "none",
+        boxShadow: "0 2px 8px rgba(55,112,255,0.35)",
+        transition: "background 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = "#2a5ce0";
+        e.currentTarget.style.boxShadow = "0 4px 16px rgba(55,112,255,0.5)";
+        e.currentTarget.style.transform = "translateY(-1px)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "#3770FF";
+        e.currentTarget.style.boxShadow = "0 2px 8px rgba(55,112,255,0.35)";
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
+    >
+      {/* Devfolio "D" logo mark */}
+      <svg width="22" height="22" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="8" fill="white" fillOpacity="0.15"/>
+        <path
+          d="M10 10h10c5.523 0 10 4.477 10 10s-4.477 10-10 10H10V10z"
+          fill="white"
+        />
+      </svg>
+      <span
+        style={{
+          fontFamily: "'Inter', 'Oswald', sans-serif",
+          fontSize: "0.93rem",
+          fontWeight: 700,
+          color: "#ffffff",
+          letterSpacing: "0.01em",
+          whiteSpace: "nowrap",
+        }}
+      >
+        Apply with Devfolio
+      </span>
+    </a>
   );
 }
 

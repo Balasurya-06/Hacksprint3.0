@@ -17,7 +17,37 @@ const goldSponsors = [
 
 const silverSponsors: { name: string; tagline: string; accent: string }[] = [];
 const bronzeSponsors: { name: string; tagline: string; accent: string }[] = [];
-const mediaPartners: { name: string; tagline: string; accent: string }[] = [];
+
+const coSponsors = [
+  {
+    name: "Adaption",
+    tagline: "Official AI Partner",
+    logo: "/Sponsor/Adaption_Logo.png",
+    bg: "none",
+    accent: "#7c3aed",
+    url: "https://adaptionlabs.ai",
+  },
+  {
+    name: "Eventopia",
+    tagline: "Media Partner",
+    logo: "/Sponsor/eventopia.png",
+    bg: "none",
+    accent: "#f59e0b",
+    url: "https://eventopia.in/",
+  },
+];
+
+const techEvalPartners = [
+  {
+    name: "TCS",
+    tagline: "Technical & Evaluation Partner",
+    logo: "/Sponsor/tcs.png",
+    bg: "none",
+    accent: "#e51b24",
+    url: "https://www.tcs.com",
+  },
+];
+
 const organizingPartners: { name: string; tagline: string; accent: string }[] = [];
 
 /* ── Card ─────────────────────────────────────────────────────── */
@@ -152,42 +182,50 @@ function SponsorCard({ card, size = "md" }: { card: LogoCard; size?: "lg" | "md"
 /* ── Tier heading ─────────────────────────────────────────────── */
 
 function TierHeading({ label, color, icon, count }: { label: string; color: string; icon: string; count: number }) {
+  const isPartner = label.toLowerCase().includes("partner") || label.toLowerCase().includes("co-sponsors");
+  const displayLabel = isPartner ? label.toUpperCase() : `${label.toUpperCase()} SPONSORS`;
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "18px" }}>
-      <div
-        style={{
-          width: "34px",
-          height: "34px",
-          borderRadius: "7px",
-          background: `${color}1a`,
-          border: `1.5px solid ${color}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "1rem",
-        }}
-      >
-        {icon}
-      </div>
-      <div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "28px" }}>
+      {/* lines + icon row */}
+      <div style={{ display: "flex", alignItems: "center", width: "100%", gap: "12px", marginBottom: "10px" }}>
+        <div aria-hidden="true" style={{ flex: 1, height: "1px", background: `linear-gradient(90deg, transparent, ${color}55)` }} />
         <div
           style={{
-            fontFamily: "'Oswald', 'Inter', sans-serif",
-            fontSize: "0.95rem",
-            fontWeight: 800,
-            color,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            lineHeight: 1,
+            width: "36px",
+            height: "36px",
+            borderRadius: "8px",
+            background: `${color}1a`,
+            border: `1.5px solid ${color}`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "1.1rem",
+            flexShrink: 0,
           }}
         >
-          {label} SPONSORS
+          {icon}
         </div>
-        <div style={{ fontSize: "0.62rem", color: "#444", fontFamily: "'Inter', sans-serif", letterSpacing: "0.06em", textTransform: "uppercase", marginTop: "2px" }}>
-          {count} {count === 1 ? "partner" : "partners"}
-        </div>
+        <div aria-hidden="true" style={{ flex: 1, height: "1px", background: `linear-gradient(90deg, ${color}55, transparent)` }} />
       </div>
-      <div aria-hidden="true" style={{ flex: 1, height: "1px", background: `linear-gradient(90deg, ${color}44, transparent)` }} />
+      {/* label */}
+      <div
+        style={{
+          fontFamily: "'Oswald', 'Inter', sans-serif",
+          fontSize: "1rem",
+          fontWeight: 800,
+          color,
+          letterSpacing: "0.14em",
+          textTransform: "uppercase",
+          lineHeight: 1,
+          textAlign: "center",
+        }}
+      >
+        {displayLabel}
+      </div>
+      {/* partner count */}
+      <div style={{ fontSize: "0.6rem", color: "#444", fontFamily: "'Inter', sans-serif", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: "4px" }}>
+        {count} {count === 1 ? "partner" : "partners"}
+      </div>
     </div>
   );
 }
@@ -196,10 +234,11 @@ function TierHeading({ label, color, icon, count }: { label: string; color: stri
 
 export default function SponsorsPage() {
   const allTiers = [
+    { label: "Technical & Evaluation Partner", color: "#e51b24", icon: "⚙️", sponsors: techEvalPartners },
     { label: "Gold", color: "#F5C518", icon: "★", sponsors: goldSponsors },
     { label: "Silver", color: "#C0C0C0", icon: "◆", sponsors: silverSponsors },
     { label: "Bronze", color: "#CD7F32", icon: "▲", sponsors: bronzeSponsors },
-    { label: "Media Partner", color: "#3a9eff", icon: "📡", sponsors: mediaPartners },
+    { label: "Co-Sponsors", color: "#a855f7", icon: "🤝", sponsors: coSponsors },
     { label: "Organizing Partner", color: "#e51b24", icon: "🏛️", sponsors: organizingPartners },
   ];
 
@@ -293,6 +332,7 @@ export default function SponsorsPage() {
                 gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
                 gap: "16px",
                 maxWidth: tier.sponsors.length === 1 ? "340px" : "100%",
+                margin: "0 auto",
               }}
             >
               {tier.sponsors.map((s) => (
