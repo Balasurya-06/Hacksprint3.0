@@ -30,21 +30,10 @@ const coSponsors = [
   {
     name: "Eventopia",
     tagline: "Media Partner",
-    logo: "/Sponsor/eventopia.png",
+    logo: "/Sponsor/Eventopia-Logo-01.png",
     bg: "none",
     accent: "#f59e0b",
-    url: "https://eventopia.in/",
-  },
-];
-
-const techEvalPartners = [
-  {
-    name: "TCS",
-    tagline: "Technical & Evaluation Partner",
-    logo: "/Sponsor/tcs.png",
-    bg: "none",
-    accent: "#e51b24",
-    url: "https://www.tcs.com",
+    url: "https://eventopia.in",
   },
 ];
 
@@ -234,7 +223,6 @@ function TierHeading({ label, color, icon, count }: { label: string; color: stri
 
 export default function SponsorsPage() {
   const allTiers = [
-    { label: "Technical & Evaluation Partner", color: "#e51b24", icon: "⚙️", sponsors: techEvalPartners },
     { label: "Gold", color: "#F5C518", icon: "★", sponsors: goldSponsors },
     { label: "Silver", color: "#C0C0C0", icon: "◆", sponsors: silverSponsors },
     { label: "Bronze", color: "#CD7F32", icon: "▲", sponsors: bronzeSponsors },
