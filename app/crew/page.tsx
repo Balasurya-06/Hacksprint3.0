@@ -109,7 +109,7 @@ export default function CrewPage() {
     <main
       style={{
         minHeight: "100vh",
-        background: "#090909",
+        background: "#070606",
         color: "#ffffff",
         padding: "100px 24px 100px",
         fontFamily: "'Inter', sans-serif",
@@ -131,7 +131,7 @@ export default function CrewPage() {
           <div style={{ flex: "1 1 45%" }}>
             <p
               style={{
-                color: "#E53935",
+                color: "#e51b24",
                 fontSize: "0.72rem",
                 fontWeight: 800,
                 letterSpacing: "0.16em",
@@ -151,7 +151,7 @@ export default function CrewPage() {
                 margin: 0,
               }}
             >
-              Meet the <span style={{ color: "#E53935" }}>crew</span>.
+              Meet the <span style={{ color: "#e51b24" }}>crew</span>.
             </h1>
           </div>
 
@@ -171,8 +171,8 @@ export default function CrewPage() {
             <svg viewBox="0 0 42 115" style={{ width: "42px", height: "115px", display: "block" }}>
               <defs>
                 <linearGradient id="headerMainSlash" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#E53935" stopOpacity="0.1" />
-                  <stop offset="45%" stopColor="#E53935" stopOpacity="0.95" />
+                  <stop offset="0%" stopColor="#e51b24" stopOpacity="0.1" />
+                  <stop offset="45%" stopColor="#e51b24" stopOpacity="0.95" />
                   <stop offset="85%" stopColor="#ffffff" stopOpacity="0.3" />
                   <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
                 </linearGradient>
@@ -210,9 +210,9 @@ export default function CrewPage() {
                 alignItems: "center",
                 gap: "6px",
                 padding: "10px 22px",
-                border: "1px solid #E53935",
+                border: "1px solid #e51b24",
                 borderRadius: "999px",
-                color: "#E53935",
+                color: "#e51b24",
                 fontSize: "0.75rem",
                 fontWeight: 700,
                 textDecoration: "none",
@@ -229,7 +229,7 @@ export default function CrewPage() {
           <p
             id="conveners-title"
             style={{
-              color: "#E53935",
+              color: "#e51b24",
               fontSize: "0.75rem",
               fontWeight: 800,
               letterSpacing: "0.16em",
@@ -252,7 +252,7 @@ export default function CrewPage() {
               <article
                 key={convener.name}
                 style={{
-                  borderTop: "1px solid #E53935",
+                  borderTop: "1px solid #e51b24",
                   borderBottom: "1px solid #292929",
                   padding: "24px 0",
                   background: "transparent",
@@ -260,7 +260,7 @@ export default function CrewPage() {
               >
                 <div
                   style={{
-                    color: "#E53935",
+                    color: "#e51b24",
                     fontSize: "0.72rem",
                     fontWeight: 800,
                     letterSpacing: "0.14em",
@@ -319,7 +319,7 @@ export default function CrewPage() {
                 border: "1px solid rgba(229, 57, 53, 0.3)",
                 padding: "5px 14px",
                 borderRadius: "999px",
-                color: "#E53935",
+                color: "#e51b24",
                 fontSize: "0.7rem",
                 fontWeight: 800,
                 letterSpacing: "0.12em",
@@ -331,8 +331,8 @@ export default function CrewPage() {
                   width: 6,
                   height: 6,
                   borderRadius: "50%",
-                  backgroundColor: "#E53935",
-                  boxShadow: "0 0 6px #E53935",
+                  backgroundColor: "#e51b24",
+                  boxShadow: "0 0 6px #e51b24",
                 }}
               />
               01 // ORGANIZING LEADERSHIP

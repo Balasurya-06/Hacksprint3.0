@@ -17,7 +17,7 @@ const storyChapters = [
     title: "4,200+ Builders Assembled",
     desc: "HackSprint 2.0 electrified the KAHE campus as over 4,200 aspiring innovators registered nationwide. Following rigorous screening, 80+ elite teams were invited for the 36-hour physical hackathon.",
     image: "/past-events/hacksprint-2-1.jpg",
-    accent: "#E53935",
+    accent: "#e51b24",
     highlights: ["80+ Finalist Teams", "Auditorium Packed", "Nationwide Outreach"],
   },
   {
@@ -26,7 +26,7 @@ const storyChapters = [
     title: "36 Hours In The Arena",
     desc: "From twilight until dawn, teams turned abstract concepts into functional software and hardware prototypes across 5 high-impact tracks, supported by 24/7 industry mentors.",
     image: "/past-events/hacksprint-2-3.jpg",
-    accent: "#E53935",
+    accent: "#e51b24",
     highlights: ["Agro · Med · Edu · WildVision", "24/7 Mentorship", "Midnight Hardware Sprints"],
   },
   {
@@ -35,7 +35,7 @@ const storyChapters = [
     title: "₹1L Worth Prizes Awarded",
     desc: "The intense finale culminated in fierce stage pitches, live product demonstrations, and ₹1 Lakh worth of prizes awarded to the most impactful real-world solutions.",
     image: "/past-events/hacksprint-2-7.jpg",
-    accent: "#E53935",
+    accent: "#e51b24",
     highlights: ["₹1L Prize Pool", "Stage Pitches", "Real-World Deployments"],
   },
 ];
@@ -80,7 +80,7 @@ export default function PastEventsPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
-    <main style={{ minHeight: "100vh", background: "#090909", color: "#ffffff", padding: "110px 24px 100px" }}>
+    <main style={{ minHeight: "100vh", background: "#070606", color: "#ffffff", padding: "110px 24px 100px" }}>
       <div style={{ maxWidth: "1220px", margin: "0 auto" }}>
         {/* Scoped responsive styles */}
         <style>{`
@@ -102,9 +102,9 @@ export default function PastEventsPage() {
             border-color: #444444;
           }
           .past-event-tab-btn.active {
-            background: #E53935;
+            background: #e51b24;
             color: #090909;
-            border-color: #E53935;
+            border-color: #e51b24;
             box-shadow: 0 0 16px rgba(212, 255, 0, 0.3);
           }
           .story-card-item:hover {
@@ -113,7 +113,7 @@ export default function PastEventsPage() {
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(212, 255, 0, 0.08) !important;
           }
           .story-card-item:hover .story-card-title {
-            color: #E53935 !important;
+            color: #e51b24 !important;
           }
           .gallery-tile:hover img {
             transform: scale(1.06);
@@ -153,8 +153,8 @@ export default function PastEventsPage() {
         >
           <div style={{ maxWidth: "780px" }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#E53935", boxShadow: "0 0 8px #E53935" }} />
-              <span style={{ color: "#E53935", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase" }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#e51b24", boxShadow: "0 0 8px #e51b24" }} />
+              <span style={{ color: "#e51b24", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase" }}>
                 LEGACY ARCHIVE · EDITION 2.0
               </span>
             </div>
@@ -169,7 +169,7 @@ export default function PastEventsPage() {
                 margin: 0,
               }}
             >
-              THE STORY OF <span style={{ color: "#E53935" }}>HACKSPRINT 2.0</span>
+              THE STORY OF <span style={{ color: "#e51b24" }}>HACKSPRINT 2.0</span>
             </h1>
 
             <p style={{ color: "#B3B3B3", fontSize: "0.94rem", lineHeight: 1.65, marginTop: "16px", margin: "16px 0 0 0" }}>
@@ -200,8 +200,8 @@ export default function PastEventsPage() {
                   overflow: "hidden",
                 }}
               >
-                <div style={{ position: "absolute", top: 0, left: 0, width: "38px", height: "2px", background: "#E53935" }} />
-                <div style={{ color: "#E53935", fontSize: "clamp(2rem, 3.2vw, 2.7rem)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>
+                <div style={{ position: "absolute", top: 0, left: 0, width: "38px", height: "2px", background: "#e51b24" }} />
+                <div style={{ color: "#e51b24", fontSize: "clamp(2rem, 3.2vw, 2.7rem)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>
                   {stat.value}
                 </div>
                 <div style={{ color: "#ffffff", fontSize: "0.86rem", fontWeight: 700, marginTop: "10px" }}>
@@ -274,7 +274,7 @@ export default function PastEventsPage() {
                   }}
                 >
                   {/* Photo Container */}
-                  <div style={{ position: "relative", width: "100%", height: "210px", background: "#090909", overflow: "hidden" }}>
+                  <div style={{ position: "relative", width: "100%", height: "210px", background: "#070606", overflow: "hidden" }}>
                     <Image
                       src={chapter.image}
                       alt={chapter.title}
@@ -401,7 +401,7 @@ export default function PastEventsPage() {
                     }}
                   >
                     <div>
-                      <span style={{ color: "#E53935", fontSize: "0.62rem", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                      <span style={{ color: "#e51b24", fontSize: "0.62rem", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase" }}>
                         MOMENT #{i + 1}
                       </span>
                       <p style={{ color: "#ffffff", fontSize: "0.78rem", fontWeight: 600, lineHeight: 1.4, margin: "4px 0 0 0" }}>
@@ -432,7 +432,7 @@ export default function PastEventsPage() {
                   style={{
                     background: "linear-gradient(180deg, #141414 0%, #0d0d0d 100%)",
                     border: "1px solid #292929",
-                    borderLeft: "3px solid #E53935",
+                    borderLeft: "3px solid #e51b24",
                     borderRadius: "12px",
                     padding: "22px 20px",
                   }}
@@ -492,7 +492,7 @@ export default function PastEventsPage() {
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
             <div>
-              <p style={{ color: "#E53935", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", textTransform: "uppercase", margin: 0 }}>
+              <p style={{ color: "#e51b24", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", textTransform: "uppercase", margin: 0 }}>
                 Ecosystem &amp; Corporate Backing
               </p>
               <h3 style={{ color: "#ffffff", fontSize: "1.35rem", fontWeight: 800, marginTop: "4px", margin: "4px 0 0 0" }}>
@@ -541,7 +541,7 @@ export default function PastEventsPage() {
             <p style={{ color: "#777777", fontSize: "0.76rem", margin: 0 }}>
               Organized by Department of Computer Science &amp; Engineering, KAHE in association with Team Metaverse.
             </p>
-            <p style={{ color: "#E53935", fontSize: "0.76rem", fontWeight: 700, marginTop: "4px" }}>
+            <p style={{ color: "#e51b24", fontSize: "0.76rem", fontWeight: 700, marginTop: "4px" }}>
               Student Leadership: Mukilan T · Lokesh P · Natesan K · Balasurya S
             </p>
           </div>

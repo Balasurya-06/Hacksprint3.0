@@ -6,7 +6,7 @@ const bodyText = {
 };
 
 const labelText = {
-  color: "#E53935",
+  color: "#e51b24",
   fontSize: "0.68rem",
   fontWeight: 700,
   letterSpacing: "0.12em",
@@ -17,7 +17,7 @@ export default function AboutPage() {
   return (
     <main
       style={{
-        background: "#090909",
+        background: "#070606",
         color: "#ffffff",
         minHeight: "100vh",
         padding: "72px 32px 88px",
@@ -87,7 +87,7 @@ export default function AboutPage() {
             >
               About Metaverse
             </h2>
-            <span style={{ color: "#E53935", fontSize: "1.4rem" }}>↗</span>
+            <span style={{ color: "#e51b24", fontSize: "1.4rem" }}>↗</span>
           </div>
           <p style={{ ...bodyText, margin: "0 0 18px" }}>
             The Metaverse Students Association is a student community under
@@ -110,13 +110,13 @@ export default function AboutPage() {
             }}
           >
             <div>
-              <strong style={{ color: "#E53935", fontSize: "1.8rem" }}>01</strong>
+              <strong style={{ color: "#e51b24", fontSize: "1.8rem" }}>01</strong>
               <p style={{ color: "#666666", fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "0.68rem", margin: "4px 0 0" }}>
                 Student community
               </p>
             </div>
             <div>
-              <strong style={{ color: "#E53935", fontSize: "1.8rem" }}>∞</strong>
+              <strong style={{ color: "#e51b24", fontSize: "1.8rem" }}>∞</strong>
               <p style={{ color: "#666666", fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "0.68rem", margin: "4px 0 0" }}>
                 Ideas to explore
               </p>
@@ -150,7 +150,7 @@ export default function AboutPage() {
             >
               About KAHE
             </h2>
-            <span style={{ color: "#E53935", fontSize: "1.4rem" }}>↗</span>
+            <span style={{ color: "#e51b24", fontSize: "1.4rem" }}>↗</span>
           </div>
           <p style={{ ...bodyText, margin: "0 0 18px" }}>
             Karpagam Academy of Higher Education (KAHE), located in Coimbatore,
@@ -172,13 +172,13 @@ export default function AboutPage() {
             }}
           >
             <div>
-              <strong style={{ color: "#E53935", fontSize: "1.8rem" }}>01</strong>
+              <strong style={{ color: "#e51b24", fontSize: "1.8rem" }}>01</strong>
               <p style={{ color: "#666666", fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "0.68rem", margin: "4px 0 0" }}>
                 Learning ecosystem
               </p>
             </div>
             <div>
-              <strong style={{ color: "#E53935", fontSize: "1.8rem" }}>✦</strong>
+              <strong style={{ color: "#e51b24", fontSize: "1.8rem" }}>✦</strong>
               <p style={{ color: "#666666", fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "0.68rem", margin: "4px 0 0" }}>
                 Innovation focused
               </p>

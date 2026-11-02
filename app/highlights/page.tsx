@@ -11,16 +11,16 @@ const galleryImages = [
 
 export default function HighlightsPage() {
   return (
-    <main style={{ minHeight: "100vh", background: "#090909", color: "#fff", padding: "62px 32px 110px" }}>
+    <main style={{ minHeight: "100vh", background: "#070606", color: "#fff", padding: "62px 32px 110px" }}>
       <div style={{ maxWidth: "940px", margin: "0 auto" }}>
         <header style={{ margin: "0 auto 42px", textAlign: "center" }}>
-          <p style={{ color: "#E53935", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", marginBottom: "12px", textTransform: "uppercase" }}>
+          <p style={{ color: "#e51b24", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", marginBottom: "12px", textTransform: "uppercase" }}>
             HackSprint 2.0
           </p>
           <h1 style={{ color: "#fff", fontSize: "clamp(2rem, 4.8vw, 3.5rem)", fontWeight: 800, letterSpacing: "-0.06em", lineHeight: 1.05 }}>
             Highlights.
           </h1>
-          <div style={{ width: "48px", height: "3px", margin: "16px auto 0", background: "#E53935", boxShadow: "0 0 14px #E5393588" }} />
+          <div style={{ width: "48px", height: "3px", margin: "16px auto 0", background: "#e51b24", boxShadow: "0 0 14px #e51b2488" }} />
           <p style={{ color: "#777", fontSize: "0.8rem", lineHeight: 1.6, margin: "16px auto 0", maxWidth: "460px" }}>
             A glimpse of the events, workshops, and moments from the past year.
           </p>
