@@ -13,6 +13,7 @@ const routes = [
   "/crew",
   "/past-events",
   "/why-sponsor-us",
+  "/pass",
   "/contact",
   "/prizes",
 ];

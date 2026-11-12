@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 /* ── Sponsor tiers — only confirmed sponsors listed ──
-   `logo` is a white / transparent version so it sits directly on the black page. */
+   Logos sit directly on the page (no cards). */
 
 interface Sponsor {
   name: string;
@@ -11,24 +11,24 @@ interface Sponsor {
   url: string;
 }
 
-const goldSponsors: Sponsor[] = [
-  { name: "Devfolio", logo: "/Sponsor/_Dark.png", w: 436, h: 144, url: "https://devfolio.co" },
-];
+const goldSponsor: Sponsor = { name: "Devfolio", logo: "/Sponsor/_Dark.png", w: 436, h: 144, url: "https://devfolio.co" };
 
 const coSponsors: Sponsor[] = [
   { name: "Adaption", logo: "/Sponsor/Adaption_Logo.png", w: 1080, h: 368, url: "https://adaptionlabs.ai" },
   { name: "Eventopia", logo: "/Sponsor/eventopia.png", w: 256, h: 85, url: "https://eventopia.in" },
 ];
 
+const SPONSOR_DECK = "/pdf/HS3_SPONSORSHIP_PROPOSAL_FINAL%20(1).pdf";
+
 function SponsorLogo({ s, height }: { s: Sponsor; height: number }) {
   return (
-    <a href={s.url} target="_blank" rel="noreferrer" aria-label={`${s.name} website`} className="spp-logo">
+    <a href={s.url} target="_blank" rel="noreferrer" className="sps-logo" aria-label={`${s.name} website`}>
       <Image
         src={s.logo}
-        alt={s.name === "Devfolio" ? "DEVFOLIO LOGO" : s.name}
+        alt={`${s.name} logo`}
         width={s.w}
         height={s.h}
-        className="spp-logo-image"
+        className="sps-logo-img"
         style={{ height: `${height}px`, width: "auto", maxWidth: "100%" }}
       />
     </a>
@@ -37,56 +37,43 @@ function SponsorLogo({ s, height }: { s: Sponsor; height: number }) {
 
 export default function SponsorsPage() {
   return (
-    <section aria-label="Our Sponsors" className="hs-section spp">
-      <div className="hs-container spp-inner">
-        {/* ── GOLD ── */}
-        <div className="spp-tier hs-reveal">
-          <span className="spp-pill">Gold Sponsor</span>
-          <div className="spp-logos spp-logos--gold">
-            {goldSponsors.map((s) => (
-              <SponsorLogo key={s.name} s={s} height={36} />
-            ))}
-          </div>
+    <section aria-labelledby="sponsors-title" className="hs-section sps">
+      <div className="hs-container sps-inner">
+        <header className="hs-head hs-head--center sps-head">
+          <p className="hs-eyebrow hs-eyebrow--center">Meet our sponsors</p>
+          <h2 id="sponsors-title" className="hs-title">
+            Powered by our <span className="hs-accent">sponsors</span>
+          </h2>
+          <p className="sps-cta">
+            Want your brand in front of 500+ innovators?{" "}
+            <a href={SPONSOR_DECK} target="_blank" rel="noreferrer">
+              Become a partner →
+            </a>
+          </p>
+        </header>
+
+        {/* ── GOLD SPONSOR ── */}
+        <div className="sps-group sps-group--gold hs-reveal">
+          <p className="sps-label sps-label--gold">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            Gold Sponsor
+          </p>
+          <SponsorLogo s={goldSponsor} height={76} />
         </div>
 
         {/* ── CO-SPONSORS ── */}
-        <div className="spp-tier hs-reveal">
-          <span className="spp-pill spp-pill--outline">Co-Sponsors</span>
-          <div className="spp-logos">
+        <div className="sps-group hs-reveal">
+          <p className="sps-label">Co-Sponsors</p>
+          <div className="sps-row">
             {coSponsors.map((s, i) => (
-              <div key={s.name} className="spp-slot">
-                {i > 0 && <span className="spp-divider" aria-hidden="true" />}
-                <SponsorLogo s={s} height={36} />
+              <div key={s.name} className="sps-slot">
+                {i > 0 && <span className="sps-divider" aria-hidden="true" />}
+                <SponsorLogo s={s} height={50} />
               </div>
             ))}
           </div>
-        </div>
-
-        {/* ── EVENT INFO (date + venue) ── */}
-        <div className="spp-info hs-reveal">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <rect x="3" y="4" width="14" height="14" rx="2" />
-            <line x1="13" y1="2" x2="13" y2="6" />
-            <line x1="7" y1="2" x2="7" y2="6" />
-            <line x1="3" y1="9" x2="17" y2="9" />
-            <path d="M20 14.5c0 3-3 5.5-3 5.5s-3-2.5-3-5.5a3 3 0 0 1 6 0Z" />
-          </svg>
-          <div>
-            <strong>Registration: Nov 8 – Dec 28, 2026</strong>
-            <span>Karpagam Academy of Higher Education, Coimbatore</span>
-          </div>
-        </div>
-
-        {/* ── ORGANIZED BY / EVENT MARK ── */}
-        <div className="spp-foot">
-          <div className="spp-org">
-            <span>Organized by</span>
-            <strong>Dept. of CSE &amp; Metaverse · KAHE</strong>
-          </div>
-          <a href="/pdf/HS3_SPONSORSHIP_PROPOSAL_FINAL%20(1).pdf" target="_blank" rel="noreferrer" className="spp-become">
-            Want your brand here? <b>View sponsor deck ↗</b>
-          </a>
-          <Image src="/3.0.png" alt="HackSprint 3.0" width={640} height={325} sizes="160px" className="spp-mark" />
         </div>
       </div>
     </section>

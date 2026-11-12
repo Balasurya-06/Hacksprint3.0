@@ -12,29 +12,18 @@ import SponsorsPage from "./sponsors/page";
 import TracksPage from "./tracks/page";
 import FaqPage from "./faq/page";
 import PartnerBar from "@/components/PartnerBar";
+import PassSection from "@/components/PassSection";
 
 /* Registration window — opens Nov 8, closes end of day Dec 28, 2026 (IST). */
 const registrationOpens = new Date("2026-11-08T09:00:00+05:30").getTime();
 const registrationCloses = new Date("2026-12-28T23:59:59+05:30").getTime();
 
-/* Hanging lanyard tags around the headline — all facts from HackSprint's own copy. */
-const lanyards = [
-  { id: "a", text: "📍 KAHE, COIMBATORE" },
-  { id: "b", text: "36 HOURS · 5 CORE TRACKS" },
-  { id: "c", text: "REGISTRATION: NOV 8 – DEC 28, 2026" },
-  { id: "d", text: "500+ INNOVATORS · 100+ PROJECTS SHIPPED" },
-];
-
-/* Decorative pixel squares. */
-const pixels = [
-  { x: "22%", y: "20%", s: 12, d: "0s" },
-  { x: "26%", y: "27%", s: 8, d: "0.6s" },
-  { x: "75%", y: "16%", s: 14, d: "1.1s" },
-  { x: "79%", y: "23%", s: 9, d: "0.3s" },
-  { x: "18%", y: "62%", s: 10, d: "1.6s" },
-  { x: "83%", y: "58%", s: 12, d: "0.9s" },
-  { x: "30%", y: "86%", s: 8, d: "2.1s" },
-  { x: "70%", y: "84%", s: 10, d: "1.3s" },
+/* Headline numbers, Snowflake-summit style. */
+const heroStats = [
+  { num: "36", label: "Hours" },
+  { num: "5", label: "Tracks" },
+  { num: "500+", label: "Innovators" },
+  { num: "100+", label: "Projects" },
 ];
 
 /* Sponsors shown along the bottom of the hero. */
@@ -43,14 +32,6 @@ const heroSponsors = [
   { src: "/Sponsor/Adaption_Logo.png", alt: "Adaption", w: 1080, h: 368 },
   { src: "/Sponsor/Eventopia-Logo-01.png", alt: "Eventopia", w: 300, h: 100 },
 ];
-
-function Bolt({ className }: { className: string }) {
-  return (
-    <svg className={`bolt ${className}`} viewBox="0 0 100 200" aria-hidden="true">
-      <path d="M62 0 L8 112 L46 112 L28 200 L94 76 L56 76 L84 0 Z" />
-    </svg>
-  );
-}
 
 function WhatsAppIcon() {
   return (
@@ -178,81 +159,59 @@ export default function Home() {
 
   return (
     <div className="home">
-      {/* ══ HERO — one-screen festival poster ═══════════════════════════ */}
+      {/* ══ HERO — cinematic title card: plain backdrop, content only ═══ */}
       <section id="home" className="hero">
-        <div className="hero-bg" aria-hidden="true">
-          <div className="hero-rays" />
-          <div className="hero-spot" />
-          <div className="hero-noise" />
-          <Bolt className="bolt--a" />
-          <Bolt className="bolt--b" />
-          <Bolt className="bolt--c" />
-          <Bolt className="bolt--d" />
-          {pixels.map((p) => (
-            <span key={`${p.x}${p.y}`} className="pixel" style={{ left: p.x, top: p.y, width: p.s, height: p.s, animationDelay: p.d }} />
-          ))}
-        </div>
-
-        <ul className="lanyards">
-          {lanyards.map((l) => (
-            <li key={l.id} className={`lanyard lanyard--${l.id}`}>
-              <span className="lanyard-strap" aria-hidden="true" />
-              <span className="lanyard-clip" aria-hidden="true" />
-              <span className="lanyard-tag">{l.text}</span>
-            </li>
-          ))}
-        </ul>
-
         <PartnerBar />
 
         <div className="hero-inner">
           <div className="hero-org">
-            <span aria-hidden="true">🏛️</span>
             <span>ORGANIZED BY THE DEPARTMENT OF COMPUTER SCIENCE &amp; ENGINEERING AND METAVERSE</span>
           </div>
 
-          <div className="hero-logo">
-            <Image src="/3.0.png" alt="HACKSPRINT 3.0" width={640} height={325} priority sizes="(max-width: 700px) 60vw, 360px" />
-          </div>
-
           <h1 className="hero-title">
-            <span className="hero-title-sm">
-              <i className="hero-x" aria-hidden="true">
-                ✕
-              </i>
-              THE ULTIMATE
+            <span className="sr-only">HACKSPRINT 3.0 — The Ultimate Hackathon Sprint</span>
+            <span className="hero-title-sm" aria-hidden="true">
+              The Ultimate Hackathon Sprint
             </span>
-            <span className="hero-title-lg">HACKATHON SPRINT</span>
+            <span className="hero-title-lg" aria-hidden="true">
+              HACKSPRINT <em>3.0</em>
+            </span>
           </h1>
 
-          <p className="hero-kicker">INDIA&apos;S BIGGEST &amp; LARGEST STUDENT HACKATHON 2027</p>
-          <p className="hero-quote">&ldquo;BUILD · COMPETE · WIN&rdquo;</p>
-
-          {/* Small screens: the lanyard facts as one line */}
-          <ul className="hero-dateline">
-            <li>📍 KAHE, COIMBATORE</li>
-            <li>REGISTRATION: NOV 8 – DEC 28</li>
-            <li>36 HOURS</li>
-          </ul>
-
-          <HeroCountdown />
+          <p className="hero-dateline">
+            <span>Live in Coimbatore</span>
+            <i aria-hidden="true">|</i>
+            <span>Feb 5–6, 2027</span>
+          </p>
+          <p className="hero-kicker">India&apos;s Biggest &amp; Largest Student Hackathon 2027 · Build · Compete · Win</p>
 
           {/* ══ ACTIONS: REGISTER, BROCHURE, JOIN WHATSAPP ══ */}
           <div className="hero-actions">
             <DevfolioApplyButton />
-            <a href="/pdf/HS3_Brochure.pdf" target="_blank" rel="noreferrer" className="hs-btn hs-btn--light">
-              <span>BROCHURE</span>
+            <a href="/pdf/HS3_Brochure.pdf" target="_blank" rel="noreferrer" className="hs-btn hero-pill">
+              <span>Brochure</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
             </a>
-            <a href="https://chat.whatsapp.com/C9gawXXKFtr76gk6YoUe3K" target="_blank" rel="noreferrer" className="hs-btn hs-btn--ghost">
+            <a href="https://chat.whatsapp.com/C9gawXXKFtr76gk6YoUe3K" target="_blank" rel="noreferrer" className="hs-btn hero-pill hero-pill--outline">
               <WhatsAppIcon />
-              <span>JOIN WHATSAPP</span>
+              <span>Join WhatsApp</span>
             </a>
           </div>
+
+          <ul className="hero-stats">
+            {heroStats.map((s) => (
+              <li key={s.label}>
+                <strong>{s.num}</strong>
+                <span>{s.label}</span>
+              </li>
+            ))}
+          </ul>
+
+          <HeroCountdown />
         </div>
 
         <div className="hero-sponsors">
@@ -300,14 +259,19 @@ export default function Home() {
         <SponsorsPage />
       </section>
 
+      {/* ── HIGHLIGHTS ── */}
+      <section id="highlights">
+        <HighlightsPage />
+      </section>
+
       {/* ── CREW ── */}
       <section id="crew">
         <CrewPage />
       </section>
 
-      {/* ── HIGHLIGHTS ── */}
-      <section id="highlights">
-        <HighlightsPage />
+      {/* ── HACKER PASS ── */}
+      <section id="pass" style={{ scrollMarginTop: "80px" }}>
+        <PassSection />
       </section>
 
       {/* ── PAST EVENTS ── */}
