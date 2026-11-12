@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 const stats = [
@@ -75,478 +75,310 @@ const partners = [
   "ISTE",
 ];
 
+/* ─────────────────────────────────────────────
+   LEGACY ARCHIVE — an editorial flip-book
+   ───────────────────────────────────────────── */
+
+function useNarrow(query = "(max-width: 860px)") {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const update = () => setNarrow(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [query]);
+  return narrow;
+}
+
+function Paper({ side, num, children }: { side: "left" | "right"; num: number; children: React.ReactNode }) {
+  return (
+    <div className={`page page--${side}`}>
+      <div className="page-run" aria-hidden="true">
+        <span>HACKSPRINT 2.0</span>
+        <span>LEGACY ARCHIVE · EDITION 2.0</span>
+      </div>
+      <div className="page-body">{children}</div>
+      <div className="page-num" aria-hidden="true">
+        {String(num).padStart(2, "0")}
+      </div>
+    </div>
+  );
+}
+
+function ActPage({ chapter, index }: { chapter: (typeof storyChapters)[number]; index: number }) {
+  return (
+    <div className="pg-act">
+      <div className="pg-act-media">
+        <Image src={chapter.image} alt={chapter.title} fill sizes="(max-width: 860px) 100vw, 520px" style={{ objectFit: "cover" }} />
+        <span className="pg-act-badge">
+          {chapter.step} {"//"} {chapter.tag}
+        </span>
+      </div>
+      <span className="pg-act-ghost" aria-hidden="true">
+        0{index + 1}
+      </span>
+      <h3>{chapter.title}</h3>
+      <p>{chapter.desc}</p>
+      <div className="pg-pills">
+        {chapter.highlights.map((item) => (
+          <span key={item}>✦ {item}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function PastEventsPage() {
-  const [activeTab, setActiveTab] = useState<"story" | "gallery" | "tracks">("story");
+  const [page, setPage] = useState(0);
+  const [turning, setTurning] = useState<null | { dir: "next" | "prev"; to: number }>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const narrow = useNarrow();
+
+  const pages: React.ReactNode[] = [
+    /* 1 — opening */
+    <div key="open" className="pg-open">
+      <p className="pg-eyebrow">
+        <span className="hs-live-dot" aria-hidden="true" /> LEGACY ARCHIVE · EDITION 2.0
+      </p>
+      <div className="pg-big" aria-hidden="true">
+        2.0
+      </div>
+      <h2 className="pg-title">
+        THE STORY OF <span>HACKSPRINT 2.0</span>
+      </h2>
+      <p className="pg-intro">
+        In January 2026, 4,200+ developers converged at Karpagam Academy of Higher Education for India&apos;s biggest student-led hackathon — a high-octane 36-hour sprint of code, caffeine, and breakthrough technology.
+      </p>
+      <p className="pg-date">January 21–22, 2026 · Coimbatore, India</p>
+    </div>,
+
+    /* 2 — numbers + contents */
+    <div key="numbers" className="pg-numbers">
+      <div className="pg-stats">
+        {stats.map((stat) => (
+          <div key={stat.label}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+            <small>{stat.sub}</small>
+          </div>
+        ))}
+      </div>
+      <ol className="pg-contents">
+        {(
+          [
+            ["⚡ 3-Act Story", 2],
+            ["🎯 5 Challenge Tracks", 5],
+            ["📷 Moments Gallery", 6],
+          ] as const
+        ).map(([label, target]) => (
+          <li key={label}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                goTo(target);
+              }}
+            >
+              <span>{label}</span>
+              <i aria-hidden="true" />
+              <b>{String(target + 1).padStart(2, "0")}</b>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </div>,
+
+    /* 3–5 — the three acts */
+    ...storyChapters.map((chapter, i) => <ActPage key={chapter.step} chapter={chapter} index={i} />),
+
+    /* 6 — tracks */
+    <div key="tracks" className="pg-tracks">
+      <h3 className="pg-section-title">🎯 5 Challenge Tracks</h3>
+      <ol>
+        {tracks.map((track, i) => (
+          <li key={track.name}>
+            <span className="pg-track-num">DOMAIN 0{i + 1}</span>
+            <strong>{track.name}</strong>
+            <p>{track.desc}</p>
+          </li>
+        ))}
+      </ol>
+    </div>,
+
+    /* 7–8 — gallery */
+    ...[0, 1].map((half) => (
+      <div key={`gallery-${half}`} className="pg-gallery">
+        {half === 0 && <h3 className="pg-section-title">📷 Moments Gallery</h3>}
+        <div className={`pg-photos ${half === 1 ? "pg-photos--tall" : ""}`}>
+          {eventGallery.slice(half * 3, half * 3 + 3).map((photo, j) => {
+            const n = half * 3 + j;
+            return (
+              <button
+                key={photo.src}
+                type="button"
+                className="pg-photo"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImage(photo.src);
+                }}
+              >
+                <span className="pg-photo-img">
+                  <Image src={photo.src} alt={photo.caption} fill sizes="(max-width: 860px) 100vw, 480px" style={{ objectFit: "cover" }} />
+                </span>
+                <span className="pg-photo-cap">
+                  <b>MOMENT #{n + 1}</b> {photo.caption}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    )),
+
+    /* 9 — partners */
+    <div key="partners" className="pg-partners">
+      <p className="pg-eyebrow">Ecosystem &amp; Corporate Backing</p>
+      <h3 className="pg-section-title">HackSprint 2.0 Sponsors &amp; Partners</h3>
+      <p className="pg-count">15+ Prestigious Partners</p>
+      <div className="pg-names">
+        {partners.map((partner) => (
+          <span key={partner}>{partner}</span>
+        ))}
+      </div>
+    </div>,
+
+    /* 10 — back cover */
+    <div key="credits" className="pg-credits">
+      <div className="pg-credits-logo">
+        <Image src="/3.0.png" alt="HACKSPRINT" width={640} height={325} sizes="320px" />
+      </div>
+      <p>Organized by Department of Computer Science &amp; Engineering, KAHE in association with Team Metaverse.</p>
+      <p className="pg-credits-names">Student Leadership: Mukilan T · Lokesh P · Natesan K · Balasurya S</p>
+    </div>,
+  ];
+
+  const spreads = pages.length / 2;
+  const spread = Math.floor(page / 2);
+
+  function goTo(target: number) {
+    if (turning) return;
+    if (narrow) {
+      setPage(Math.max(0, Math.min(pages.length - 1, target)));
+      return;
+    }
+    const to = Math.floor(target / 2);
+    if (to === spread || to < 0 || to >= spreads) return;
+    setTurning({ dir: to > spread ? "next" : "prev", to });
+  }
+
+  const next = () => goTo(narrow ? page + 1 : (spread + 1) * 2);
+  const prev = () => goTo(narrow ? page - 1 : (spread - 1) * 2);
+
+  const finishTurn = () => {
+    if (!turning) return;
+    setPage(turning.to * 2);
+    setTurning(null);
+  };
+
+  const pageNode = (i: number, side: "left" | "right") => (
+    <Paper side={side} num={i + 1}>
+      {pages[i]}
+    </Paper>
+  );
+
+  /* Which pages sit underneath while a leaf is turning */
+  let baseLeft = spread * 2;
+  let baseRight = spread * 2 + 1;
+  if (turning?.dir === "next") baseRight = turning.to * 2 + 1;
+  if (turning?.dir === "prev") baseLeft = turning.to * 2;
+
+  const total = narrow ? pages.length : spreads;
+  const current = narrow ? page : spread;
 
   return (
-    <main style={{ minHeight: "100vh", background: "#070606", color: "#ffffff", padding: "110px 24px 100px" }}>
-      <div style={{ maxWidth: "1220px", margin: "0 auto" }}>
-        {/* Scoped responsive styles */}
-        <style>{`
-          .past-event-tab-btn {
-            background: #141414;
-            color: #B3B3B3;
-            border: 1px solid #292929;
-            padding: 9px 20px;
-            border-radius: 999px;
-            font-size: 0.76rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.25s ease;
-          }
-          .past-event-tab-btn:hover {
-            color: #ffffff;
-            border-color: #444444;
-          }
-          .past-event-tab-btn.active {
-            background: #e51b24;
-            color: #090909;
-            border-color: #e51b24;
-            box-shadow: 0 0 16px rgba(212, 255, 0, 0.3);
-          }
-          .story-card-item:hover {
-            transform: translateY(-6px);
-            border-color: rgba(212, 255, 0, 0.35) !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(212, 255, 0, 0.08) !important;
-          }
-          .story-card-item:hover .story-card-title {
-            color: #e51b24 !important;
-          }
-          .gallery-tile:hover img {
-            transform: scale(1.06);
-          }
-          .gallery-tile:hover .gallery-overlay {
-            opacity: 1 !important;
-          }
-          @media (max-width: 900px) {
-            .past-event-stats-grid {
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-            .story-cards-grid {
-              grid-template-columns: 1fr !important;
-            }
-            .gallery-grid {
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
-            .tracks-grid {
-              grid-template-columns: 1fr !important;
-            }
-          }
-          @media (max-width: 600px) {
-            .past-event-stats-grid,
-            .gallery-grid {
-              grid-template-columns: 1fr !important;
-            }
-          }
-        `}</style>
-
-        {/* ── HEADER ── */}
-        <header
-          style={{
-            marginBottom: "48px",
-            paddingBottom: "32px",
-            borderBottom: "1px solid #1a1a1a",
-          }}
-        >
-          <div style={{ maxWidth: "780px" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#e51b24", boxShadow: "0 0 8px #e51b24" }} />
-              <span style={{ color: "#e51b24", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase" }}>
-                LEGACY ARCHIVE · EDITION 2.0
-              </span>
-            </div>
-
-            <h1
-              style={{
-                fontSize: "clamp(2.6rem, 5.5vw, 4.6rem)",
-                fontWeight: 900,
-                letterSpacing: "-0.05em",
-                lineHeight: 0.94,
-                textTransform: "uppercase",
-                margin: 0,
-              }}
-            >
-              THE STORY OF <span style={{ color: "#e51b24" }}>HACKSPRINT 2.0</span>
-            </h1>
-
-            <p style={{ color: "#B3B3B3", fontSize: "0.94rem", lineHeight: 1.65, marginTop: "16px", margin: "16px 0 0 0" }}>
-              In January 2026, 4,200+ developers converged at Karpagam Academy of Higher Education for India&apos;s biggest student-led hackathon — a high-octane 36-hour sprint of code, caffeine, and breakthrough technology.
-            </p>
-          </div>
+    <div className="hs-section legacy">
+      <div className="hs-container">
+        <header className="hs-head hs-head--center legacy-page-heading hs-reveal">
+          <p className="hs-eyebrow hs-eyebrow--center">HACKSPRINT ARCHIVE</p>
+          <h1 className="hs-title hs-title--xl">
+            Past <span className="hs-accent">Events</span>
+          </h1>
+          <p className="hs-lead">Explore the story, milestones, and moments of HackSprint 2.0.</p>
         </header>
 
-        {/* ── KEY NUMBERS (SHORT & IMPACTFUL) ── */}
-        <section style={{ marginBottom: "48px" }}>
-          <div
-            className="past-event-stats-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-              gap: "18px",
-            }}
-          >
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                style={{
-                  background: "linear-gradient(180deg, #131313 0%, #0d0d0d 100%)",
-                  border: "1px solid #292929",
-                  borderRadius: "14px",
-                  padding: "24px 22px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div style={{ position: "absolute", top: 0, left: 0, width: "38px", height: "2px", background: "#e51b24" }} />
-                <div style={{ color: "#e51b24", fontSize: "clamp(2rem, 3.2vw, 2.7rem)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>
-                  {stat.value}
-                </div>
-                <div style={{ color: "#ffffff", fontSize: "0.86rem", fontWeight: 700, marginTop: "10px" }}>
-                  {stat.label}
-                </div>
-                <div style={{ color: "#777777", fontSize: "0.72rem", marginTop: "3px" }}>
-                  {stat.sub}
-                </div>
+        <div
+          className="book-wrap hs-reveal"
+          tabIndex={0}
+          role="region"
+          aria-label="HackSprint 2.0 legacy archive book"
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight") next();
+            if (e.key === "ArrowLeft") prev();
+          }}
+        >
+          {narrow ? (
+            <div className="book book--single">
+              <div key={page} className="book-single-page">
+                {pageNode(page, page % 2 ? "right" : "left")}
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── INTERACTIVE VIEW SWITCHER ── */}
-        <section style={{ marginBottom: "36px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <button
-                type="button"
-                className={`past-event-tab-btn ${activeTab === "story" ? "active" : ""}`}
-                onClick={() => setActiveTab("story")}
-              >
-                ⚡ 3-Act Story
-              </button>
-              <button
-                type="button"
-                className={`past-event-tab-btn ${activeTab === "gallery" ? "active" : ""}`}
-                onClick={() => setActiveTab("gallery")}
-              >
-                📷 Moments Gallery
-              </button>
-              <button
-                type="button"
-                className={`past-event-tab-btn ${activeTab === "tracks" ? "active" : ""}`}
-                onClick={() => setActiveTab("tracks")}
-              >
-                🎯 5 Challenge Tracks
-              </button>
             </div>
+          ) : (
+            <div className="book">
+              <div className="book-half book-half--left" onClick={prev}>
+                {pageNode(baseLeft, "left")}
+              </div>
+              <div className="book-half book-half--right" onClick={next}>
+                {pageNode(baseRight, "right")}
+              </div>
+              <div className="book-spine" aria-hidden="true" />
 
-            <div style={{ color: "#666666", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              January 21–22, 2026 · Coimbatore, India
-            </div>
-          </div>
-        </section>
-
-        {/* ── TAB 1: 3-ACT STORY (SHORT, CINEMATIC & PUNCHY) ── */}
-        {activeTab === "story" && (
-          <section style={{ marginBottom: "56px" }}>
-            <div
-              className="story-cards-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                gap: "22px",
-              }}
-            >
-              {storyChapters.map((chapter) => (
-                <article
-                  key={chapter.step}
-                  className="story-card-item"
-                  style={{
-                    background: "linear-gradient(180deg, #131313 0%, #090909 100%)",
-                    border: "1px solid #202020",
-                    borderRadius: "16px",
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                    transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                  }}
-                >
-                  {/* Photo Container */}
-                  <div style={{ position: "relative", width: "100%", height: "210px", background: "#070606", overflow: "hidden" }}>
-                    <Image
-                      src={chapter.image}
-                      alt={chapter.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      style={{ objectFit: "cover" }}
-                    />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(10,10,10,0.95) 100%)" }} />
-
-                    {/* Badge */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "14px",
-                        left: "14px",
-                        background: "rgba(10, 10, 10, 0.85)",
-                        border: `1px solid ${chapter.accent}`,
-                        color: chapter.accent,
-                        fontSize: "0.62rem",
-                        fontWeight: 800,
-                        letterSpacing: "0.14em",
-                        padding: "3px 9px",
-                        borderRadius: "999px",
-                        backdropFilter: "blur(6px)",
-                      }}
-                    >
-                      {chapter.step} {"//"} {chapter.tag}
-                    </div>
+              {turning && (
+                <div className={`leaf leaf--${turning.dir}`} onAnimationEnd={finishTurn} aria-hidden="true">
+                  <div className="leaf-face leaf-front">
+                    {turning.dir === "next" ? pageNode(spread * 2 + 1, "right") : pageNode(spread * 2, "left")}
                   </div>
-
-                  {/* Body Content */}
-                  <div style={{ padding: "20px 22px 24px", display: "flex", flexDirection: "column", flex: 1 }}>
-                    <h3
-                      className="story-card-title"
-                      style={{
-                        color: "#ffffff",
-                        fontSize: "1.25rem",
-                        fontWeight: 800,
-                        letterSpacing: "-0.02em",
-                        lineHeight: 1.2,
-                        margin: "0 0 10px 0",
-                        transition: "color 0.2s ease",
-                      }}
-                    >
-                      {chapter.title}
-                    </h3>
-
-                    <p style={{ color: "#8e8e8e", fontSize: "0.82rem", lineHeight: 1.6, margin: "0 0 18px 0", flex: 1 }}>
-                      {chapter.desc}
-                    </p>
-
-                    {/* Bullet pills */}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                      {chapter.highlights.map((item) => (
-                        <span
-                          key={item}
-                          style={{
-                            background: "#1A1A1A",
-                            border: "1px solid #282828",
-                            color: "#bbbbbb",
-                            fontSize: "0.65rem",
-                            fontWeight: 700,
-                            padding: "4px 9px",
-                            borderRadius: "6px",
-                          }}
-                        >
-                          ✦ {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── TAB 2: MOMENTS GALLERY (ACTUAL HACKSPRINT 2.0 PHOTOS) ── */}
-        {activeTab === "gallery" && (
-          <section style={{ marginBottom: "56px" }}>
-            <div
-              className="gallery-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                gap: "18px",
-              }}
-            >
-              {eventGallery.map((photo, i) => (
-                <div
-                  key={photo.src}
-                  className="gallery-tile"
-                  onClick={() => setSelectedImage(photo.src)}
-                  style={{
-                    position: "relative",
-                    height: "240px",
-                    borderRadius: "14px",
-                    overflow: "hidden",
-                    border: "1px solid #292929",
-                    cursor: "pointer",
-                    background: "#121212",
-                  }}
-                >
-                  <Image
-                    src={photo.src}
-                    alt={photo.caption}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    style={{ objectFit: "cover", transition: "transform 0.4s ease" }}
-                  />
-
-                  {/* Caption Overlay */}
-                  <div
-                    className="gallery-overlay"
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background: "linear-gradient(0deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%)",
-                      display: "flex",
-                      alignItems: "flex-end",
-                      padding: "16px",
-                      opacity: 0.9,
-                      transition: "opacity 0.25s ease",
-                    }}
-                  >
-                    <div>
-                      <span style={{ color: "#e51b24", fontSize: "0.62rem", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                        MOMENT #{i + 1}
-                      </span>
-                      <p style={{ color: "#ffffff", fontSize: "0.78rem", fontWeight: 600, lineHeight: 1.4, margin: "4px 0 0 0" }}>
-                        {photo.caption}
-                      </p>
-                    </div>
+                  <div className="leaf-face leaf-back">
+                    {turning.dir === "next" ? pageNode(turning.to * 2, "left") : pageNode(turning.to * 2 + 1, "right")}
                   </div>
                 </div>
+              )}
+            </div>
+          )}
+
+          <div className="book-controls">
+            <button type="button" className="book-btn" onClick={prev} disabled={current === 0} aria-label="Previous page">
+              ←
+            </button>
+            <div className="book-dots">
+              {Array.from({ length: total }, (_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={i === current ? "is-active" : ""}
+                  aria-label={`Go to ${narrow ? "page" : "spread"} ${i + 1}`}
+                  onClick={() => goTo(narrow ? i : i * 2)}
+                />
               ))}
             </div>
-          </section>
-        )}
-
-        {/* ── TAB 3: 5 CHALLENGE TRACKS ── */}
-        {activeTab === "tracks" && (
-          <section style={{ marginBottom: "56px" }}>
-            <div
-              className="tracks-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                gap: "18px",
-              }}
-            >
-              {tracks.map((track, i) => (
-                <div
-                  key={track.name}
-                  style={{
-                    background: "linear-gradient(180deg, #141414 0%, #0d0d0d 100%)",
-                    border: "1px solid #292929",
-                    borderLeft: "3px solid #e51b24",
-                    borderRadius: "12px",
-                    padding: "22px 20px",
-                  }}
-                >
-                  <span style={{ color: "#666666", fontSize: "0.65rem", fontWeight: 800, letterSpacing: "0.12em" }}>
-                    DOMAIN 0{i + 1}
-                  </span>
-                  <h3 style={{ color: "#ffffff", fontSize: "1.2rem", fontWeight: 800, margin: "6px 0" }}>
-                    {track.name}
-                  </h3>
-                  <p style={{ color: "#B3B3B3", fontSize: "0.78rem", lineHeight: 1.55, margin: 0 }}>
-                    {track.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── LIGHTBOX POPUP MODAL FOR GALLERY ── */}
-        {selectedImage && (
-          <div
-            onClick={() => setSelectedImage(null)}
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.92)",
-              backdropFilter: "blur(10px)",
-              zIndex: 9999,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "24px",
-              cursor: "zoom-out",
-            }}
-          >
-            <div style={{ position: "relative", maxWidth: "90vw", maxHeight: "85vh", width: "900px", height: "600px" }}>
-              <Image
-                src={selectedImage}
-                alt="HackSprint 2.0 expanded preview"
-                fill
-                style={{ objectFit: "contain" }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* ── BACKED BY TITANS (SPONSORS & ECOSYSTEM) ── */}
-        <section
-          style={{
-            background: "linear-gradient(180deg, #111111 0%, #090909 100%)",
-            border: "1px solid #202020",
-            borderRadius: "16px",
-            padding: "32px 30px",
-            marginBottom: "36px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
-            <div>
-              <p style={{ color: "#e51b24", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", textTransform: "uppercase", margin: 0 }}>
-                Ecosystem &amp; Corporate Backing
-              </p>
-              <h3 style={{ color: "#ffffff", fontSize: "1.35rem", fontWeight: 800, marginTop: "4px", margin: "4px 0 0 0" }}>
-                HackSprint 2.0 Sponsors &amp; Partners
-              </h3>
-            </div>
-            <span style={{ color: "#666666", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.08em" }}>
-              15+ Prestigious Partners
+            <span className="book-count">
+              {String(current + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
             </span>
+            <button type="button" className="book-btn" onClick={next} disabled={current === total - 1} aria-label="Next page">
+              →
+            </button>
           </div>
+        </div>
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-            {partners.map((partner) => (
-              <span
-                key={partner}
-                style={{
-                  background: "#1A1A1A",
-                  border: "1px solid #292929",
-                  borderRadius: "999px",
-                  color: "#d0d0d0",
-                  fontSize: "0.74rem",
-                  fontWeight: 700,
-                  padding: "7px 15px",
-                  letterSpacing: "0.04em",
-                }}
-              >
-                {partner}
-              </span>
-            ))}
+        {/* ── LIGHTBOX ── */}
+        {selectedImage && (
+          <div className="hs-lightbox" onClick={() => setSelectedImage(null)}>
+            <div className="hs-lightbox-frame">
+              <Image src={selectedImage} alt="HackSprint 2.0 expanded preview" fill style={{ objectFit: "contain" }} />
+            </div>
           </div>
-        </section>
-
-        {/* ── STUDENT COORDINATORS CREDITS ── */}
-        <footer
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "18px",
-            padding: "24px 0 0",
-            borderTop: "1px solid #1a1a1a",
-          }}
-        >
-          <div>
-            <p style={{ color: "#777777", fontSize: "0.76rem", margin: 0 }}>
-              Organized by Department of Computer Science &amp; Engineering, KAHE in association with Team Metaverse.
-            </p>
-            <p style={{ color: "#e51b24", fontSize: "0.76rem", fontWeight: 700, marginTop: "4px" }}>
-              Student Leadership: Mukilan T · Lokesh P · Natesan K · Balasurya S
-            </p>
-          </div>
-        </footer>
+        )}
       </div>
-    </main>
+    </div>
   );
 }

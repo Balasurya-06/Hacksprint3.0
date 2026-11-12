@@ -8,42 +8,11 @@ export default function Footer() {
         <div className="contelas-footer-top">
           {/* Brand & Socials */}
           <div className="contelas-footer-brand">
-            <Link
-              href="/#home"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "10px",
-                textDecoration: "none",
-              }}
-            >
-              <Image
-                src="/logo.png"
-                alt="HackSprint"
-                width={36}
-                height={36}
-                style={{ objectFit: "contain" }}
-              />
-              <span
-                style={{
-                  fontSize: "1.35rem",
-                  fontWeight: 800,
-                  color: "#ffffff",
-                  letterSpacing: "-0.03em",
-                }}
-              >
-                HackSprint <span style={{                 color: "var(--soft-red)" }}>3.0</span>
-              </span>
+            <Link href="/#home" className="footer-brand-link" aria-label="HackSprint 3.0 home">
+              <Image src="/3.0.png" alt="HackSprint 3.0" width={640} height={325} sizes="180px" />
             </Link>
 
-            <p
-              style={{
-                color: "#777777",
-                fontSize: "0.85rem",
-                marginTop: "12px",
-                lineHeight: 1.55,
-              }}
-            >
+            <p className="footer-blurb">
               Unlock your hackathon potential. Build, collaborate, and innovate with India&apos;s largest student hackathon.
             </p>
 
@@ -121,7 +90,9 @@ export default function Footer() {
             </div>
 
             <div className="contelas-nav-col">
-              <Link href="/highlights" className="contelas-nav-link">Challenge Tracks</Link>
+              <Link href="/#tracks" className="contelas-nav-link">Challenge Tracks</Link>
+              <Link href="/#faq" className="contelas-nav-link">FAQ</Link>
+              <Link href="/prizes" className="contelas-nav-link">Prizes</Link>
               <Link href="/why-sponsor-us" className="contelas-nav-link">Why Sponsor Us</Link>
               <Link href="/#registration" className="contelas-nav-link">Registration</Link>
               <a href="/pdf/HS3_Brochure.pdf" download className="contelas-nav-link">Brochure PDF</a>

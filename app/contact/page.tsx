@@ -1,102 +1,48 @@
-"use client";
-
-import PageHeader, { PageFrame } from "@/components/PageHeader";
+const channels = [
+  { label: "EMAIL", value: "hacksprint.official@gmail.com", href: "mailto:hacksprint.official@gmail.com", icon: "✉", cmd: "mail" },
+  { label: "PHONE", value: "+91 95970 75831 — Bala Surya S (Lead)", href: "tel:+919597075831", icon: "☎", cmd: "call" },
+  { label: "INSTAGRAM", value: "instagram.com/hacksprint3.0", href: "https://www.instagram.com/hacksprint3.0", icon: "◉", cmd: "open", external: true },
+  { label: "LINKEDIN", value: "linkedin.com/showcase/hacksprint3-0", href: "https://www.linkedin.com/showcase/hacksprint3-0", icon: "in", cmd: "open", external: true },
+];
 
 export default function ContactPage() {
   return (
-    <PageFrame accent>
-      <PageHeader
-        eyebrow="Get in touch"
-        title={<>Contact<br />HackSprint 3.0</>}
-        description="Reach out to the organizing team for queries, sponsorships, or partnerships."
-      />
+    <div className="hs-section page-top">
+      <div className="hs-bg-grid" aria-hidden="true" />
+      <div className="hs-container hs-container--narrow">
+        <header className="hs-head hs-head--center">
+          <p className="hs-eyebrow hs-eyebrow--center">Get in touch</p>
+          <h1 className="hs-title hs-title--xl">
+            Contact
+            <br />
+            <span className="hs-accent">HackSprint 3.0</span>
+          </h1>
+          <p className="hs-lead">Reach out to the organizing team for queries, sponsorships, or partnerships.</p>
+        </header>
 
-      <div style={{ maxWidth:"640px", margin:"0 auto", display:"flex", flexDirection:"column", gap:24 }}>
-
-        {/* Email */}
-        <a
-          href="mailto:hacksprint.official@gmail.com"
-          style={{
-            display:"flex", alignItems:"center", gap:16,
-            background:"#0f0a0b", border:"1px solid #2a1b1d",
-            borderLeft:"3px solid #e51b24",
-            padding:"20px 24px", textDecoration:"none",
-            transition:"border-color 0.2s, transform 0.2s",
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = "translateX(4px)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = "none"; }}
-        >
-          <span style={{ color:"#e51b24", fontSize:"1.2rem" }}>✉</span>
-          <div>
-            <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"0.65rem", fontWeight:700, letterSpacing:"0.18em", color:"#e51b24", textTransform:"uppercase", marginBottom:4 }}>EMAIL</div>
-            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"0.92rem", color:"#f5f1ea" }}>hacksprint.official@gmail.com</div>
-          </div>
-        </a>
-
-        {/* Phone */}
-        <a
-          href="tel:+919597075831"
-          style={{
-            display:"flex", alignItems:"center", gap:16,
-            background:"#0f0a0b", border:"1px solid #2a1b1d",
-            borderLeft:"3px solid #e51b24",
-            padding:"20px 24px", textDecoration:"none",
-            transition:"border-color 0.2s, transform 0.2s",
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = "translateX(4px)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = "none"; }}
-        >
-          <span style={{ color:"#e51b24", fontSize:"1.2rem" }}>☎</span>
-          <div>
-            <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"0.65rem", fontWeight:700, letterSpacing:"0.18em", color:"#e51b24", textTransform:"uppercase", marginBottom:4 }}>PHONE</div>
-            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"0.92rem", color:"#f5f1ea" }}>+91 95970 75831 — Bala Surya S (Lead)</div>
-          </div>
-        </a>
-
-        {/* Instagram */}
-        <a
-          href="https://www.instagram.com/hacksprint3.0"
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            display:"flex", alignItems:"center", gap:16,
-            background:"#0f0a0b", border:"1px solid #2a1b1d",
-            borderLeft:"3px solid #e51b24",
-            padding:"20px 24px", textDecoration:"none",
-            transition:"border-color 0.2s, transform 0.2s",
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = "translateX(4px)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = "none"; }}
-        >
-          <span style={{ color:"#e51b24", fontSize:"1.2rem" }}>◉</span>
-          <div>
-            <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"0.65rem", fontWeight:700, letterSpacing:"0.18em", color:"#e51b24", textTransform:"uppercase", marginBottom:4 }}>INSTAGRAM</div>
-            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"0.92rem", color:"#f5f1ea" }}>instagram.com/hacksprint3.0</div>
-          </div>
-        </a>
-
-        {/* LinkedIn */}
-        <a
-          href="https://www.linkedin.com/showcase/hacksprint3-0"
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            display:"flex", alignItems:"center", gap:16,
-            background:"#0f0a0b", border:"1px solid #2a1b1d",
-            borderLeft:"3px solid #e51b24",
-            padding:"20px 24px", textDecoration:"none",
-            transition:"border-color 0.2s, transform 0.2s",
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = "translateX(4px)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = "none"; }}
-        >
-          <span style={{ color:"#e51b24", fontSize:"1.2rem" }}>in</span>
-          <div>
-            <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"0.65rem", fontWeight:700, letterSpacing:"0.18em", color:"#e51b24", textTransform:"uppercase", marginBottom:4 }}>LINKEDIN</div>
-            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:"0.92rem", color:"#f5f1ea" }}>linkedin.com/showcase/hacksprint3-0</div>
-          </div>
-        </a>
+        <div className="contact-grid">
+          {channels.map((c) => (
+            <a
+              key={c.label}
+              href={c.href}
+              className="contact-card spot"
+              {...(c.external ? { target: "_blank", rel: "noreferrer" } : {})}
+            >
+              <span className="contact-icon" aria-hidden="true">
+                {c.icon}
+              </span>
+              <span className="contact-label">{c.label}</span>
+              <span className="contact-value">{c.value}</span>
+              <span className="contact-cmd" aria-hidden="true">
+                $ {c.cmd} <span className="type-caret" />
+              </span>
+              <span className="contact-arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          ))}
+        </div>
       </div>
-    </PageFrame>
+    </div>
   );
 }

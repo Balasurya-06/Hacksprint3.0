@@ -3,8 +3,12 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ChatBot from "@/components/ChatBot";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.hacksprint.tech";
+const siteTitle = "HACKSPRINT 3.0 | India’s Biggest & Largest Student Hackathon 2027";
+const siteDescription =
+  "Join HACKSPRINT 3.0, India’s biggest and largest student hackathon 2027 at KAHE, Coimbatore. Build, compete, and innovate across five challenge tracks in a 36-hour finale on February 5–6, 2027.";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,11 +19,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "HACKSPRINT 3.0 | India’s Biggest & Largest Student Hackathon 2027",
+    default: siteTitle,
     template: "%s | HACKSPRINT 3.0",
   },
-  description:
-    "HACKSPRINT 3.0 is India’s biggest and largest student hackathon 2027, organized by KAHE’s Department of Computer Science & Engineering with the Metaverse Students Association in Coimbatore, Tamil Nadu.",
+  description: siteDescription,
   keywords: [
     "HackSprint 3.0",
     "HACKSPRINT 3.0 2027",
@@ -27,12 +30,28 @@ export const metadata: Metadata = {
     "India's largest student hackathon",
     "biggest hackathon in India",
     "largest hackathon in India",
+    "best hackathon in India 2027",
+    "top student hackathon in India",
+    "national hackathon 2027",
     "student hackathon",
     "hackathon 2027 India",
     "student coding competition India",
     "national level hackathon",
     "36 hour hackathon",
+    "36 hour hackathon India",
+    "February 2027 hackathon",
+    "February 5 2027 hackathon",
     "hackathon Coimbatore",
+    "hackathon Tamil Nadu",
+    "college hackathon Coimbatore",
+    "offline hackathon India",
+    "hackathon registration India",
+    "Devfolio hackathon India",
+    "AgroTech hackathon",
+    "EduTech hackathon",
+    "MedTech hackathon",
+    "WildVision Tech hackathon",
+    "Open Innovation hackathon",
     "KAHE",
     "Karpagam Academy of Higher Education",
     "Metaverse Students Association",
@@ -55,27 +74,25 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "HACKSPRINT 3.0 | India’s Biggest & Largest Student Hackathon 2027",
-    description:
-      "Build, compete, and innovate at India’s biggest and largest student hackathon 2027. Join HACKSPRINT 3.0 in Coimbatore, organized by KAHE and the Metaverse Students Association.",
+    title: siteTitle,
+    description: siteDescription,
     type: "website",
     locale: "en_IN",
     siteName: "HACKSPRINT 3.0 — India’s Biggest Student Hackathon",
     images: [
       {
-        url: "/3.0.png",
-        width: 404,
-        height: 161,
+        url: "/og.png",
+        width: 1200,
+        height: 630,
         alt: "HACKSPRINT 3.0",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HACKSPRINT 3.0 | India’s Biggest Student Hackathon 2027",
-    description:
-      "Join India’s biggest and largest student hackathon 2027 in Coimbatore, Tamil Nadu.",
-    images: ["/3.0.png"],
+    title: siteTitle,
+    description: siteDescription,
+    images: ["/og.png"],
   },
   icons: {
     icon: "/3.0.png",
@@ -88,6 +105,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${siteUrl}/#website`,
+        name: "HACKSPRINT 3.0",
+        alternateName: "India’s Biggest & Largest Student Hackathon",
+        url: siteUrl,
+        description: siteDescription,
+        publisher: { "@id": `${siteUrl}/#organization` },
+        inLanguage: "en-IN",
+      },
       {
         "@type": "Organization",
         "@id": `${siteUrl}/#organization`,
@@ -107,15 +134,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       {
         "@type": "Event",
         "@id": `${siteUrl}/#hacksprint-3`,
-        name: "HACKSPRINT 3.0 — India’s Biggest & Largest Student Hackathon 2027",
+        name: "HACKSPRINT 3.0 — India’s Biggest & Largest Student Hackathon",
         description:
-          "A national-level student hackathon organized by KAHE’s Department of Computer Science & Engineering with the Metaverse Students Association.",
+          "India’s biggest and largest student hackathon: a 36-hour national-level coding and innovation competition organized by KAHE’s Department of Computer Science & Engineering with the Metaverse Students Association.",
         url: siteUrl,
-        image: `${siteUrl}/3.0.png`,
+        image: `${siteUrl}/og.png`,
         eventStatus: "https://schema.org/EventScheduled",
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-        startDate: "2026-11-08T09:00:00+05:30",
-        endDate: "2026-12-28T18:00:00+05:30",
+        startDate: "2027-02-05T09:00:00+05:30",
+        endDate: "2027-02-06T20:00:00+05:30",
+        inLanguage: "en-IN",
+        keywords:
+          "India's biggest hackathon, India's largest student hackathon, student hackathon 2027, 36-hour hackathon, Coimbatore hackathon",
         location: {
           "@type": "Place",
           name: "Karpagam Academy of Higher Education",
@@ -135,6 +165,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           availability: "https://schema.org/InStock",
           price: "0",
           priceCurrency: "INR",
+          validFrom: "2026-11-08T09:00:00+05:30",
+          validThrough: "2026-12-28T23:59:59+05:30",
         },
       },
     ],
@@ -148,7 +180,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
         <Navbar />
-        <main>{children}</main>
+        <main className="site-main">{children}</main>
         <section className="venue-map" aria-labelledby="venue-map-title">
           <div className="venue-map-marquee" aria-hidden="true">
             <div className="venue-map-marquee-track">
@@ -181,6 +213,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </section>
         <Footer />
+        <ChatBot />
       </body>
     </html>
   );

@@ -5,6 +5,8 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.hacksprint.tech
 const routes = [
   "",
   "/about",
+  "/tracks",
+  "/faq",
   "/highlights",
   "/timeline",
   "/sponsors",

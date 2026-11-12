@@ -28,42 +28,25 @@ export default function ApplyPage() {
         strategy="beforeInteractive"
       />
 
-      <main
-        style={{
-          minHeight: "100vh",
-          background: "#070506",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "32px",
-          fontFamily: "'Inter', sans-serif",
-          padding: "40px 24px",
-        }}
-      >
-        <h1
-          style={{
-            color: "#f5f1ea",
-            fontSize: "clamp(1.8rem, 5vw, 3rem)",
-            fontWeight: 800,
-            textAlign: "center",
-            margin: 0,
-          }}
-        >
-          Apply to HACKSPRINT 3.0
-        </h1>
+      <main className="apply-page">
+        <div className="hs-bg-grid" aria-hidden="true" />
+        <div className="apply-card term">
+          <div className="term-bar">
+            <span className="term-dots" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className="term-file" aria-hidden="true">apply.sh</span>
+          </div>
+          <div className="apply-body">
+            <h1 className="hs-title">
+              Apply to <span className="hs-accent">HACKSPRINT 3.0</span>
+            </h1>
 
-        <p
-          style={{
-            color: "#888",
-            fontSize: "1rem",
-            textAlign: "center",
-            maxWidth: "480px",
-            margin: 0,
-          }}
-        >
-          Click the button below to register for India&apos;s biggest student hackathon on Devfolio.
-        </p>
+            <p className="hs-lead">
+              Click the button below to register for India&apos;s biggest student hackathon on Devfolio.
+            </p>
 
         {/*
           ── DEVFOLIO APPLY BUTTON ─────────────────────────────────────────
@@ -80,6 +63,8 @@ export default function ApplyPage() {
           data-button-theme="blue"
           style={{ height: "44px", width: "312px" }}
         />
+          </div>
+        </div>
       </main>
     </>
   );
