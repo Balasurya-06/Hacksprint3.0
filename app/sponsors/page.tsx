@@ -5,33 +5,46 @@ import Image from "next/image";
 
 interface Sponsor {
   name: string;
+  role?: string;
+  roleWrap?: boolean;
+  roleTone?: "tooling" | "media" | "platform" | "community";
   logo: string;
   w: number;
   h: number;
   url: string;
 }
 
-const goldSponsor: Sponsor = { name: "Devfolio", logo: "/Sponsor/_Dark.png", w: 436, h: 144, url: "https://devfolio.co" };
+const goldSponsors: Sponsor[] = [
+  { name: "Devfolio", role: "PLATFORM & COMMUNITY SPONSOR", roleWrap: true, roleTone: "platform", logo: "/Sponsor/_Dark.png", w: 436, h: 144, url: "https://devfolio.co" },
+  { name: "HackIndia", role: "PLATFORM & COMMUNITY SPONSOR", roleWrap: true, roleTone: "community", logo: "/Sponsor/hackindia.png", w: 1600, h: 400, url: "https://hackindia.io" },
+];
 
 const coSponsors: Sponsor[] = [
-  { name: "Adaption", logo: "/Sponsor/Adaption_Logo.png", w: 1080, h: 368, url: "https://adaptionlabs.ai" },
-  { name: "Eventopia", logo: "/Sponsor/eventopia.png", w: 256, h: 85, url: "https://eventopia.in" },
+  { name: "Adaption", role: "TOOLING SPONSOR", roleTone: "tooling", logo: "/Sponsor/Adaption_Logo.png", w: 1080, h: 368, url: "https://adaptionlabs.ai" },
+  { name: "Eventopia", role: "MEDIA PARTNER", roleTone: "media", logo: "/Sponsor/eventopia.png", w: 256, h: 85, url: "https://eventopia.in" },
 ];
 
 const SPONSOR_DECK = "/pdf/HS3_SPONSORSHIP_PROPOSAL_FINAL%20(1).pdf";
 
 function SponsorLogo({ s, height }: { s: Sponsor; height: number }) {
   return (
-    <a href={s.url} target="_blank" rel="noreferrer" className="sps-logo" aria-label={`${s.name} website`}>
-      <Image
-        src={s.logo}
-        alt={`${s.name} logo`}
-        width={s.w}
-        height={s.h}
-        className="sps-logo-img"
-        style={{ height: `${height}px`, width: "auto", maxWidth: "100%" }}
-      />
-    </a>
+    <div className="sps-sponsor">
+      <a href={s.url} target="_blank" rel="noreferrer" className="sps-logo" aria-label={`${s.name} website`}>
+        <Image
+          src={s.logo}
+          alt={`${s.name} logo`}
+          width={s.w}
+          height={s.h}
+          className="sps-logo-img"
+          style={{ height: `${height}px`, width: "auto", maxWidth: "100%" }}
+        />
+      </a>
+      {s.role && (
+        <span className={`sps-role${s.roleTone ? ` sps-role--${s.roleTone}` : ""}${s.roleWrap ? " sps-role--wrap" : ""}`}>
+          <span className="sps-role-title">{s.role}</span>
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -60,7 +73,14 @@ export default function SponsorsPage() {
             </svg>
             Gold Sponsor
           </p>
-          <SponsorLogo s={goldSponsor} height={76} />
+          <div className="sps-row">
+            {goldSponsors.map((s, i) => (
+              <div key={s.name} className="sps-slot">
+                {i > 0 && <span className="sps-divider" aria-hidden="true" />}
+                <SponsorLogo s={s} height={60} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* ── CO-SPONSORS ── */}

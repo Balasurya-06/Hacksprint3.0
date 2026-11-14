@@ -2479,10 +2479,30 @@ body { background: transparent !important; }
 .sps-logo { display: block; line-height: 0; text-decoration: none; transition: transform 0.35s var(--ease), filter 0.35s ease; }
 .sps-logo:hover { transform: translateY(-4px); filter: brightness(1.1); }
 .sps-logo-img { display: block; object-fit: contain; border-radius: 8px; }
+.sps-sponsor { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.sps-role { position: relative; display: flex; width: min(205px, calc(100vw - 80px)); min-width: 175px; min-height: 28px; align-items: center; justify-content: center; padding: 6px 12px; overflow: visible; background: #ffe33f; color: #111820; filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.2)); font-family: var(--font-mono); text-align: center; text-transform: uppercase; animation: sps-role-cycle 10s ease-in-out infinite; }
+.sps-role::before,
+.sps-role::after { position: absolute; top: 50%; width: 3px; height: 42px; background: #111820; content: ""; transform: translateY(-50%) rotate(-24deg); }
+.sps-role::before { left: 5px; }
+.sps-role::after { right: 5px; }
+.sps-role-title { display: block; font-family: var(--font-sans); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.04em; line-height: 1.1; white-space: nowrap; }
+.sps-role--wrap .sps-role-title { max-width: 150px; white-space: normal; text-wrap: balance; }
+.sps-role--media { background: #8edcff; }
+.sps-role--community { background: #b7e88a; }
+@keyframes sps-role-cycle {
+  0%, 8% { opacity: 0; clip-path: polygon(0 12%, 0 0, 0 88%, 0 100%); transform: translateX(-46px) rotate(-4deg); }
+  18% { opacity: 1; clip-path: polygon(3% 12%, 97% 0, 100% 88%, 7% 100%); transform: translateX(0) rotate(-1deg); }
+  72% { opacity: 1; clip-path: polygon(3% 12%, 97% 0, 100% 88%, 7% 100%); transform: translateX(0) rotate(1deg); }
+  88%, 100% { opacity: 0; clip-path: polygon(100% 12%, 100% 0, 100% 88%, 100% 100%); transform: translateX(46px) rotate(4deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sps-role { animation: none; }
+}
 
 @media (max-width: 560px) {
   .sps-row,
   .sps-slot { gap: 16px; }
   .sps-divider { display: none; }
   .sps-row .sps-logo-img { height: 40px !important; }
+  .sps-role { width: min(190px, calc(100vw - 56px)); min-width: 0; padding-right: 8px; padding-left: 8px; }
 }
