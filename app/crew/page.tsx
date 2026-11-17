@@ -36,30 +36,19 @@ const conveners = [
   },
 ];
 
+/* Organizers — three-person crew, lead in the centre. */
 const startingFive: TeamMember[] = [
   {
-    id: "deepa",
-    number: "04",
-    name: "DEEPA",
-    role: "Organizer · Operations & Logistics",
-    positionCode: "04",
-    detail: "Third Year · Computer Science and Engineering",
-    tagRole: "ORGANIZER",
-    tagYear: "THIRD YEAR · CSE",
-    bio: "Spearheading operations, track scheduling, on-ground execution, and seamless participant engagement across all 36 hours.",
-    image: "/deepa.jpeg",
-  },
-  {
-    id: "kavinya",
+    id: "harini",
     number: "02",
-    name: "KAVINYA",
-    role: "Organizer · Outreach & Partnerships",
+    name: "HARINI",
+    role: "Organizer · HackSprint 3.0",
     positionCode: "02",
     detail: "Third Year · Computer Science and Engineering",
     tagRole: "ORGANIZER",
     tagYear: "THIRD YEAR · CSE",
-    bio: "Directing attendee outreach, judge and mentor relations, community partnerships, and mainstage coordination.",
-    image: "/kavinya.jpeg",
+    bio: "Coordinating event administration, participant hospitality, schedule management, and stage operations.",
+    image: "/harini.jpeg",
   },
   {
     id: "surya",
@@ -79,23 +68,11 @@ const startingFive: TeamMember[] = [
     },
   },
   {
-    id: "harini",
-    number: "03",
-    name: "HARINI",
-    role: "Organizer · Admin & Participant Hospitality",
-    positionCode: "03",
-    detail: "Third Year · Computer Science and Engineering",
-    tagRole: "ORGANIZER",
-    tagYear: "THIRD YEAR · CSE",
-    bio: "Coordinating event administration, participant hospitality, schedule management, and stage operations.",
-    image: "/harini.jpeg",
-  },
-  {
     id: "aravind",
-    number: "05",
+    number: "03",
     name: "ARAVIND",
-    role: "Organizer · Technical Infrastructure",
-    positionCode: "05",
+    role: "Organizer · HackSprint 3.0",
+    positionCode: "03",
     detail: "Third Year · Computer Science and Engineering",
     tagRole: "ORGANIZER",
     tagYear: "THIRD YEAR · CSE",
@@ -142,10 +119,10 @@ export default function CrewPage() {
           <p className="crew-block-label">Organizers</p>
 
           <div className="starting-five-grid">
-            {startingFive.map((member, index) => {
+            {startingFive.map((member) => {
               const isCaptain = member.id === "surya";
-              const offset = index === 0 || index === 4 ? 28 : index === 2 ? 12 : 0;
-              const height = index === 0 || index === 4 ? 365 : index === 2 ? 430 : 395;
+              const offset = isCaptain ? 0 : 28;
+              const height = isCaptain ? 430 : 395;
 
               return (
                 <div key={member.id} className="s5-col" style={{ ["--s5-offset" as string]: `${offset}px` }}>

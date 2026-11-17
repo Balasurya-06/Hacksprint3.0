@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import AboutPage from "./about/page";
 import HighlightsPage from "./highlights/page";
 import TimelinePage from "./timeline/page";
@@ -13,6 +13,8 @@ import TracksPage from "./tracks/page";
 import FaqPage from "./faq/page";
 import PartnerBar from "@/components/PartnerBar";
 import PassSection from "@/components/PassSection";
+import HeroBackdrop from "@/components/HeroBackdrop";
+import { CountUp } from "@/components/HeroFx";
 
 /* Registration window — opens Nov 8, closes end of day Dec 28, 2026 (IST). */
 const registrationOpens = new Date("2026-11-08T09:00:00+05:30").getTime();
@@ -67,6 +69,22 @@ function DevfolioApplyButton({ className = "" }: { className?: string }) {
   );
 }
 
+/* One odometer wheel: a 0–9 strip that rolls to the current digit. */
+function RollDigit({ d }: { d: number }) {
+  return (
+    <span className="cd-roll" aria-hidden="true">
+      <span className="cd-strip" style={{ transform: `translateY(${-d * 10}%)` }}>
+        {Array.from({ length: 10 }, (_, n) => (
+          <span key={n}>{n}</span>
+        ))}
+      </span>
+    </span>
+  );
+}
+
+const CD_SEGMENTS = 30;
+const windowDays = Math.ceil((registrationCloses - registrationOpens) / 86400000);
+
 function HeroCountdown() {
   const [now, setNow] = useState<number | null>(null);
 
@@ -79,54 +97,92 @@ function HeroCountdown() {
 
   const remaining = now === null ? null : Math.max(0, registrationCloses - now);
   const totalSeconds = remaining === null ? 0 : Math.floor(remaining / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hrs = Math.floor((totalSeconds % 86400) / 3600);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
   const units = [
-    { val: Math.floor(totalSeconds / 86400), label: "DAYS" },
-    { val: Math.floor((totalSeconds % 86400) / 3600), label: "HRS" },
-    { val: Math.floor((totalSeconds % 3600) / 60), label: "MINS" },
-    { val: totalSeconds % 60, label: "SECS" },
+    { val: days, label: "DAYS", frac: days / windowDays },
+    { val: hrs, label: "HRS", frac: hrs / 24 },
+    { val: mins, label: "MINS", frac: mins / 60 },
+    { val: secs, label: "SECS", frac: secs / 60, live: true },
   ];
 
   const progress =
     now === null
       ? 0
       : Math.min(100, Math.max(0, ((now - registrationOpens) / (registrationCloses - registrationOpens)) * 100));
+  const litSegments = (progress / 100) * CD_SEGMENTS;
   const isClosed = remaining === 0;
 
   return (
-    <div className="cd" id="registration">
-      <p className="cd-status">
-        <i aria-hidden="true" className={isClosed ? "is-closed" : ""} />
-        {isClosed ? "Registration closed" : "Registration closes in"}
-      </p>
+    <div className={`cd${isClosed ? " is-closed" : ""}`} id="registration">
+      <span className="cd-corner cd-corner--tl" aria-hidden="true" />
+      <span className="cd-corner cd-corner--tr" aria-hidden="true" />
+      <span className="cd-corner cd-corner--bl" aria-hidden="true" />
+      <span className="cd-corner cd-corner--br" aria-hidden="true" />
 
-      <div className="cd-grid" aria-label="Registration closing countdown" role="timer">
-        {units.map(({ val, label }, i) => (
+      <div className="cd-head">
+        <p className="cd-status">
+          <i aria-hidden="true" className={isClosed ? "is-closed" : ""} />
+          {isClosed ? "Registration closed" : "Registration closes in"}
+        </p>
+        <span className="cd-tag" aria-hidden="true">
+          T-MINUS<b>_</b>
+        </span>
+      </div>
+
+      <div className="cd-grid" role="timer" aria-label="Registration closing countdown">
+        {remaining !== null && (
+          <span className="sr-only">
+            {days} days, {hrs} hours, {mins} minutes remaining
+          </span>
+        )}
+        {units.map(({ val, label, frac, live }, i) => (
           <div className="cd-unit" key={label}>
-            <div className="cd-cell">
-              <span className="cd-num">
-                <span key={remaining === null ? "init" : val} className="cd-digit">
-                  {remaining === null ? "--" : String(val).padStart(2, "0")}
-                </span>
+            <div className={`cd-cell${live ? " cd-cell--live" : ""}`}>
+              {live && remaining !== null && <span key={val} className="cd-flash" aria-hidden="true" />}
+              <span className="cd-num" aria-hidden="true">
+                {remaining === null ? (
+                  <span className="cd-wait">--</span>
+                ) : (
+                  String(val)
+                    .padStart(2, "0")
+                    .split("")
+                    .map((d, k, arr) => <RollDigit key={arr.length - k} d={Number(d)} />)
+                )}
               </span>
-              <span className="cd-label">{label}</span>
+              <span className="cd-label" aria-hidden="true">
+                {label}
+              </span>
+              <span className="cd-fill" aria-hidden="true" style={{ transform: `scaleX(${remaining === null ? 0 : frac})` }} />
             </div>
             {i < units.length - 1 && (
               <span className="cd-sep" aria-hidden="true">
-                :
+                <i />
+                <i />
               </span>
             )}
           </div>
         ))}
       </div>
 
-      <div className="cd-meta">
-        <span aria-hidden="true">NOV 8</span>
-        <div className="cd-progress" aria-hidden="true">
-          <div className="cd-progress-bar" style={{ width: `${progress}%` }} />
+      <div className="cd-meta" aria-hidden="true">
+        <span>NOV 8</span>
+        <div className="cd-track">
+          {Array.from({ length: CD_SEGMENTS }, (_, i) => (
+            <span
+              key={i}
+              style={{ "--i": i } as CSSProperties}
+              className={i < Math.floor(litSegments) ? "is-on" : i === Math.floor(litSegments) && !isClosed ? "is-now" : ""}
+            />
+          ))}
         </div>
-        <span aria-hidden="true">DEC 28</span>
+        <span>DEC 28</span>
       </div>
-      <p className="cd-foot">Registration closes December 28, 2026</p>
+      <p className="cd-foot">
+        <b>{now === null ? "--" : progress.toFixed(1)}%</b> of the registration window elapsed · closes Dec 28, 2026
+      </p>
     </div>
   );
 }
@@ -159,62 +215,95 @@ export default function Home() {
 
   return (
     <div className="home">
-      {/* ══ HERO — cinematic title card: plain backdrop, content only ═══ */}
-      <section id="home" className="hero">
+      {/* ══ HERO — bold wordmark left, logo + launch countdown right ═══ */}
+      <section id="home" className="hero hero--launch">
+        <HeroBackdrop />
         <PartnerBar />
 
-        <div className="hero-inner">
-          <div className="hero-org">
-            <span>ORGANIZED BY THE DEPARTMENT OF COMPUTER SCIENCE &amp; ENGINEERING AND METAVERSE</span>
+        <div className="lx">
+          <div className="hx-main">
+            <div className="hx-org">
+              <span className="hx-org-label">Organized by</span>
+              <p className="hx-org-names">
+                <span>Department of Computer Science &amp; Engineering</span>
+                <span>
+                  <i aria-hidden="true">×</i> Metaverse Students Association
+                </span>
+              </p>
+            </div>
+
+            <h1 className="hx-title">
+              <span className="sr-only">HackSprint 3.0 (2027) — India’s biggest national level student hackathon in Coimbatore, Tamil Nadu</span>
+              <span className="hx-tag" aria-hidden="true">
+                <b />
+                The Ultimate Hackathon Sprint
+              </span>
+              <span className="hx-lockup" aria-hidden="true">
+                <span className="hx-line hx-line--hack">
+                  <span>HACK</span>
+                </span>
+                <span className="hx-ver">
+                  <span>3.0</span>
+                </span>
+                <span className="hx-row2">
+                  <span className="hx-line hx-line--sprint">
+                    <span>SPRINT</span>
+                  </span>
+                  <span className="hx-year">
+                    <span>2027</span>
+                  </span>
+                </span>
+              </span>
+            </h1>
+
+            <p className="hx-kicker">
+              <span className="hx-kicker-main">
+                India&apos;s Biggest &amp; Largest Student Hackathon <em>2027</em>
+              </span>
+              <span className="hx-kicker-sub">
+                Live in Coimbatore <i aria-hidden="true" /> Feb 5–6, 2027 <i aria-hidden="true" /> Build · Compete · Win
+              </span>
+            </p>
+
+            {/* ══ ACTIONS: REGISTER, BROCHURE, JOIN WHATSAPP ══ */}
+            <div className="hero-actions hx-actions">
+              <DevfolioApplyButton />
+              <a href="/pdf/HS3_Brochure.pdf" target="_blank" rel="noreferrer" className="hs-btn hero-pill">
+                <span>Brochure</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              </a>
+              <a href="https://chat.whatsapp.com/C9gawXXKFtr76gk6YoUe3K" target="_blank" rel="noreferrer" className="hs-btn hero-pill hero-pill--outline">
+                <WhatsAppIcon />
+                <span>Join WhatsApp</span>
+              </a>
+            </div>
           </div>
 
-          <h1 className="hero-title">
-            <span className="sr-only">HACKSPRINT 3.0 — The Ultimate Hackathon Sprint</span>
-            <span className="hero-title-sm" aria-hidden="true">
-              The Ultimate Hackathon Sprint
-            </span>
-            <span className="hero-title-lg" aria-hidden="true">
-              HACKSPRINT <em>3.0</em>
-            </span>
-          </h1>
+          <aside className="lx-side" aria-label="Registration countdown">
+            <div className="lx-logo">
+              <Image src="/3.0.png" alt="HackSprint 3.0 logo" width={640} height={325} sizes="(max-width: 760px) 80vw, 400px" priority />
+            </div>
 
-          <p className="hero-dateline">
-            <span>Live in Coimbatore</span>
-            <i aria-hidden="true">|</i>
-            <span>Feb 5–6, 2027</span>
-          </p>
-          <p className="hero-kicker">India&apos;s Biggest &amp; Largest Student Hackathon 2027 · Build · Compete · Win</p>
+            <HeroCountdown />
 
-          {/* ══ ACTIONS: REGISTER, BROCHURE, JOIN WHATSAPP ══ */}
-          <div className="hero-actions">
-            <DevfolioApplyButton />
-            <a href="/pdf/HS3_Brochure.pdf" target="_blank" rel="noreferrer" className="hs-btn hero-pill">
-              <span>Brochure</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-            </a>
-            <a href="https://chat.whatsapp.com/C9gawXXKFtr76gk6YoUe3K" target="_blank" rel="noreferrer" className="hs-btn hero-pill hero-pill--outline">
-              <WhatsAppIcon />
-              <span>Join WhatsApp</span>
-            </a>
-          </div>
-
-          <ul className="hero-stats">
-            {heroStats.map((s) => (
-              <li key={s.label}>
-                <strong>{s.num}</strong>
-                <span>{s.label}</span>
-              </li>
-            ))}
-          </ul>
-
-          <HeroCountdown />
+            <ul className="lx-stats">
+              {heroStats.map((s, i) => (
+                <li key={s.label} style={{ "--i": i } as CSSProperties}>
+                  <strong>
+                    <CountUp value={s.num} delay={900 + i * 120} />
+                  </strong>
+                  <span>{s.label}</span>
+                </li>
+              ))}
+            </ul>
+          </aside>
         </div>
 
-        <div className="hero-sponsors">
+        <div className="hero-sponsors lx-sponsors">
           <span className="hero-sponsors-label">Our Sponsors</span>
           {heroSponsors.map((s) => (
             <Image key={s.alt} src={s.src} alt={s.alt} width={s.w} height={s.h} sizes="120px" />

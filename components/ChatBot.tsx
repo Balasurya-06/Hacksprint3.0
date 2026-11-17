@@ -68,13 +68,13 @@ const normalize = (s: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
-function findAnswer(input: string): QA | null {
+/* Best-scoring Q&A for one question (or one part of it). */
+function bestFor(input: string): QA | null {
   const text = ` ${normalize(input)} `;
   const words = new Set(text.split(" ").filter((w) => w && !STOP.has(w)));
 
   let best: QA | null = null;
   let bestScore = 0;
-
   for (const item of knowledge) {
     let score = 0;
     for (const k of item.keywords) {
@@ -96,8 +96,26 @@ function findAnswer(input: string): QA | null {
       best = item;
     }
   }
-
   return bestScore >= 1.5 ? best : null;
+}
+
+/* A question like "what's the fee and where is the venue?" is split into
+   its parts so each topic gets its own answer (up to three). */
+function findAnswers(input: string): QA[] {
+  const parts = input
+    .split(/\s+and\s+|\s+also\s+|[,;&?]/i)
+    .map((p) => p.trim())
+    .filter((p) => normalize(p).length > 2);
+  if (parts.length > 1) {
+    const out: QA[] = [];
+    for (const part of parts) {
+      const hit = bestFor(part);
+      if (hit && !out.includes(hit)) out.push(hit);
+    }
+    if (out.length) return out.slice(0, 3);
+  }
+  const hit = bestFor(input);
+  return hit ? [hit] : [];
 }
 
 const GREETING = /^(hi|hii+|hello|hey|hai|helo|howdy|good (morning|afternoon|evening)|vanakkam|namaste)\b/;
@@ -108,12 +126,15 @@ function reply(input: string): Message {
   const nameMatch = input.match(/\b(?:i['’]?m|i am|my name is|call me)\s+([a-z][a-z'-]{1,24})\b/i);
   if (nameMatch) {
     const name = nameMatch[1].charAt(0).toUpperCase() + nameMatch[1].slice(1).toLowerCase();
-    return { from: "bot", text: `Hi ${name}! 👋 I’m Sprinty, your HackSprint 3.0 guide. Ask me about registration, tracks, the 5–6 February 2027 finale, teams, judging, travel, or anything else about the hackathon.` };
+    return { from: "bot", text: `Hi ${name}! 👋 I’m Sprinty, your HackSprint 3.0 guide. Ask me about registration, the timeline, tracks, the 5–6 February 2027 finale, teams, fees, the venue, judging, prizes or anything else about the hackathon.` };
   }
   if (GREETING.test(n) && n.split(" ").length <= 3) return { from: "bot", text: chatbotText.greeting };
   if (THANKS.test(n) && n.split(" ").length <= 4) return { from: "bot", text: "You're welcome! All the best for HackSprint 3.0 🚀" };
-  const hit = findAnswer(input);
-  if (hit) return { from: "bot", text: hit.a, links: hit.links };
+  const hits = findAnswers(input);
+  if (hits.length) {
+    const links = hits.flatMap((h) => h.links ?? []).filter((l, i, arr) => arr.findIndex((x) => x.href === l.href) === i);
+    return { from: "bot", text: hits.map((h) => h.a).join("\n\n"), links: links.length ? links : undefined };
+  }
   return {
     from: "bot",
     text: chatbotText.fallback,

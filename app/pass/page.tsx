@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
 import PassSection from "@/components/PassSection";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Round 1 Participant Pass",
+export const metadata = pageMetadata({
+  path: "/pass",
+  title: "Hacker Pass – Create & Share Your Participant Pass",
   description:
-    "Took part in Round 1 of HACKSPRINT 3.0? Create your participant pass with your name, team and photo, then download it and share it on Instagram or LinkedIn.",
-  alternates: { canonical: "/pass" },
-};
+    "Make your HackSprint 3.0 participant pass with your name, team and photo, then share it on LinkedIn or Instagram. India’s biggest national-level student hackathon 2027, KAHE Coimbatore.",
+  keywords: ["hackathon participant pass", "hacker pass", "HackSprint pass", "hackathon badge"],
+});
 
 export default function PassPage() {
   return (

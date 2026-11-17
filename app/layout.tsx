@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Archivo, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,9 +8,9 @@ import ChatBot from "@/components/ChatBot";
 import { faqs } from "@/data/faq";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.hacksprint.tech";
-const siteTitle = "HACKSPRINT 3.0 | India’s Biggest Student Hackathon 2027";
+const siteTitle = "HackSprint 3.0 – India’s Biggest National Level Hackathon 2027";
 const siteDescription =
-  "HACKSPRINT 3.0 is India’s biggest national-level student hackathon — 36 hours, 5 tracks, free registration till Dec 28, 2026. Grand finale Feb 5–6, 2027 at KAHE, Coimbatore.";
+  "HackSprint 3.0 is India’s biggest national-level student hackathon of 2027 — 36 hours, 5 tracks, free registration till Dec 28, 2026. Grand finale Feb 5–6, 2027 at KAHE, Coimbatore, Tamil Nadu.";
 const registerUrl = "https://hacksprint-3.devfolio.co/overview";
 
 /* Developer & organizer credit — lives only in SEO metadata / structured data, not in the visible UI. */
@@ -26,16 +26,46 @@ const inter = Inter({
   weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
+/* Premium display face for the hero wordmark — Archivo with its width
+   axis, used expanded (wdth 125) at Black weight. */
+const archivo = Archivo({
+  subsets: ["latin"],
+  variable: "--font-archivo",
+  axes: ["wdth"],
+});
+
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: siteTitle,
-    template: "%s | HACKSPRINT 3.0 — India’s Biggest Student Hackathon",
+    template: "%s | HackSprint 3.0",
   },
   description: siteDescription,
   applicationName: "HACKSPRINT 3.0",
   keywords: [
     "HackSprint 3.0",
+    "HackSprint 2027",
+    "HackSprint 3.0 2027",
+    "best hackathon 2027",
+    "top hackathon 2027",
+    "top hackathons in India 2027",
+    "upcoming hackathons in India 2027",
+    "upcoming hackathons 2027",
+    "biggest hackathon in India 2027",
+    "national level hackathon 2027 India",
+    "national level hackathon in Tamil Nadu",
+    "national level hackathon in Coimbatore",
+    "best hackathon in Tamil Nadu 2027",
+    "top hackathon in Tamil Nadu",
+    "hackathon in Tamil Nadu 2027",
+    "hackathon in Coimbatore 2027",
+    "best hackathon in Coimbatore",
+    "hackathons in South India",
+    "hackathon for engineering students 2027",
+    "college hackathon 2027",
+    "offline hackathon 2027",
+    "student hackathon India 2027",
     "HACKSPRINT 3.0 2027",
     "HackSprint",
     "Hack Sprint",
@@ -138,6 +168,8 @@ export const metadata: Metadata = {
   },
   other: {
     designer: developer.name,
+    "geo.region": "IN-TN",
+    "geo.placename": "Coimbatore, Tamil Nadu, India",
   },
 };
 
@@ -159,6 +191,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         inLanguage: "en-IN",
       },
       {
+        "@type": "WebPage",
+        "@id": `${siteUrl}/#webpage`,
+        url: siteUrl,
+        name: siteTitle,
+        description: siteDescription,
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        about: { "@id": `${siteUrl}/#hacksprint-3` },
+        primaryImageOfPage: { "@type": "ImageObject", url: `${siteUrl}/og.png`, width: 1200, height: 630 },
+        inLanguage: "en-IN",
+      },
+      {
         "@type": "Person",
         "@id": `${siteUrl}/#developer`,
         name: developer.name,
@@ -175,6 +218,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         url: siteUrl,
         logo: `${siteUrl}/3.0.png`,
         email: "mailto:hacksprint.official@gmail.com",
+        contactPoint: [
+          {
+            "@type": "ContactPoint",
+            telephone: "+91-95970-75831",
+            email: "hacksprint.official@gmail.com",
+            contactType: "customer support",
+            areaServed: "IN",
+            availableLanguage: ["English", "Tamil"],
+          },
+        ],
         founder: developerRef,
         sameAs: [
           "https://www.instagram.com/hacksprint3.0",
@@ -190,11 +243,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         "@type": "Event",
         "@id": `${siteUrl}/#hacksprint-3`,
         name: "HACKSPRINT 3.0 — India’s Biggest & Largest Student Hackathon",
+        alternateName: ["HackSprint 3.0", "HackSprint 2027", "HackSprint 3.0 National Level Hackathon"],
         description:
           "India’s biggest and largest national-level student hackathon: a 36-hour coding and innovation competition across AgroTech, EduTech, MedTech, WildVision Tech and Open Innovation, organized by KAHE’s Department of Computer Science & Engineering with the Metaverse Students Association.",
         url: siteUrl,
         image: [`${siteUrl}/og.png`, `${siteUrl}/3.0.png`],
         eventStatus: "https://schema.org/EventScheduled",
+        duration: "PT36H",
+        typicalAgeRange: "17-25",
+        about: ["AgroTech", "EduTech", "MedTech", "WildVision Tech", "Open Innovation", "Artificial Intelligence", "Software development"].map((name) => ({ "@type": "Thing", name })),
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         startDate: "2027-02-05T09:00:00+05:30",
         endDate: "2027-02-06T20:00:00+05:30",
@@ -245,7 +302,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en-IN" className={`${inter.variable} ${archivo.variable}`}>
       <body>
         {/* Fixed site-wide backdrop: the content scrolls over it on every page. */}
         <div className="site-bg" aria-hidden="true" />

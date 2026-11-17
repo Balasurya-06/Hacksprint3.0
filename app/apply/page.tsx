@@ -14,7 +14,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Apply | HACKSPRINT 3.0",
+  title: "Apply on Devfolio",
   description: "Apply to HACKSPRINT 3.0 via Devfolio — India's biggest student hackathon 2027.",
   robots: { index: false, follow: false },
 };

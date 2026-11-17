@@ -4,56 +4,36 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import qrcode from "qrcode-generator";
 
 /* ──────────────────────────────────────────────────────────────
-   HackSprint 3.0 — Round 1 Participant Pass (event-ticket layout).
-   A keepsake for everyone who took part in Round 1 — NOT an entry
-   ticket. Shortlisted teams get a separate finale pass later.
-   Main body: logo, pass title, name/team, registration window,
-   Round 1 status, finale date (shortlisted only) and the photo.
-   Tear-off stub: round/status, QR → hacksprint.tech, pass ID.
+   HackSprint 3.0 — Participant Pass ("picture of me" card, 1080 × 1350).
+   A shareable keepsake to celebrate being part of HackSprint 3.0,
+   sized 4:5 for LinkedIn / Instagram feeds.
+   Composition: a dark, out-of-focus graffiti backdrop (red brush
+   strokes, spray splatter, giant blurred letters) under a slightly
+   tilted, crumpled bone-paper card. On the card: logo + title +
+   stamp; huge bubbly HACK / SPRINT letters fading black → red; the
+   photo in a white polaroid frame with crop marks and the name as a
+   bubbly sticker; a 2027 row with the team; a quote; and a footer
+   with venue + finale date, registration deadline, pass ID and a QR
+   code to hacksprint.tech.
    Everything is drawn on one <canvas>, so the preview and the
    downloaded PNG are pixel-identical.
    ────────────────────────────────────────────────────────────── */
 
-const W = 1800;
-const H = 700;
-const STUB_X = 1330;
+const PW = 1080;
+const PH = 1350;
 const SITE_URL = "https://www.hacksprint.tech";
-const PASS_URL = `${SITE_URL}/pass`;
-
-const themes = {
-  night: {
-    label: "Night",
-    body: "#0b0b0d",
-    bodyText: "#ffffff",
-    bodyMuted: "rgba(244,238,228,0.55)",
-    stub: "#f4eee4",
-    stubText: "#0b0b0d",
-    stubMuted: "rgba(11,11,13,0.55)",
-  },
-  bone: {
-    label: "Bone",
-    body: "#f4eee4",
-    bodyText: "#0b0b0d",
-    bodyMuted: "rgba(11,11,13,0.55)",
-    stub: "#e5191f",
-    stubText: "#ffffff",
-    stubMuted: "rgba(255,255,255,0.75)",
-  },
-} as const;
-type ThemeKey = keyof typeof themes;
 
 const RED = "#e5191f";
 const RED_HOT = "#ff3b30";
 const RED_DEEP = "#8f0c10";
+const INK = "#0b0b0d";
+const BONE = "#f4eee4";
 
-const shareText =
-  "I took part in Round 1 of HACKSPRINT 3.0 🔥 — India's biggest student hackathon. Fingers crossed for the shortlist! Grand finale: Feb 5–6, 2027 at KAHE, Coimbatore. Get your participant pass 👉";
-const caption = `${shareText} ${PASS_URL}\n\n@hacksprint3.0 #HackSprint3 #HackSprint2027 #Hackathon #KAHE`;
 
 function newPassId() {
   const n = Math.floor(Math.random() * 9000) + 1000;
   const c = "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random() * 24)];
-  return `HS3-R1-${c}${n}`;
+  return `HS3-${c}${n}`;
 }
 
 type Ctx = CanvasRenderingContext2D & { letterSpacing?: string };
@@ -73,327 +53,443 @@ function fitFont(ctx: Ctx, text: string, maxW: number, start: number, min: numbe
   return size;
 }
 
-/* Location pin icon. */
-function pin(ctx: Ctx, x: number, y: number, s: number, color: string) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(s, s);
+/* Seeded random, so textures don't shimmer while someone types. */
+function rng(seed: number) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* Four-point sparkle. */
+function sparkle(ctx: Ctx, x: number, y: number, r: number, color: string) {
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.moveTo(0, 22);
-  ctx.bezierCurveTo(-4, 14, -14, 8, -14, -2);
-  ctx.arc(0, -2, 14, Math.PI, 0);
-  ctx.bezierCurveTo(14, 8, 4, 14, 0, 22);
+  ctx.moveTo(x, y - r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.quadraticCurveTo(x, y, x, y + r);
+  ctx.quadraticCurveTo(x, y, x - r, y);
+  ctx.quadraticCurveTo(x, y, x, y - r);
   ctx.fill();
-  ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(0, -2, 5.5, 0, Math.PI * 2);
-  ctx.fill();
+}
+
+/* QR code (→ website) on a white tile with a thin ink border. */
+function qrTile(ctx: Ctx, x: number, y: number, size: number) {
+  const qr = qrcode(0, "M");
+  qr.addData(SITE_URL);
+  qr.make();
+  const count = qr.getModuleCount();
+  const pad = 8;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x - pad, y - pad, size + pad * 2, size + pad * 2);
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x - pad, y - pad, size + pad * 2, size + pad * 2);
+  const cell = size / count;
+  ctx.fillStyle = INK;
+  for (let row = 0; row < count; row++) {
+    for (let col = 0; col < count; col++) {
+      if (qr.isDark(row, col)) ctx.fillRect(x + col * cell, y + row * cell, Math.ceil(cell), Math.ceil(cell));
+    }
+  }
+}
+
+/* Stretched bubbly line filling a box, with a vertical gradient. */
+function bigLine(ctx: Ctx, text: string, family: string, cx: number, baseline: number, maxW: number, height: number, from: string, to: string) {
+  ctx.font = `100px ${family}`;
+  const size = maxW / (ctx.measureText(text).width / 100);
+  const sy = Math.min(2.3, Math.max(0.9, height / (size * 0.74)));
+  ctx.save();
+  ctx.translate(cx, baseline);
+  ctx.scale(1, sy);
+  ctx.font = `${size}px ${family}`;
+  ctx.textAlign = "center";
+  const g = ctx.createLinearGradient(0, -size * 0.78, 0, 0);
+  g.addColorStop(0, from);
+  g.addColorStop(1, to);
+  ctx.fillStyle = g;
+  ctx.fillText(text, 0, 0);
   ctx.restore();
 }
 
 type DrawState = {
   name: string;
   team: string;
-  theme: ThemeKey;
   passId: string;
   photo: HTMLImageElement | null;
   logo: HTMLImageElement | null;
 };
 
 function drawPass(ctx: Ctx, s: DrawState) {
-  const t = themes[s.theme];
   const display = "Anton, Impact, sans-serif";
   const mono = "'JetBrains Mono', ui-monospace, monospace";
   const body = "Inter, system-ui, sans-serif";
+  const bubble = "'Rammetto One', 'Arial Black', sans-serif";
 
   ctx.save();
-  ctx.clearRect(0, 0, W, H);
+  ctx.clearRect(0, 0, PW, PH);
   spaced(ctx, 0);
   ctx.textBaseline = "alphabetic";
+  ctx.textAlign = "left";
 
-  /* Ticket silhouette with notches at the perforation */
-  const r = 26;
-  const notch = 30;
+  /* ── Backdrop: dark, out-of-focus graffiti ── */
+  ctx.fillStyle = "#070707";
+  ctx.fillRect(0, 0, PW, PH);
+  const r = rng(7);
   ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(r, 0);
-  ctx.lineTo(STUB_X - notch, 0);
-  ctx.arc(STUB_X, 0, notch, Math.PI, 0, true);
-  ctx.lineTo(W - r, 0);
-  ctx.arcTo(W, 0, W, r, r);
-  ctx.lineTo(W, H - r);
-  ctx.arcTo(W, H, W - r, H, r);
-  ctx.lineTo(STUB_X + notch, H);
-  ctx.arc(STUB_X, H, notch, 0, Math.PI, true);
-  ctx.lineTo(r, H);
-  ctx.arcTo(0, H, 0, H - r, r);
-  ctx.lineTo(0, r);
-  ctx.arcTo(0, 0, r, 0, r);
-  ctx.closePath();
-  ctx.clip();
-
-  /* ── Main body ── */
-  ctx.fillStyle = t.body;
-  ctx.fillRect(0, 0, STUB_X, H);
-  if (s.theme === "night") {
-    const glow = ctx.createRadialGradient(420, 0, 0, 420, 0, 700);
-    glow.addColorStop(0, "rgba(229,25,31,0.22)");
-    glow.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, STUB_X, H);
-    ctx.fillStyle = "rgba(255,255,255,0.018)";
-    for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, STUB_X, 1);
-  }
-
-  /* Decorative waves behind the photo (right side of the body) */
-  ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(880, 0);
-  ctx.bezierCurveTo(820, 160, 980, 230, 900, 380);
-  ctx.bezierCurveTo(840, 500, 960, 600, 920, H);
-  ctx.lineTo(STUB_X, H);
-  ctx.lineTo(STUB_X, 0);
-  ctx.closePath();
-  ctx.fillStyle = RED;
-  ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(990, 0);
-  ctx.bezierCurveTo(940, 120, 1060, 210, 1010, 330);
-  ctx.bezierCurveTo(960, 450, 1080, 560, 1040, H);
-  ctx.lineTo(STUB_X, H);
-  ctx.lineTo(STUB_X, 0);
-  ctx.closePath();
+  ctx.filter = "blur(10px)";
+  ctx.globalAlpha = 0.6;
+  ctx.font = `440px ${bubble}`;
   ctx.fillStyle = RED_DEEP;
-  ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(1150, 0);
-  ctx.bezierCurveTo(1110, 140, 1210, 230, 1170, 360);
-  ctx.bezierCurveTo(1130, 480, 1230, 580, 1200, H);
-  ctx.lineTo(STUB_X, H);
-  ctx.lineTo(STUB_X, 0);
-  ctx.closePath();
-  ctx.fillStyle = "#14090a";
-  ctx.fill();
+  ctx.fillText("HS", -60, 430);
+  ctx.fillStyle = RED;
+  ctx.fillText("3.0", 470, 1390);
   ctx.restore();
-
-  /* Vertical hashtag on the left edge */
   ctx.save();
-  ctx.translate(46, H / 2);
-  ctx.rotate(-Math.PI / 2);
-  ctx.textAlign = "center";
-  ctx.font = `700 18px ${mono}`;
-  spaced(ctx, 6);
-  ctx.fillStyle = t.bodyMuted;
-  ctx.fillText("#HACKSPRINT3 · @HACKSPRINT3.0", 0, 6);
-  ctx.restore();
-  spaced(ctx, 0);
-
-  /* Logo */
-  const lx = 96;
-  if (s.logo && s.logo.complete && s.logo.naturalWidth) {
-    const lh = 120;
-    const lw = (s.logo.naturalWidth / s.logo.naturalHeight) * lh;
-    if (s.theme === "bone") {
-      ctx.fillStyle = "#0b0b0d";
+  ctx.filter = "blur(2px)";
+  ctx.lineCap = "round";
+  for (let i = 0; i < 16; i++) {
+    const pick = r();
+    ctx.strokeStyle = pick < 0.45 ? RED : pick < 0.8 ? RED_DEEP : "rgba(244,238,228,0.55)";
+    ctx.globalAlpha = 0.35 + r() * 0.45;
+    ctx.lineWidth = 18 + r() * 52;
+    const x0 = r() * PW;
+    const y0 = r() * PH;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.bezierCurveTo(x0 + (r() - 0.5) * 640, y0 + (r() - 0.5) * 640, x0 + (r() - 0.5) * 640, y0 + (r() - 0.5) * 640, x0 + (r() - 0.5) * 520, y0 + (r() - 0.5) * 520);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  for (let c = 0; c < 6; c++) {
+    const sx = r() * PW;
+    const sy = r() * PH;
+    ctx.fillStyle = c % 2 ? RED_HOT : BONE;
+    for (let i = 0; i < 46; i++) {
+      const a = r() * Math.PI * 2;
+      const d = Math.pow(r(), 1.8) * 120;
+      ctx.globalAlpha = 0.25 + r() * 0.5;
       ctx.beginPath();
-      ctx.roundRect(lx - 14, 42, lw + 28, lh + 20, 16);
+      ctx.arc(sx + Math.cos(a) * d, sy + Math.sin(a) * d, 1 + r() * 5, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.drawImage(s.logo, lx, 52, lw, lh);
-  } else {
-    ctx.fillStyle = t.bodyText;
-    ctx.font = `90px ${display}`;
-    ctx.fillText("HACKSPRINT 3.0", lx, 150);
   }
+  ctx.restore();
+  const vig = ctx.createRadialGradient(PW / 2, PH / 2, PH * 0.25, PW / 2, PH / 2, PH * 0.75);
+  vig.addColorStop(0, "rgba(0,0,0,0)");
+  vig.addColorStop(1, "rgba(0,0,0,0.65)");
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, PW, PH);
 
-  /* Pass title chip */
-  ctx.font = `30px ${display}`;
-  spaced(ctx, 4);
-  const chip = "ROUND 1 · PARTICIPANT PASS";
-  const cw = ctx.measureText(chip).width + 40;
-  ctx.fillStyle = RED;
-  ctx.beginPath();
-  ctx.roundRect(lx, 200, cw, 50, 8);
-  ctx.fill();
-  ctx.fillStyle = "#fff";
-  ctx.fillText(chip, lx + 20, 237);
-  spaced(ctx, 0);
-
-  /* Name + team */
-  const name = (s.name.trim() || "YOUR NAME").toUpperCase();
-  ctx.fillStyle = t.bodyText;
-  fitFont(ctx, name, 720, 118, 56, display);
-  spaced(ctx, 1);
-  ctx.fillText(name, lx - 4, 390);
-  const team = (s.team.trim() || "TEAM NAME").toUpperCase();
-  fitFont(ctx, `TEAM // ${team}`, 720, 30, 18, mono, "700");
-  spaced(ctx, 6);
-  ctx.fillStyle = s.theme === "night" ? RED_HOT : RED;
-  ctx.fillText(`TEAM // ${team}`, lx, 438);
-  spaced(ctx, 0);
-
-  /* Info row: registration · finale · venue */
-  ctx.fillStyle = s.theme === "night" ? "rgba(255,255,255,0.12)" : "rgba(11,11,13,0.14)";
-  ctx.fillRect(lx, 484, 740, 2);
-  const info = (label: string, value: string, x: number) => {
-    ctx.font = `700 16px ${mono}`;
-    spaced(ctx, 4);
-    ctx.fillStyle = t.bodyMuted;
-    ctx.fillText(label, x, 528);
-    ctx.font = `34px ${display}`;
-    spaced(ctx, 1);
-    ctx.fillStyle = t.bodyText;
-    ctx.fillText(value, x, 572);
-  };
-  info("REGISTRATION", "NOV 8 – DEC 28", lx);
-  info("ROUND 1", "PARTICIPATED", lx + 280);
-  info("GRAND FINALE", "FEB 5–6, 2027", lx + 520);
-  pin(ctx, lx + 12, 626, 1, RED);
-  ctx.font = `600 22px ${body}`;
-  spaced(ctx, 1);
-  ctx.fillStyle = t.bodyText;
-  ctx.fillText("Grand finale at KAHE, Coimbatore · shortlisted teams only", lx + 40, 640);
-  spaced(ctx, 0);
-
-  /* Photo — right-side space over the waves */
-  const px = 940;
-  const py = 92;
-  const pw = 330;
-  const ph = 400;
+  /* ── The paper card ── */
+  const cx = 70;
+  const cy = 56;
+  const cw = 940;
+  const ch = 1238;
   ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.55)";
-  ctx.shadowBlur = 40;
-  ctx.shadowOffsetY = 18;
-  ctx.fillStyle = "#f4eee4";
+  ctx.translate(PW / 2, PH / 2);
+  ctx.rotate(-0.02);
+  ctx.translate(-PW / 2, -PH / 2);
+
+  ctx.save();
+  ctx.shadowColor = "rgba(0,0,0,0.65)";
+  ctx.shadowBlur = 60;
+  ctx.shadowOffsetY = 26;
+  ctx.fillStyle = BONE;
   ctx.beginPath();
-  ctx.roundRect(px - 12, py - 12, pw + 24, ph + 24, 22);
+  ctx.roundRect(cx, cy, cw, ch, 22);
   ctx.fill();
   ctx.restore();
+
   ctx.save();
   ctx.beginPath();
-  ctx.roundRect(px, py, pw, ph, 14);
+  ctx.roundRect(cx, cy, cw, ch, 22);
   ctx.clip();
-  ctx.fillStyle = "#121214";
-  ctx.fillRect(px, py, pw, ph);
+
+  /* Paper grain + soft creases. */
+  const pr = rng(42);
+  for (let i = 0; i < 2600; i++) {
+    ctx.fillStyle = pr() < 0.5 ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.45)";
+    ctx.fillRect(cx + pr() * cw, cy + pr() * ch, 1.6, 1.6);
+  }
+  for (let i = 0; i < 8; i++) {
+    const y = cy + pr() * ch;
+    ctx.save();
+    ctx.translate(cx + cw / 2, y);
+    ctx.rotate((pr() - 0.5) * 0.7);
+    const g = ctx.createLinearGradient(0, -26, 0, 26);
+    g.addColorStop(0, "rgba(0,0,0,0)");
+    g.addColorStop(0.48, "rgba(0,0,0,0.045)");
+    g.addColorStop(0.52, "rgba(255,255,255,0.55)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(-cw, -26, cw * 2, 52);
+    ctx.restore();
+  }
+
+  /* Top row: logo · title · stamp. */
+  if (s.logo && s.logo.complete && s.logo.naturalWidth) {
+    const lh = 64;
+    const lw = (s.logo.naturalWidth / s.logo.naturalHeight) * lh;
+    ctx.drawImage(s.logo, cx + 40, cy + 30, lw, lh);
+  }
+  ctx.textAlign = "center";
+  ctx.fillStyle = INK;
+  ctx.font = `52px ${display}`;
+  spaced(ctx, 2);
+  ctx.fillText("HACKER PASS", PW / 2, cy + 78);
+  ctx.font = `700 13px ${mono}`;
+  spaced(ctx, 4);
+  ctx.fillStyle = RED;
+  ctx.fillText("HACKSPRINT 3.0 · EDITION 2027", PW / 2, cy + 104);
+  spaced(ctx, 0);
+  ctx.save();
+  ctx.translate(cx + cw - 92, cy + 66);
+  ctx.rotate(-0.2);
+  ctx.strokeStyle = RED;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(0, 0, 46, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.arc(0, 0, 39, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = RED;
+  ctx.font = `700 9px ${mono}`;
+  spaced(ctx, 2);
+  ctx.fillText("HACKSPRINT", 0, -14);
+  ctx.font = `36px ${display}`;
+  spaced(ctx, 0);
+  ctx.fillText("3.0", 0, 22);
+  ctx.restore();
+  ctx.textAlign = "left";
+
+  /* Huge bubbly letters behind the photo. */
+  bigLine(ctx, "HACK", bubble, PW / 2, cy + 440, cw - 80, 300, INK, RED_DEEP);
+  bigLine(ctx, "SPRINT", bubble, PW / 2, cy + 790, cw - 80, 320, RED, "#ff7a5c");
+
+  /* Polaroid photo frame, slightly rotated, with crop marks. */
+  const fx = 280;
+  const fy = 196;
+  const fw = 520;
+  const fh = 610;
+  const px = fx + 18;
+  const py = fy + 18;
+  const pw = fw - 36;
+  const ph = 486;
+  ctx.save();
+  ctx.translate(fx + fw / 2, fy + fh / 2);
+  ctx.rotate(0.035);
+  ctx.translate(-(fx + fw / 2), -(fy + fh / 2));
+  ctx.save();
+  ctx.shadowColor = "rgba(0,0,0,0.35)";
+  ctx.shadowBlur = 30;
+  ctx.shadowOffsetY = 12;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(fx, fy, fw, fh);
+  ctx.restore();
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(px, py, pw, ph);
+  ctx.clip();
   if (s.photo) {
     const k = Math.max(pw / s.photo.naturalWidth, ph / s.photo.naturalHeight);
     const dw = s.photo.naturalWidth * k;
     const dh = s.photo.naturalHeight * k;
-    ctx.drawImage(s.photo, px + (pw - dw) / 2, py + (ph - dh) / 2, dw, dh);
+    ctx.drawImage(s.photo, px + (pw - dw) / 2, py + (ph - dh) * 0.2, dw, dh);
   } else {
-    const cx = px + pw / 2;
-    const cy = py + ph / 2 - 16;
-    ctx.fillStyle = "rgba(255,255,255,0.14)";
+    /* Abstract red/black swirl as the placeholder backdrop. */
+    ctx.fillStyle = "#160506";
+    ctx.fillRect(px, py, pw, ph);
+    const sx = px + pw * 0.62;
+    const sy = py + ph * 0.36;
+    const bands = [RED, INK, RED_DEEP, BONE, RED_HOT, INK];
+    for (let i = 18; i >= 1; i--) {
+      ctx.fillStyle = bands[i % bands.length];
+      ctx.beginPath();
+      for (let a = 0; a <= Math.PI * 2 + 0.01; a += 0.08) {
+        const rr = i * 30 + Math.sin(a * 3 + i * 0.9) * 12;
+        const x = sx + Math.cos(a) * rr * 1.15;
+        const y = sy + Math.sin(a) * rr;
+        if (a === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
     ctx.beginPath();
-    ctx.arc(cx, cy - 30, 46, 0, Math.PI * 2);
+    ctx.arc(px + pw / 2, py + ph * 0.42, 78, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(cx, cy + 90, 90, 60, 0, Math.PI, 0);
+    ctx.ellipse(px + pw / 2, py + ph + 40, 190, 170, 0, Math.PI, 0);
     ctx.fill();
     ctx.textAlign = "center";
     ctx.font = `700 18px ${mono}`;
     spaced(ctx, 5);
-    ctx.fillStyle = "rgba(255,255,255,0.4)";
-    ctx.fillText("YOUR PHOTO", cx, py + ph - 34);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("ADD YOUR PHOTO", px + pw / 2, py + 50);
     ctx.textAlign = "left";
     spaced(ctx, 0);
   }
   ctx.restore();
-  /* Photo label */
+
+  /* Strip labels: PAR / TICI / PANT  ·  HS / 3.0 */
+  ctx.fillStyle = INK;
   ctx.font = `26px ${display}`;
-  spaced(ctx, 4);
-  const tag = "HACKER";
-  const tw = ctx.measureText(tag).width + 36;
-  ctx.fillStyle = "#0b0b0d";
-  ctx.beginPath();
-  ctx.roundRect(px + pw / 2 - tw / 2, py + ph - 4, tw, 44, 22);
-  ctx.fill();
-  ctx.fillStyle = "#fff";
-  ctx.textAlign = "center";
-  ctx.fillText(tag, px + pw / 2, py + ph + 28);
-  ctx.textAlign = "left";
-  spaced(ctx, 0);
-
-  /* ── Stub ── */
-  ctx.fillStyle = t.stub;
-  ctx.fillRect(STUB_X, 0, W - STUB_X, H);
-
-  /* Perforation */
-  ctx.strokeStyle = s.theme === "night" ? "rgba(11,11,13,0.45)" : "rgba(255,255,255,0.7)";
-  ctx.lineWidth = 3;
-  ctx.setLineDash([10, 12]);
-  ctx.beginPath();
-  ctx.moveTo(STUB_X, notch + 10);
-  ctx.lineTo(STUB_X, H - notch - 10);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
+  spaced(ctx, 1);
+  ["PAR", "TICI", "PANT"].forEach((t, i) => ctx.fillText(t, fx + 22, fy + fh - 66 + i * 26));
   ctx.textAlign = "right";
-  ctx.font = `700 15px ${mono}`;
-  spaced(ctx, 4);
-  ctx.fillStyle = t.stubMuted;
-  ctx.fillText("#HACKSPRINT3", W - 40, 52);
+  ctx.font = `32px ${display}`;
+  ctx.fillText("HS", fx + fw - 22, fy + fh - 46);
+  ctx.fillStyle = RED;
+  ctx.fillText("3.0", fx + fw - 22, fy + fh - 14);
   ctx.textAlign = "left";
+  spaced(ctx, 0);
 
-  /* Rotated date / time, like a classic ticket stub */
-  ctx.save();
-  ctx.translate(STUB_X + 70, H - 70);
-  ctx.rotate(-Math.PI / 2);
-  ctx.fillStyle = t.stubText;
-  ctx.font = `46px ${display}`;
-  spaced(ctx, 2);
-  ctx.fillText("ROUND", 0, 0);
-  ctx.fillText("01", 0, 52);
-  ctx.fillRect(0, 70, 520, 3);
-  ctx.fillText("STATUS", 200, 0);
-  ctx.fillText("PARTICIPANT", 200, 52);
+  /* Crop marks at the frame corners. */
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 3;
+  const mark = (x: number, y: number) => {
+    ctx.beginPath();
+    ctx.moveTo(x - 9, y);
+    ctx.lineTo(x + 9, y);
+    ctx.moveTo(x, y - 9);
+    ctx.lineTo(x, y + 9);
+    ctx.stroke();
+  };
+  mark(fx - 18, fy - 18);
+  mark(fx + fw + 18, fy - 18);
+  mark(fx - 18, fy + fh + 18);
+  mark(fx + fw + 18, fy + fh + 18);
   ctx.restore();
-  spaced(ctx, 0);
 
-  /* QR → website */
-  const qr = qrcode(0, "M");
-  qr.addData(SITE_URL);
-  qr.make();
-  const count = qr.getModuleCount();
-  const qs = 250;
-  const qx = W - 40 - qs;
-  const qy = 90;
-  ctx.fillStyle = "#ffffff";
-  ctx.beginPath();
-  ctx.roundRect(qx - 14, qy - 14, qs + 28, qs + 28, 14);
-  ctx.fill();
-  const cell = qs / count;
-  ctx.fillStyle = "#0b0b0d";
-  for (let row = 0; row < count; row++) {
-    for (let col = 0; col < count; col++) {
-      if (qr.isDark(row, col)) ctx.fillRect(qx + col * cell, qy + row * cell, Math.ceil(cell), Math.ceil(cell));
-    }
-  }
+  /* Name sticker — bubbly, red, ink outline, white die-cut edge. */
+  const name = (s.name.trim() || "YOUR NAME").toUpperCase();
+  const ns = fitFont(ctx, name, 290, 78, 26, bubble);
+  ctx.save();
+  ctx.translate(PW / 2 + 4, fy + fh - 50);
+  ctx.rotate(-0.06);
+  ctx.font = `${ns}px ${bubble}`;
   ctx.textAlign = "center";
-  ctx.font = `700 17px ${mono}`;
+  ctx.textBaseline = "middle";
+  ctx.lineJoin = "round";
+  ctx.shadowColor = "rgba(0,0,0,0.35)";
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 8;
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = ns * 0.3;
+  ctx.strokeText(name, 0, 0);
+  ctx.shadowColor = "transparent";
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = ns * 0.14;
+  ctx.strokeText(name, 0, 0);
+  const ng = ctx.createLinearGradient(0, -ns * 0.45, 0, ns * 0.45);
+  ng.addColorStop(0, "#ff7466");
+  ng.addColorStop(0.5, RED);
+  ng.addColorStop(1, RED_DEEP);
+  ctx.fillStyle = ng;
+  ctx.fillText(name, 0, 0);
+  ctx.restore();
+  ctx.textBaseline = "alphabetic";
+  sparkle(ctx, fx + fw + 6, fy + fh - 96, 18, RED);
+  sparkle(ctx, fx + fw + 30, fy + fh - 66, 8, RED);
+
+  /* 2027 row: logo · year · team. */
+  const rowY = cy + 935;
+  if (s.logo && s.logo.complete && s.logo.naturalWidth) {
+    const lh = 50;
+    const lw = (s.logo.naturalWidth / s.logo.naturalHeight) * lh;
+    ctx.drawImage(s.logo, cx + 44, rowY - 44, lw, lh);
+  }
+  ctx.save();
+  ctx.font = `104px ${bubble}`;
+  ctx.textAlign = "center";
+  const yg = ctx.createLinearGradient(0, rowY - 80, 0, rowY);
+  yg.addColorStop(0, INK);
+  yg.addColorStop(1, RED);
+  ctx.fillStyle = yg;
+  ctx.fillText("2027", PW / 2, rowY + 4);
+  ctx.restore();
+  const team = (s.team.trim() || "TEAM NAME").toUpperCase();
+  ctx.textAlign = "right";
+  ctx.font = `700 12px ${mono}`;
   spaced(ctx, 3);
-  ctx.fillStyle = t.stubText;
-  ctx.fillText("SCAN · HACKSPRINT.TECH", qx + qs / 2, qy + qs + 50);
-  ctx.font = `700 15px ${mono}`;
-  ctx.fillStyle = t.stubMuted;
-  ctx.fillText("PASS ID", qx + qs / 2, qy + qs + 96);
-  ctx.font = `700 24px ${mono}`;
-  ctx.fillStyle = t.stubText;
-  ctx.fillText(s.passId, qx + qs / 2, qy + qs + 128);
-  ctx.font = `700 14px ${mono}`;
-  spaced(ctx, 3);
-  ctx.fillStyle = t.stubMuted;
-  ctx.fillText("NOT AN ENTRY PASS", qx + qs / 2, H - 124, qs + 20);
-  ctx.fillText("FINALE · SHORTLISTED ONLY", qx + qs / 2, H - 100, qs + 20);
-  ctx.font = `40px ${display}`;
-  spaced(ctx, 4);
-  ctx.fillStyle = s.theme === "night" ? RED : "#ffffff";
-  ctx.fillText("PARTICIPANT", qx + qs / 2, H - 46);
+  ctx.fillStyle = RED;
+  ctx.fillText("TEAM", cx + cw - 44, rowY - 34);
+  spaced(ctx, 1);
+  ctx.fillStyle = INK;
+  fitFont(ctx, team, 230, 32, 16, display);
+  ctx.fillText(team, cx + cw - 44, rowY);
   ctx.textAlign = "left";
   spaced(ctx, 0);
 
-  ctx.restore(); // silhouette clip
+  /* Quote + rule. */
+  ctx.textAlign = "center";
+  ctx.font = `italic 500 18px ${body}`;
+  ctx.fillStyle = "rgba(11,11,13,0.78)";
+  ctx.fillText("“36 hours. One idea. Build it, break it, ship it.”", PW / 2, rowY + 50);
+  ctx.font = `700 12px ${mono}`;
+  spaced(ctx, 3);
+  ctx.fillStyle = RED;
+  ctx.fillText("— INDIA'S BIGGEST STUDENT HACKATHON", PW / 2, rowY + 76);
+  spaced(ctx, 0);
+  ctx.textAlign = "left";
+  ctx.fillStyle = INK;
+  ctx.fillRect(cx + 44, rowY + 94, cw - 88, 2);
+
+  /* Footer: venue + finale | deadline + pass ID | QR. */
+  const fyb = rowY + 94;
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(cx + 56, fyb + 40, 9, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = INK;
+  ctx.font = `30px ${display}`;
+  spaced(ctx, 1);
+  ctx.fillText("KAHE · COIMBATORE", cx + 76, fyb + 51);
+  fitFont(ctx, "FEB 5–6, 2027", 330, 66, 40, display);
+  ctx.fillText("FEB 5–6, 2027", cx + 44, fyb + 124);
+  ctx.font = `700 12px ${mono}`;
+  spaced(ctx, 3);
+  ctx.fillStyle = RED;
+  ctx.fillText("GRAND FINALE · 36 HOURS", cx + 46, fyb + 152);
+  spaced(ctx, 0);
+
+  const divX = cx + 410;
+  ctx.fillStyle = INK;
+  ctx.fillRect(divX, fyb + 22, 2, 140);
+  const tx = divX + 22;
+  ctx.font = `italic 500 16px ${body}`;
+  ctx.fillStyle = "rgba(11,11,13,0.82)";
+  ["Registration closes Dec 28, 2026.", "Proud to be part of HackSprint 3.0 —", "where ideas sprint into reality."].forEach((l, i) =>
+    ctx.fillText(l, tx, fyb + 46 + i * 24),
+  );
+  ctx.font = `700 12px ${mono}`;
+  spaced(ctx, 2);
+  ctx.fillStyle = INK;
+  ctx.fillText(`PASS ID · ${s.passId}`, tx, fyb + 140);
+  spaced(ctx, 0);
+
+  const qs = 100;
+  const qx = cx + cw - 44 - qs;
+  const qy = fyb + 28;
+  qrTile(ctx, qx, qy, qs);
+  ctx.textAlign = "center";
+  ctx.font = `700 9px ${mono}`;
+  spaced(ctx, 2);
+  ctx.fillStyle = INK;
+  ctx.fillText("SCAN · HACKSPRINT.TECH", qx + qs / 2, qy + qs + 26);
+  ctx.textAlign = "left";
+  spaced(ctx, 0);
+
+  ctx.restore(); // card clip
+  ctx.restore(); // card rotation
   ctx.restore();
 }
 
@@ -401,17 +497,14 @@ export default function PassGenerator() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [name, setName] = useState("");
   const [team, setTeam] = useState("");
-  const [theme, setTheme] = useState<ThemeKey>("night");
-  const [passId, setPassId] = useState("HS3-R1-X0000");
+  const [passId, setPassId] = useState("HS3-X0000");
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
   const [logo, setLogo] = useState<HTMLImageElement | null>(null);
   const [fontsReady, setFontsReady] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [canShareFile, setCanShareFile] = useState(false);
   const photoUrl = useRef<string | null>(null);
 
-  /* Client-only setup: logo, fonts, random pass ID, share support. */
+  /* Client-only setup: logo, fonts, random pass ID. */
   useEffect(() => {
     const img = new Image();
     img.onload = () => setLogo(img);
@@ -419,18 +512,13 @@ export default function PassGenerator() {
     Promise.all([
       document.fonts.load("100px Anton"),
       document.fonts.load("700 28px 'JetBrains Mono'"),
-      document.fonts.load("600 22px Inter"),
+      document.fonts.load("100px 'Rammetto One'"),
+      document.fonts.load("italic 500 18px Inter"),
     ])
       .catch(() => undefined)
       .finally(() => {
         setPassId(newPassId());
         setFontsReady(true);
-        try {
-          const probe = new File([new Blob()], "p.png", { type: "image/png" });
-          setCanShareFile(typeof navigator.canShare === "function" && navigator.canShare({ files: [probe] }));
-        } catch {
-          setCanShareFile(false);
-        }
       });
     return () => {
       if (photoUrl.current) URL.revokeObjectURL(photoUrl.current);
@@ -439,8 +527,8 @@ export default function PassGenerator() {
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");
-    if (ctx) drawPass(ctx as Ctx, { name, team, theme, passId, photo, logo });
-  }, [name, team, theme, passId, photo, logo, fontsReady]);
+    if (ctx) drawPass(ctx as Ctx, { name, team, passId, photo, logo });
+  }, [name, team, passId, photo, logo, fontsReady]);
 
   const loadFile = useCallback((file?: File | null) => {
     if (!file || !file.type.startsWith("image/")) return;
@@ -452,155 +540,73 @@ export default function PassGenerator() {
     img.src = url;
   }, []);
 
-  const fileName = () => {
-    const slug = (name.trim() || "hacker").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    return `hacksprint3-pass-${slug || "hacker"}.png`;
+  const download = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const slug = (name.trim() || "hacker").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `hacksprint3-pass-${slug || "hacker"}.png`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }, "image/png");
   };
-
-  const toBlob = () =>
-    new Promise<Blob | null>((resolve) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return resolve(null);
-      canvas.toBlob((b) => resolve(b), "image/png");
-    });
-
-  const download = async () => {
-    const blob = await toBlob();
-    if (!blob) return;
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = fileName();
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  };
-
-  /* Native share sheet (phones) — lets people post straight to Instagram stories, WhatsApp, LinkedIn… */
-  const shareImage = async () => {
-    const blob = await toBlob();
-    if (!blob) return;
-    const file = new File([blob], fileName(), { type: "image/png" });
-    try {
-      await navigator.share({ files: [file], title: "HACKSPRINT 3.0 — Round 1 Participant Pass", text: caption });
-    } catch {
-      /* user cancelled */
-    }
-  };
-
-  const copyCaption = async () => {
-    try {
-      await navigator.clipboard.writeText(caption);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      /* clipboard blocked — ignore */
-    }
-  };
-
-  const enc = encodeURIComponent;
-  const shareLinks = [
-    { label: "LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(PASS_URL)}` },
-    { label: "X", href: `https://twitter.com/intent/tweet?text=${enc(shareText)}&url=${enc(PASS_URL)}&hashtags=HackSprint3` },
-    { label: "WhatsApp", href: `https://wa.me/?text=${enc(`${shareText} ${PASS_URL}`)}` },
-    { label: "Instagram", href: "https://www.instagram.com/hacksprint3.0" },
-  ];
 
   return (
     <div className="pass-layout">
-      <div className={`pass-preview pass-preview--${theme}`}>
+      <form className="pass-panel pass-panel--simple" onSubmit={(e) => { e.preventDefault(); download(); }}>
+        <label className="pass-field">
+          <span className="pass-label">{"// Your name"}</span>
+          <input className="pass-input" value={name} maxLength={24} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" autoComplete="name" />
+        </label>
+
+        <label className="pass-field">
+          <span className="pass-label">{"// Team name"}</span>
+          <input className="pass-input" value={team} maxLength={26} onChange={(e) => setTeam(e.target.value)} placeholder="Enter your team name" />
+        </label>
+
+        <div className="pass-field">
+          <span className="pass-label">{"// Your photo"}</span>
+          <label
+            className={`pass-drop ${dragging ? "is-drag" : ""} ${photo ? "has-photo" : ""}`}
+            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => { e.preventDefault(); setDragging(false); loadFile(e.dataTransfer.files?.[0]); }}
+          >
+            <input type="file" accept="image/*" className="sr-only" onChange={(e) => loadFile(e.target.files?.[0])} />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
+            <span>{photo ? "Photo added — click to change" : "Upload a photo"}</span>
+            <small>Stays on your device. Nothing is uploaded.</small>
+          </label>
+        </div>
+
+        <button type="submit" className="pass-download">
+          Download pass
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </form>
+
+      <div className="pass-preview pass-preview--poster">
+        <p className="pass-preview-label">Live preview</p>
         <canvas
           ref={canvasRef}
-          width={W}
-          height={H}
+          width={PW}
+          height={PH}
           className="pass-canvas"
-          style={{ display: "block", width: "100%", height: "auto", aspectRatio: `${W} / ${H}` }}
-          aria-label="Your HackSprint 3.0 Round 1 participant pass preview"
+          style={{ display: "block", width: "100%", height: "auto", aspectRatio: `${PW} / ${PH}` }}
+          aria-label="Your HackSprint 3.0 participant pass preview"
           role="img"
         />
       </div>
-
-      <form className="pass-panel" onSubmit={(e) => { e.preventDefault(); download(); }}>
-        <div className="pass-grid">
-          <label className="pass-field">
-            <span className="pass-label">{"// Your name"}</span>
-            <input className="pass-input" value={name} maxLength={24} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" autoComplete="name" />
-          </label>
-
-          <label className="pass-field">
-            <span className="pass-label">{"// Team name"}</span>
-            <input className="pass-input" value={team} maxLength={26} onChange={(e) => setTeam(e.target.value)} placeholder="Enter your team name" />
-          </label>
-
-          <div className="pass-field">
-            <span className="pass-label">{"// Photo"}</span>
-            <label
-              className={`pass-drop ${dragging ? "is-drag" : ""} ${photo ? "has-photo" : ""}`}
-              onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-              onDragLeave={() => setDragging(false)}
-              onDrop={(e) => { e.preventDefault(); setDragging(false); loadFile(e.dataTransfer.files?.[0]); }}
-            >
-              <input type="file" accept="image/*" className="sr-only" onChange={(e) => loadFile(e.target.files?.[0])} />
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
-              <span>{photo ? "Photo added — click to change" : "Click or drop a photo"}</span>
-              <small>Stays on your device. Nothing is uploaded.</small>
-            </label>
-          </div>
-
-          <div className="pass-field">
-            <span className="pass-label">{"// Finish"}</span>
-            <div className="pass-seg pass-seg--2" role="radiogroup" aria-label="Finish">
-              {(Object.keys(themes) as ThemeKey[]).map((k) => (
-                <button key={k} type="button" role="radio" aria-checked={theme === k} className={theme === k ? "is-on" : ""} onClick={() => setTheme(k)}>
-                  {themes[k].label}
-                </button>
-              ))}
-            </div>
-            <div className="pass-actions">
-              <button type="button" className="pass-shuffle" onClick={() => setPassId(newPassId())} aria-label="Generate a new pass ID" title="New pass ID">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="16 3 21 3 21 8" />
-                  <line x1="4" y1="20" x2="21" y2="3" />
-                  <polyline points="21 16 21 21 16 21" />
-                  <line x1="15" y1="15" x2="21" y2="21" />
-                  <line x1="4" y1="4" x2="9" y2="9" />
-                </svg>
-              </button>
-              <button type="submit" className="pass-download">
-                Download pass
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="pass-share">
-          <p className="pass-share-title">
-            Share it on <b>Instagram</b>, <b>LinkedIn</b> or anywhere — and tag <b>@hacksprint3.0</b> with <b>#HackSprint3</b>
-          </p>
-          <div className="pass-share-row">
-            {canShareFile && (
-              <button type="button" className="pass-share-btn pass-share-btn--primary" onClick={shareImage}>
-                Share image
-              </button>
-            )}
-            {shareLinks.map((l) => (
-              <a key={l.label} className="pass-share-btn" href={l.href} target="_blank" rel="noreferrer">
-                {l.label} ↗
-              </a>
-            ))}
-            <button type="button" className="pass-share-btn" onClick={copyCaption}>
-              {copied ? "Caption copied ✓" : "Copy caption"}
-            </button>
-          </div>
-          <p className="pass-share-hint">Tip: download the pass, then post it with the copied caption. On your phone, “Share image” sends it straight to Instagram Stories or WhatsApp.</p>
-        </div>
-      </form>
     </div>
   );
 }
