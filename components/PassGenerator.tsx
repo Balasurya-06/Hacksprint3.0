@@ -76,10 +76,16 @@ function sparkle(ctx: Ctx, x: number, y: number, r: number, color: string) {
 }
 
 /* QR code (→ website) on a white tile with a thin ink border. */
+/* The URL never changes, so build the QR matrix once (it's slow on low-end
+   phones) instead of on every redraw / keystroke. */
+let qrCache: ReturnType<typeof qrcode> | null = null;
 function qrTile(ctx: Ctx, x: number, y: number, size: number) {
-  const qr = qrcode(0, "M");
-  qr.addData(SITE_URL);
-  qr.make();
+  if (!qrCache) {
+    qrCache = qrcode(0, "M");
+    qrCache.addData(SITE_URL);
+    qrCache.make();
+  }
+  const qr = qrCache;
   const count = qr.getModuleCount();
   const pad = 8;
   ctx.fillStyle = "#ffffff";

@@ -48,7 +48,7 @@ const startingFive: TeamMember[] = [
     tagRole: "ORGANIZER",
     tagYear: "THIRD YEAR · CSE",
     bio: "Coordinating event administration, participant hospitality, schedule management, and stage operations.",
-    image: "/harini.jpeg",
+    image: "/harino-org.png",
   },
   {
     id: "surya",
@@ -77,7 +77,7 @@ const startingFive: TeamMember[] = [
     tagRole: "ORGANIZER",
     tagYear: "THIRD YEAR · CSE",
     bio: "Managing technical operations, hackathon cloud infrastructure, platform workflows, and track logistics.",
-    image: "/aravind.jpeg",
+    image: "/aravind-org.png",
   },
 ];
 

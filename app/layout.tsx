@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Archivo, Inter } from "next/font/google";
+import { Anton, Archivo, Inter, JetBrains_Mono, Permanent_Marker, Rammetto_One } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatBot from "@/components/ChatBot";
+import PauseOffscreenAnimations from "@/components/PauseOffscreenAnimations";
 
 import { faqs } from "@/data/faq";
 
@@ -33,6 +34,17 @@ const archivo = Archivo({
   variable: "--font-archivo",
   axes: ["wdth"],
 });
+
+/* Self-hosted via next/font (served from our own domain, preloaded, with
+   size-matched fallbacks) instead of a render-blocking Google Fonts
+   @import chain in globals.css — that chain was a big part of the slow
+   first load on phones. Family names stay the same ("Anton", ...), so CSS
+   and the pass canvas keep working. */
+const anton = Anton({ subsets: ["latin"], weight: "400", variable: "--font-anton" });
+const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
+/* Below-the-fold faces (timeline script, hacker-pass canvas): no preload. */
+const marker = Permanent_Marker({ subsets: ["latin"], weight: "400", variable: "--font-marker", preload: false });
+const rammetto = Rammetto_One({ subsets: ["latin"], weight: "400", variable: "--font-rammetto", preload: false });
 
 
 export const metadata: Metadata = {
@@ -302,7 +314,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="en-IN" className={`${inter.variable} ${archivo.variable}`}>
+    <html lang="en-IN" className={`${inter.variable} ${archivo.variable} ${anton.variable} ${jetbrains.variable} ${marker.variable} ${rammetto.variable}`}>
       <body>
         {/* Fixed site-wide backdrop: the content scrolls over it on every page. */}
         <div className="site-bg" aria-hidden="true" />
@@ -345,6 +357,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </section>
         <Footer />
         <ChatBot />
+        <PauseOffscreenAnimations />
       </body>
     </html>
   );

@@ -90,7 +90,7 @@ export default function HeroBackdrop() {
       (nav.hardwareConcurrency ?? 8) <= 4 ||
       (nav.deviceMemory ?? 8) <= 4;
     const still = reduce || nav.connection?.saveData === true;
-    const frameMs = lite ? 1000 / 30 : 0;
+    let frameMs = lite ? 1000 / 24 : 0;
     const grid = document.createElement("canvas");
     const gctx = grid.getContext("2d")!;
 
@@ -359,17 +359,39 @@ export default function HeroBackdrop() {
       }
     }
 
+    /* Fading traces, batched: segments are grouped into a few opacity
+       buckets per colour and stroked as one path each, instead of one
+       stroke() call per segment (hundreds per frame). */
+    const BUCKETS = 10;
+    const traceBuckets = new Map<string, Seg[][]>();
     function drawTraces() {
       ctx!.lineWidth = 1;
       ctx!.lineCap = "square";
+      for (const list of traceBuckets.values()) for (const b of list) b.length = 0;
       for (const s of segs) {
-        const a = 0.32 * (1 - (time - s.t) / SEG_LIFE) ** 1.4 * (s.rgb === BONE ? 0.6 : 1);
-        if (a <= 0.01) continue;
-        ctx!.strokeStyle = `rgba(${s.rgb}, ${a})`;
-        ctx!.beginPath();
-        ctx!.moveTo(s.x1, s.y1);
-        ctx!.lineTo(s.x2, s.y2);
-        ctx!.stroke();
+        const k = 1 - (time - s.t) / SEG_LIFE;
+        if (k <= 0) continue;
+        let list = traceBuckets.get(s.rgb);
+        if (!list) {
+          list = Array.from({ length: BUCKETS }, () => []);
+          traceBuckets.set(s.rgb, list);
+        }
+        list[Math.min(BUCKETS - 1, Math.floor(k * BUCKETS))].push(s);
+      }
+      for (const [rgb, list] of traceBuckets) {
+        for (let i = 0; i < BUCKETS; i++) {
+          const bucket = list[i];
+          if (!bucket.length) continue;
+          const a = 0.32 * ((i + 0.5) / BUCKETS) ** 1.4 * (rgb === BONE ? 0.6 : 1);
+          if (a <= 0.01) continue;
+          ctx!.strokeStyle = `rgba(${rgb}, ${a})`;
+          ctx!.beginPath();
+          for (const s of bucket) {
+            ctx!.moveTo(s.x1, s.y1);
+            ctx!.lineTo(s.x2, s.y2);
+          }
+          ctx!.stroke();
+        }
       }
     }
 
@@ -506,13 +528,36 @@ export default function HeroBackdrop() {
       }
       const dt = Math.min(0.05, (t - last) / 1000 || 0);
       last = t;
+      const c0 = performance.now();
       update(dt);
       draw();
-      raf = requestAnimationFrame(frame);
+      if (lite) adapt(performance.now() - c0);
+      if (!frozen) raf = requestAnimationFrame(frame);
+      else raf = 0;
+    }
+
+    /* Adaptive quality for phones: time our own frames for the first ~2s.
+       Slow device → drop to 15fps; still slow → freeze on the current frame
+       (a still circuit board behind the hero instead of a hung page). */
+    let frozen = false;
+    let sampled = 0;
+    let cost = 0;
+    function adapt(ms: number) {
+      if (sampled < 0) return;
+      cost += ms;
+      if (++sampled < 48) return;
+      const avg = cost / sampled;
+      if (avg > 14) frozen = true;
+      else if (avg > 6 && frameMs < 1000 / 15) {
+        frameMs = 1000 / 15;
+        sampled = cost = 0;
+        return;
+      }
+      sampled = -1;
     }
     let ready = false;
     function start() {
-      if (still || !ready || raf || !inView || document.hidden) return;
+      if (still || frozen || !ready || raf || !inView || document.hidden) return;
       last = performance.now();
       raf = requestAnimationFrame(frame);
     }

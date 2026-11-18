@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=JetBrains+Mono:wght@500;700;800&family=Oswald:wght@500;600;700;800&family=Permanent+Marker&family=Rammetto+One&display=swap');
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════
@@ -27,9 +26,9 @@
   --text-2: #a9a4a0;
   --text-3: #6f6a67;
 
-  --font-display: 'Anton', 'Bebas Neue', Impact, sans-serif;
+  --font-display: var(--font-anton), 'Anton', Impact, sans-serif;
   --font-body: var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: var(--font-jetbrains), 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --radius: 18px;
   --radius-sm: 10px;
@@ -712,7 +711,9 @@ body:not(:has(.home)) .site-main .apply-page {
 }
 .cd-cell:hover { border-color: rgba(229, 25, 31, 0.45); transform: translateY(-2px); }
 .cd-cell--live { border-color: rgba(229, 25, 31, 0.35); }
-.cd-flash { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: cd-flash 0.9s ease-out both; }
+/* Same flash as before, but the glow is static and only opacity animates,
+   so it runs on the compositor instead of repainting every frame. */
+.cd-flash { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(255, 59, 48, 0.9), inset 0 0 26px rgba(229, 25, 31, 0.45); animation: cd-flash 0.9s ease-out both; }
 
 .cd-num {
   display: flex;
@@ -758,10 +759,7 @@ body:not(:has(.home)) .site-main .apply-page {
 .cd.is-closed .cd-num { color: var(--text-3); filter: none; }
 
 @keyframes cd-sheen { 0% { left: -40%; } 55%, 100% { left: 130%; } }
-@keyframes cd-flash {
-  0% { box-shadow: inset 0 0 0 1px rgba(255, 59, 48, 0.9), inset 0 0 26px rgba(229, 25, 31, 0.45); }
-  100% { box-shadow: inset 0 0 0 1px rgba(255, 59, 48, 0), inset 0 0 26px rgba(229, 25, 31, 0); }
-}
+@keyframes cd-flash { from { opacity: 1; } to { opacity: 0; } }
 @keyframes cd-sep { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 @keyframes cd-seg-in { from { opacity: 0; transform: scaleY(0.2); } to { opacity: 1; transform: none; } }
 
@@ -1679,20 +1677,6 @@ body:not(:has(.home)) .site-main .apply-page {
    CTA
    ═══════════════════════════════════════════════════════════════ */
 .cta { position: relative; overflow: hidden; padding: clamp(110px, 14vw, 180px) 24px clamp(130px, 16vw, 200px); text-align: center; background: var(--ink); border-top: 1px solid var(--line); isolation: isolate; }
-.cta-floor {
-  position: absolute;
-  left: -50%;
-  right: -50%;
-  bottom: 0;
-  height: 55%;
-  z-index: -1;
-  background-image: none;
-  transform: perspective(380px) rotateX(64deg);
-  transform-origin: center top;
-  animation: hs-floor 2.6s linear infinite;
-  mask-image: linear-gradient(to bottom, transparent, #000 60%);
-  opacity: 0.5;
-}
 .cta::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse 55% 45% at 50% 60%, rgba(229, 25, 31, 0.3), transparent 70%); }
 .cta-inner { position: relative; max-width: var(--page-w); margin: 0 auto; }
 .cta-title { margin-bottom: 40px; font-family: var(--font-display); font-weight: 400; font-size: clamp(3rem, 10vw, 9.4rem); line-height: 0.9; text-transform: uppercase; color: var(--bone); }
@@ -2822,6 +2806,17 @@ body { background: transparent !important; }
   .hx-lockup { filter: none; }
   .hx-line > span, .hx-ver > span, .hx-year > span { animation-iteration-count: 1, 2; }
   .lx-logo { will-change: transform; }
+  /* The live dots pulsed a box-shadow ring = a main-thread repaint every
+     frame. Opacity pulse runs on the compositor. */
+  @keyframes hs-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  /* A rotated tape that clips its own overflow forces Chrome to rebuild the
+     clip mask every frame. .tapes already clips the edges, so this is
+     visually identical. */
+  .tape { overflow: visible; }
+  /* drop-shadow over the rolling seconds digits re-filters every frame of
+     the roll; text-shadow is painted once with the digits. */
+  .cd-cell--live .cd-num { filter: none; text-shadow: 0 0 12px rgba(255, 59, 48, 0.6); }
+  .tape-track, .venue-map-marquee-track { will-change: transform; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hx-main > *, .hx-tag, .hx-line > span, .hx-ver > span, .hx-year > span, .hx-year::before, .lx-side, .lx-logo, .lx-stats li { animation: none !important; }
