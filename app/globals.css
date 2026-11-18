@@ -6,6 +6,8 @@
    Pure dark canvas · blood red from the 3.0 logo · bone white.
    ═══════════════════════════════════════════════════════════════ */
 :root {
+  /* Page content width: 90% of the screen on every display size */
+  --page-w: 90vw;
   --ink: #000000;
   --ink-2: #000000;
   --surface: #0f0f0f;
@@ -134,8 +136,8 @@ body:not(:has(.home)) .site-main .apply-page {
 .hs-section--alt { background: var(--ink-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .page-top { padding-top: clamp(130px, 14vw, 170px); min-height: 100vh; }
 
-.hs-container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
-.hs-container--narrow { max-width: 980px; }
+.hs-container { position: relative; z-index: 1; width: 100%; max-width: var(--page-w); margin: 0 auto; }
+.hs-container--narrow { max-width: var(--page-w); }
 
 .hs-bg-grid {
   position: absolute;
@@ -449,7 +451,7 @@ body:not(:has(.home)) .site-main .apply-page {
   top: 14px;
   left: 50%;
   z-index: 100;
-  width: min(1200px, calc(100% - 28px));
+  width: min(var(--page-w), calc(100% - 28px));
   transform: translateX(-50%);
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -585,7 +587,7 @@ body:not(:has(.home)) .site-main .apply-page {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 1100px;
+  max-width: var(--page-w);
   margin-block: auto;
   padding-block: clamp(24px, 4vh, 48px);
   display: flex;
@@ -951,7 +953,7 @@ body:not(:has(.home)) .site-main .apply-page {
 }
 .road-sub { margin-top: 14px; color: var(--text-2); font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase; }
 
-.road { position: relative; max-width: 1120px; margin: 0 auto; }
+.road { position: relative; max-width: var(--page-w); margin: 0 auto; }
 .road-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .road-edge { fill: none; stroke: #4a0507; stroke-width: 92px; stroke-linecap: round; }
 .road-body { fill: none; stroke: var(--red); stroke-width: 76px; stroke-linecap: round; filter: drop-shadow(0 0 30px rgba(229, 25, 31, 0.45)); }
@@ -1328,7 +1330,7 @@ body:not(:has(.home)) .site-main .apply-page {
 }
 .legacy-page-heading { margin-bottom: clamp(42px, 6vw, 72px); }
 
-.book-wrap { max-width: 1180px; margin: 0 auto; outline: none; perspective: 2600px; }
+.book-wrap { max-width: var(--page-w); margin: 0 auto; outline: none; perspective: 2600px; }
 .book-wrap:focus-visible .book { box-shadow: 0 0 0 3px var(--red-hot), 0 60px 120px -40px rgba(0, 0, 0, 0.95); }
 
 .book {
@@ -1561,7 +1563,7 @@ body:not(:has(.home)) .site-main .apply-page {
 .call-frame {
   position: relative;
   z-index: 1;
-  max-width: 1080px;
+  max-width: var(--page-w);
   margin: 0 auto 30px;
   padding: clamp(26px, 4vw, 46px);
   border: 2px solid rgba(255, 255, 255, 0.92);
@@ -1692,7 +1694,7 @@ body:not(:has(.home)) .site-main .apply-page {
   opacity: 0.5;
 }
 .cta::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse 55% 45% at 50% 60%, rgba(229, 25, 31, 0.3), transparent 70%); }
-.cta-inner { position: relative; max-width: 1100px; margin: 0 auto; }
+.cta-inner { position: relative; max-width: var(--page-w); margin: 0 auto; }
 .cta-title { margin-bottom: 40px; font-family: var(--font-display); font-weight: 400; font-size: clamp(3rem, 10vw, 9.4rem); line-height: 0.9; text-transform: uppercase; color: var(--bone); }
 .cta-line { display: block; }
 .cta-line--outline { color: transparent; -webkit-text-stroke: 2px var(--bone); }
@@ -1710,7 +1712,7 @@ body:not(:has(.home)) .site-main .apply-page {
 .venue-map-marquee:hover .venue-map-marquee-track { animation-play-state: paused; }
 .venue-map-frame { position: relative; height: 460px; width: 100%; overflow: hidden; background: #111; }
 .venue-map-frame iframe { width: 100%; height: 100%; border: 0; filter: grayscale(0.6) invert(0.92) hue-rotate(180deg) contrast(0.9); }
-.venue-map-card { position: absolute; z-index: 1; top: 64px; left: max(24px, calc((100% - 1200px) / 2)); width: min(340px, calc(100% - 48px)); padding: 22px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6); }
+.venue-map-card { position: absolute; z-index: 1; top: 64px; left: max(24px, calc((100% - var(--page-w)) / 2)); width: min(340px, calc(100% - 48px)); padding: 22px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6); }
 .venue-map-eyebrow { margin-bottom: 10px; color: var(--red-hot); font-family: var(--font-mono); font-size: 0.64rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
 .venue-map h2 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.3rem, 2.2vw, 1.7rem); line-height: 1.1; text-transform: uppercase; color: var(--bone); }
 .venue-map-card > p:not(.venue-map-eyebrow) { margin-top: 8px; color: var(--text-2); font-size: 0.82rem; line-height: 1.6; }
@@ -1726,7 +1728,7 @@ body:not(:has(.home)) .site-main .apply-page {
    FOOTER
    ═══════════════════════════════════════════════════════════════ */
 .contelas-footer { overflow: hidden; padding: 88px 24px 0; background: #030303; border-top: 1px solid var(--line); color: var(--text); }
-.contelas-footer-inner { max-width: 1200px; margin: 0 auto; }
+.contelas-footer-inner { max-width: var(--page-w); margin: 0 auto; }
 .contelas-footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; }
 .contelas-footer-brand { max-width: 340px; }
 .footer-brand-link { display: inline-flex; }
@@ -1794,7 +1796,7 @@ body:not(:has(.home)) .site-main .apply-page {
 .pool-label { color: var(--red-soft); font-family: var(--font-mono); font-size: 0.66rem; font-weight: 800; letter-spacing: 0.22em; }
 .pool-value { font-family: var(--font-display); font-size: clamp(2.6rem, 6vw, 4.4rem); line-height: 1; color: var(--bone); }
 
-.podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 18px; max-width: 1000px; margin: 0 auto 80px; }
+.podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 18px; max-width: var(--page-w); margin: 0 auto 80px; }
 .podium-col { display: flex; flex-direction: column; }
 .podium-card { position: relative; overflow: hidden; padding: 28px 24px; border: 1px solid var(--line); border-bottom: 0; border-radius: 20px 20px 0 0; background: linear-gradient(170deg, var(--surface-2), var(--surface)); text-align: center; }
 .podium-col--1st .podium-card { border-color: var(--red); box-shadow: 0 -20px 60px -30px var(--red-glow); }
@@ -2133,7 +2135,7 @@ body {
 /* ═══════════════════════════════════════════════════════════════
    FAQ — short, one-open-at-a-time accordion
    ═══════════════════════════════════════════════════════════════ */
-.faqx { max-width: 1180px; }
+.faqx { max-width: var(--page-w); }
 .faqx .hs-head { margin-bottom: 36px; }
 .faqx-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 10px 16px; }
 .faqx-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
@@ -2170,7 +2172,7 @@ body {
 /* ═══════════════════════════════════════════════════════════════
    SPONSORS — premium spotlight layout
    ═══════════════════════════════════════════════════════════════ */
-.spx .hs-container { max-width: 1040px; }
+.spx .hs-container { max-width: var(--page-w); }
 .spx-group { margin-bottom: 44px; }
 .spx-tier { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
 .spx-tier-icon { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(229, 25, 31, 0.4); border-radius: 10px; background: rgba(229, 25, 31, 0.1); color: var(--red-hot); }
@@ -2250,7 +2252,7 @@ body {
 .crew-block-label::after { content: ""; width: 60px; height: 1px; background: linear-gradient(90deg, transparent, rgba(229, 25, 31, 0.6)); }
 .crew-block-label::after { transform: scaleX(-1); }
 
-.convener-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
+.convener-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: var(--page-w); margin: 0 auto; }
 .convener {
   position: relative;
   display: flex;
@@ -2391,7 +2393,7 @@ body { background-image: none !important; }
 /* ═══════════════════════════════════════════════════════════════
    CONVENERS — no cards: badge + name, side by side
    ═══════════════════════════════════════════════════════════════ */
-.convener-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: clamp(28px, 6vw, 80px); max-width: 1040px; margin: 0 auto; }
+.convener-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: clamp(28px, 6vw, 80px); max-width: var(--page-w); margin: 0 auto; }
 .convener {
   padding: 0;
   border: 0;
@@ -2430,6 +2432,8 @@ body { background: transparent !important; }
    Loaded last so it overrides the per-section styles above.
    ═══════════════════════════════════════════════════════════════ */
 :root {
+  /* Page content width: 90% of the screen on every display size */
+  --page-w: 90vw;
   --fs-h2: clamp(2.8rem, 6.2vw, 5.2rem);
   --fs-body: clamp(0.98rem, 1.1vw, 1.06rem);
   --fs-eyebrow: 0.74rem;
@@ -2492,7 +2496,7 @@ body { background: transparent !important; }
    PASS — Round 1 hacker-pass generator (home #pass and /pass)
    Wide ticket preview on top, form + share panel underneath.
    ═══════════════════════════════════════════════════════════════ */
-.pass-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 460px); align-items: start; gap: clamp(28px, 4vw, 56px); max-width: 1160px; margin: 0 auto; }
+.pass-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 460px); align-items: start; gap: clamp(28px, 4vw, 56px); max-width: var(--page-w); margin: 0 auto; }
 
 .pass-preview { position: relative; width: 100%; }
 .pass-preview::before { content: ""; position: absolute; inset: 10% 4% -6%; z-index: -1; border-radius: 40px; background: radial-gradient(ellipse at 50% 50%, rgba(229, 25, 31, 0.32), transparent 70%); filter: blur(46px); }
@@ -2550,7 +2554,7 @@ body { background: transparent !important; }
    labelled row of logos sitting directly on the page.
    ═══════════════════════════════════════════════════════════════ */
 .sps { position: relative; isolation: isolate; }
-.sps-inner { max-width: 960px; }
+.sps-inner { max-width: var(--page-w); }
 .sps-head { margin-bottom: clamp(48px, 7vw, 80px); }
 .sps-cta { margin-top: 6px; color: var(--text-2); font-size: var(--fs-body); }
 .sps-cta a { color: var(--bone); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--red); white-space: nowrap; transition: color 0.2s ease, border-color 0.2s ease; }
