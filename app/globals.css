@@ -2625,7 +2625,7 @@ body { background: transparent !important; }
   grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
   align-items: center;
   gap: clamp(40px, 7vw, 120px);
-  width: min(1280px, 100%);
+  width: min(var(--page-w), 100%);
   margin-block: auto;
   padding: clamp(28px, 5vh, 56px) clamp(0px, 1.5vw, 20px);
 }
@@ -2775,7 +2775,7 @@ body { background: transparent !important; }
 .lx-stats li:hover strong { color: var(--red-hot); }
 .lx-stats li > span { margin-top: 5px; color: var(--text-3); font-family: var(--font-mono); font-size: 0.5rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
 
-.hero-sponsors.lx-sponsors { width: min(1280px, 100%); justify-content: flex-start; padding: 16px clamp(0px, 1.5vw, 20px) 0; border-top: 1px solid rgba(255, 255, 255, 0.07); }
+.hero-sponsors.lx-sponsors { width: min(var(--page-w), 100%); justify-content: flex-start; padding: 16px clamp(0px, 1.5vw, 20px) 0; border-top: 1px solid rgba(255, 255, 255, 0.07); }
 
 /* Keep the backdrop dim behind the wordmark on the left. */
 @media (min-width: 1025px) {
