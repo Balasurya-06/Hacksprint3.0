@@ -2813,6 +2813,16 @@ body { background: transparent !important; }
   .lx-stats strong { font-size: 1.2rem; }
   .lx-stats li > span { font-size: 0.48rem; letter-spacing: 0.1em; }
 }
+/* Phones / touch: same intro, but GPU-cheap. Animating filter: blur() on
+   ~10 elements at once and repainting the sheen under a drop-shadow filter
+   is what made the hero stutter on mobile. Transform + opacity only. */
+@keyframes cine-rise-lite { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (max-width: 760px), (pointer: coarse) {
+  .hx-main > *, .hx-tag, .lx-side, .lx-stats li { animation-name: cine-rise-lite; }
+  .hx-lockup { filter: none; }
+  .hx-line > span, .hx-ver > span, .hx-year > span { animation-iteration-count: 1, 2; }
+  .lx-logo { will-change: transform; }
+}
 @media (prefers-reduced-motion: reduce) {
   .hx-main > *, .hx-tag, .hx-line > span, .hx-ver > span, .hx-year > span, .hx-year::before, .lx-side, .lx-logo, .lx-stats li { animation: none !important; }
 }

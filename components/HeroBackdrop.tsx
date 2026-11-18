@@ -79,6 +79,18 @@ export default function HeroBackdrop() {
     if (!canvas || !ctx) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    /* Lite mode for phones / touch / low-end devices: 1x pixels, ~30fps,
+       fewer packets, no per-frame gradients, and a deferred start so the
+       board never competes with first paint and hydration. */
+    const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const lite =
+      coarse ||
+      window.matchMedia("(max-width: 760px)").matches ||
+      (nav.hardwareConcurrency ?? 8) <= 4 ||
+      (nav.deviceMemory ?? 8) <= 4;
+    const still = reduce || nav.connection?.saveData === true;
+    const frameMs = lite ? 1000 / 30 : 0;
     const grid = document.createElement("canvas");
     const gctx = grid.getContext("2d")!;
 
@@ -214,7 +226,7 @@ export default function HeroBackdrop() {
       if (nw === w && nh === h) return;
       w = nw;
       h = nh;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = lite ? 1 : Math.min(window.devicePixelRatio || 1, 2);
       mobile = w < 640;
       gap = mobile ? 24 : 30;
       horizon = h;
@@ -222,7 +234,7 @@ export default function HeroBackdrop() {
       oy = gap * 0.5;
       rows = Math.max(2, Math.floor((horizon - gap - oy) / gap) + 1);
       ox = (w - (cols - 1) * gap) / 2;
-      maxPackets = Math.round(Math.min(28, Math.max(8, (w * horizon) / 48000)));
+      maxPackets = Math.round(Math.min(lite ? 10 : 28, Math.max(lite ? 5 : 8, (w * horizon) / 48000)));
       canvas!.width = Math.ceil(w * dpr);
       canvas!.height = Math.ceil(h * dpr);
       drawGrid();
@@ -231,7 +243,7 @@ export default function HeroBackdrop() {
       segs = [];
       glyphs = [];
       pings = [];
-      if (reduce) draw();
+      if (still) draw();
     }
 
     /* ── Simulation ───────────────────────────────────────────── */
@@ -405,10 +417,14 @@ export default function HeroBackdrop() {
         if (seg === 0) continue;
         const take = Math.min(seg, p.len - walked);
         if (take < seg) b = { x: a.x + ((b.x - a.x) * take) / seg, y: a.y + ((b.y - a.y) * take) / seg };
-        const g = ctx!.createLinearGradient(a.x, a.y, b.x, b.y);
-        g.addColorStop(0, `rgba(${p.rgb}, ${0.9 * fade * (1 - walked / p.len)})`);
-        g.addColorStop(1, `rgba(${p.rgb}, ${0.9 * fade * (1 - (walked + take) / p.len)})`);
-        ctx!.strokeStyle = g;
+        if (lite) {
+          ctx!.strokeStyle = `rgba(${p.rgb}, ${0.9 * fade * (1 - (walked + take / 2) / p.len)})`;
+        } else {
+          const g = ctx!.createLinearGradient(a.x, a.y, b.x, b.y);
+          g.addColorStop(0, `rgba(${p.rgb}, ${0.9 * fade * (1 - walked / p.len)})`);
+          g.addColorStop(1, `rgba(${p.rgb}, ${0.9 * fade * (1 - (walked + take) / p.len)})`);
+          ctx!.strokeStyle = g;
+        }
         ctx!.beginPath();
         ctx!.moveTo(a.x, a.y);
         ctx!.lineTo(b.x, b.y);
@@ -416,11 +432,18 @@ export default function HeroBackdrop() {
         walked += take;
       }
 
-      const glow = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, 16);
-      glow.addColorStop(0, `rgba(${p.rgb}, ${0.6 * fade})`);
-      glow.addColorStop(1, `rgba(${p.rgb}, 0)`);
-      ctx!.fillStyle = glow;
-      ctx!.fillRect(p.x - 16, p.y - 16, 32, 32);
+      if (lite) {
+        ctx!.fillStyle = `rgba(${p.rgb}, ${0.22 * fade})`;
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, 6, 0, Math.PI * 2);
+        ctx!.fill();
+      } else {
+        const glow = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, 16);
+        glow.addColorStop(0, `rgba(${p.rgb}, ${0.6 * fade})`);
+        glow.addColorStop(1, `rgba(${p.rgb}, 0)`);
+        ctx!.fillStyle = glow;
+        ctx!.fillRect(p.x - 16, p.y - 16, 32, 32);
+      }
       ctx!.fillStyle = `rgba(255, 255, 255, ${0.95 * fade})`;
       ctx!.beginPath();
       ctx!.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
@@ -457,7 +480,7 @@ export default function HeroBackdrop() {
       ctx!.drawImage(grid, 0, 0);
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      if (!reduce) drawScan();
+      if (!still) drawScan();
       drawTraces();
       drawHubs();
 
@@ -477,14 +500,19 @@ export default function HeroBackdrop() {
 
     /* ── Loop ─────────────────────────────────────────────────── */
     function frame(t: number) {
+      if (frameMs && t - last < frameMs - 1) {
+        raf = requestAnimationFrame(frame);
+        return;
+      }
       const dt = Math.min(0.05, (t - last) / 1000 || 0);
       last = t;
       update(dt);
       draw();
       raf = requestAnimationFrame(frame);
     }
+    let ready = false;
     function start() {
-      if (reduce || raf || !inView || document.hidden) return;
+      if (still || !ready || raf || !inView || document.hidden) return;
       last = performance.now();
       raf = requestAnimationFrame(frame);
     }
@@ -540,20 +568,40 @@ export default function HeroBackdrop() {
     io.observe(canvas);
 
     resize();
-    if (!reduce) {
-      /* Pre-warm so the board is already alive on first paint. */
-      for (let i = 0; i < 50; i++) update(0.05);
-      window.addEventListener("pointermove", onMove, { passive: true });
+    /* Paint the static grid right away (cheap), animate later. */
+    draw();
+
+    let idleId = 0;
+    let loadTimer = 0;
+    const idle = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    const cancelIdle = (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+    const boot = () => {
+      if (still) return;
+      /* Pre-warm so the board is already alive when it starts moving. */
+      for (let i = 0; i < (lite ? 20 : 50); i++) update(0.05);
+      if (!coarse) {
+        window.addEventListener("pointermove", onMove, { passive: true });
+        document.documentElement.addEventListener("pointerleave", onLeave);
+      }
       window.addEventListener("pointerdown", onDown, { passive: true });
-      document.documentElement.addEventListener("pointerleave", onLeave);
-    } else {
-      draw();
-    }
+      ready = true;
+      start();
+    };
+    const schedule = () => {
+      if (idle) idleId = idle(boot, { timeout: lite ? 2500 : 800 });
+      else loadTimer = window.setTimeout(boot, lite ? 1200 : 200);
+    };
+    if (!lite) boot();
+    else if (document.readyState === "complete") schedule();
+    else window.addEventListener("load", schedule, { once: true });
+
     document.addEventListener("visibilitychange", onVisibility);
-    start();
 
     return () => {
       stop();
+      window.removeEventListener("load", schedule);
+      if (idleId && cancelIdle) cancelIdle(idleId);
+      window.clearTimeout(loadTimer);
       ro.disconnect();
       io.disconnect();
       window.removeEventListener("pointermove", onMove);
