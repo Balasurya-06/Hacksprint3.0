@@ -2554,6 +2554,10 @@ body { background: transparent !important; }
 .sps-label::after { content: ""; width: clamp(36px, 8vw, 90px); height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3)); }
 .sps-label::after { transform: scaleX(-1); }
 .sps-label svg { margin-right: -6px; }
+.sps-group--diamond::before { content: ""; position: absolute; left: 50%; top: 60%; z-index: -1; width: min(600px, 90%); height: 200px; translate: -50% -50%; background: radial-gradient(ellipse at center, rgba(18, 200, 222, 0.18), transparent 70%); filter: blur(10px); pointer-events: none; }
+.sps-label--diamond { color: #7fe6f2; }
+.sps-label--diamond::before,
+.sps-label--diamond::after { background: linear-gradient(90deg, transparent, rgba(18, 200, 222, 0.7)); }
 .sps-label--gold { color: #f3d68c; }
 .sps-label--gold::before,
 .sps-label--gold::after { background: linear-gradient(90deg, transparent, rgba(232, 193, 106, 0.7)); }
@@ -2575,6 +2579,7 @@ body { background: transparent !important; }
 .sps-role--wrap .sps-role-title { max-width: 150px; white-space: normal; text-wrap: balance; }
 .sps-role--media { background: #8edcff; }
 .sps-role--community { background: #b7e88a; }
+.sps-role--hardware { background: #12c8de; }
 @keyframes sps-role-cycle {
   0%, 8% { opacity: 0; clip-path: polygon(0 12%, 0 0, 0 88%, 0 100%); transform: translateX(-46px) rotate(-4deg); }
   18% { opacity: 1; clip-path: polygon(3% 12%, 97% 0, 100% 88%, 7% 100%); transform: translateX(0) rotate(-1deg); }

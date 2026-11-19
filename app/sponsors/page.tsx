@@ -7,12 +7,16 @@ interface Sponsor {
   name: string;
   role?: string;
   roleWrap?: boolean;
-  roleTone?: "tooling" | "media" | "platform" | "community";
+  roleTone?: "tooling" | "media" | "platform" | "community" | "hardware";
   logo: string;
   w: number;
   h: number;
   url: string;
 }
+
+const diamondSponsors: Sponsor[] = [
+  { name: "Cyberwave", role: "HARDWARE SPONSOR", roleTone: "hardware", logo: "/Sponsor/cyberwave.png", w: 1872, h: 511, url: "https://cyberwave.com" },
+];
 
 const goldSponsors: Sponsor[] = [
   { name: "Devfolio", role: "PLATFORM & COMMUNITY SPONSOR", roleWrap: true, roleTone: "platform", logo: "/Sponsor/_Dark.png", w: 436, h: 144, url: "https://devfolio.co" },
@@ -64,6 +68,24 @@ export default function SponsorsPage() {
             </a>
           </p>
         </header>
+
+        {/* ── DIAMOND SPONSOR ── */}
+        <div className="sps-group sps-group--diamond hs-reveal">
+          <p className="sps-label sps-label--diamond">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M6 3h12l4 6-10 12L2 9l4-6z" />
+            </svg>
+            Diamond Sponsor
+          </p>
+          <div className="sps-row">
+            {diamondSponsors.map((s, i) => (
+              <div key={s.name} className="sps-slot">
+                {i > 0 && <span className="sps-divider" aria-hidden="true" />}
+                <SponsorLogo s={s} height={72} />
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* ── GOLD SPONSOR ── */}
         <div className="sps-group sps-group--gold hs-reveal">
