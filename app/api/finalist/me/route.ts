@@ -1,0 +1,31 @@
+import { amountForMembers, FEE_PER_MEMBER_INR } from "@/lib/finalist/config";
+import { getMembers } from "@/lib/finalist/db";
+import { currentTeam } from "@/lib/finalist/session";
+import { passToken } from "@/lib/finalist/tokens";
+
+/* Dashboard data for the logged-in team. */
+export async function GET() {
+  const team = await currentTeam();
+  if (!team) return Response.json({ error: "Not logged in" }, { status: 401 });
+
+  const members = await getMembers(team.id);
+  const paid = team.status === "paid";
+
+  return Response.json(
+    {
+      team: {
+        code: team.team_code,
+        name: team.name,
+        status: team.status,
+        paidAt: team.paid_at,
+        paymentId: team.payment_id,
+        amountPaid: team.amount_paid ? team.amount_paid / 100 : null,
+      },
+      members: members.map((m) => ({ name: m.name, isLeader: m.is_leader })),
+      feePerMember: FEE_PER_MEMBER_INR,
+      amountDue: amountForMembers(members.length),
+      passToken: paid ? passToken(team.id) : null,
+    },
+    { headers: { "Cache-Control": "no-store" } },
+  );
+}

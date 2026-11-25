@@ -1,0 +1,68 @@
+/* ── Finalist portal (login, dashboard, gate verify, admin) ── */
+.fp-wrap { max-width: 980px; margin: 0 auto; }
+.fp-wrap--sm { max-width: 520px; }
+
+.fp-card {
+  position: relative;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
+  padding: clamp(22px, 3.4vw, 34px);
+}
+.fp-card + .fp-card { margin-top: 18px; }
+.fp-card-title { font-family: var(--font-display); font-size: clamp(1.4rem, 2.6vw, 1.9rem); text-transform: uppercase; letter-spacing: 0.01em; margin: 0 0 6px; }
+.fp-muted { color: var(--text-2); font-size: 0.92rem; line-height: 1.65; }
+.fp-label { display: block; margin: 0 0 8px; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.14em; color: var(--text-2); text-transform: uppercase; }
+
+.fp-input {
+  width: 100%; height: 56px; padding: 0 18px;
+  border: 1px solid var(--line-strong); border-radius: 12px;
+  background: rgba(0, 0, 0, 0.5); color: var(--bone);
+  font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: 0.06em;
+  outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.fp-input:focus { border-color: var(--red); box-shadow: 0 0 0 4px var(--red-tint); }
+.fp-input--code { text-align: center; font-size: 1.8rem; letter-spacing: 0.6em; padding-left: 0.6em; }
+.fp-form { display: grid; gap: 16px; margin-top: 22px; }
+.fp-form .hs-btn { width: 100%; justify-content: center; }
+.fp-btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.fp-link { background: none; border: 0; padding: 0; color: var(--red-soft); font: inherit; font-size: 0.85rem; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.fp-link:disabled { color: var(--text-3); cursor: default; }
+
+.fp-error { border: 1px solid rgba(255, 59, 48, 0.4); background: rgba(229, 25, 31, 0.1); color: #ffb3ad; border-radius: 10px; padding: 12px 14px; font-size: 0.88rem; }
+.fp-ok { border: 1px solid rgba(65, 209, 123, 0.4); background: rgba(65, 209, 123, 0.08); color: #9ff0bf; border-radius: 10px; padding: 12px 14px; font-size: 0.88rem; }
+
+.fp-badge { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.66rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.fp-badge--short { background: var(--red-tint); color: var(--red-soft); border: 1px solid rgba(229, 25, 31, 0.35); }
+.fp-badge--paid { background: rgba(65, 209, 123, 0.1); color: #7fe6a8; border: 1px solid rgba(65, 209, 123, 0.35); }
+.fp-badge--bad { background: rgba(255, 255, 255, 0.05); color: var(--text-2); border: 1px solid var(--line-strong); }
+
+.fp-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.fp-team-name { font-family: var(--font-display); font-size: clamp(2.2rem, 5.4vw, 3.6rem); line-height: 0.95; text-transform: uppercase; margin: 10px 0 8px; }
+.fp-code { font-family: var(--font-mono); color: var(--text-2); font-size: 0.85rem; letter-spacing: 0.08em; }
+
+.fp-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 18px; margin-top: 18px; }
+.fp-grid .fp-card + .fp-card { margin-top: 0; }
+@media (max-width: 820px) { .fp-grid { grid-template-columns: 1fr; } }
+
+.fp-members { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
+.fp-members li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(0, 0, 0, 0.35); }
+.fp-avatar { display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; background: var(--red); color: #fff; font-weight: 800; font-size: 0.85rem; }
+.fp-members .fp-tag { margin-left: auto; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; color: var(--red-soft); }
+
+.fp-bill { margin: 16px 0 20px; display: grid; gap: 10px; font-size: 0.95rem; }
+.fp-bill div { display: flex; justify-content: space-between; color: var(--text-2); }
+.fp-bill .fp-total { padding-top: 12px; border-top: 1px dashed var(--line-strong); color: var(--bone); font-weight: 800; font-size: 1.2rem; }
+
+.fp-pass { margin-top: 18px; display: grid; grid-template-columns: minmax(0, 360px) 1fr; gap: 24px; align-items: start; }
+.fp-pass canvas { width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line-strong); }
+@media (max-width: 820px) { .fp-pass { grid-template-columns: 1fr; } }
+
+.fp-table-wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: 12px; }
+.fp-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.fp-table th, .fp-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.fp-table th { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.12em; color: var(--text-2); text-transform: uppercase; background: rgba(255, 255, 255, 0.03); position: sticky; top: 0; }
+.fp-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 18px; }
+.fp-stat { padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: rgba(0, 0, 0, 0.35); }
+.fp-stat b { display: block; font-family: var(--font-display); font-size: 2rem; }
+.fp-stat span { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; color: var(--text-2); text-transform: uppercase; }

@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+!.env.example
+# finalist data exports (real participant data)
+/data/*.csv
+!/data/finalists.sample.csv
