@@ -1,6 +1,8 @@
+import { randomBytes } from "node:crypto";
 import { withErrors } from "@/lib/finalist/http";
 import { amountForMembers, requireEnv } from "@/lib/finalist/config";
-import { db, getMembers } from "@/lib/finalist/db";
+import { getMembers, store } from "@/lib/finalist/db";
+import { isDemoPayments } from "@/lib/finalist/payments";
 import { createOrder } from "@/lib/finalist/razorpay";
 import { currentTeam } from "@/lib/finalist/session";
 
@@ -14,28 +16,28 @@ async function handlePOST() {
   const members = await getMembers(team.id);
   if (members.length === 0) return Response.json({ error: "No members found for this team. Contact the organisers." }, { status: 400 });
   const amountPaise = amountForMembers(members.length) * 100;
+  const demo = isDemoPayments();
 
-  const sql = db();
-  const [existing] = await sql<{ order_id: string }[]>`
-    select order_id from payments
-    where team_id = ${team.id} and status = 'created' and amount = ${amountPaise} and created_at > now() - interval '12 hours'
-    order by created_at desc limit 1`;
-
-  let orderId = existing?.order_id;
+  let orderId = await store().findReusableOrder(team.id, amountPaise);
   if (!orderId) {
-    try {
-      const order = await createOrder(amountPaise, team.team_code, { team_id: String(team.id), team_code: team.team_code });
-      orderId = order.id;
-      await sql`insert into payments (team_id, order_id, amount) values (${team.id}, ${orderId}, ${amountPaise})`;
-    } catch (err) {
-      console.error("[finalist] create order failed", err);
-      return Response.json({ error: "Couldn't start the payment. Please try again." }, { status: 502 });
+    if (demo) {
+      orderId = `order_demo_${randomBytes(6).toString("hex")}`;
+    } else {
+      try {
+        const order = await createOrder(amountPaise, team.team_code, { team_id: String(team.id), team_code: team.team_code });
+        orderId = order.id;
+      } catch (err) {
+        console.error("[finalist] create order failed", err);
+        return Response.json({ error: "Couldn't start the payment. Please try again." }, { status: 502 });
+      }
     }
+    await store().insertOrder(team.id, orderId, amountPaise);
   }
 
   const leader = members.find((m) => m.is_leader);
   return Response.json({
-    keyId: requireEnv("RAZORPAY_KEY_ID"),
+    demo,
+    keyId: demo ? null : requireEnv("RAZORPAY_KEY_ID"),
     orderId,
     amount: amountPaise,
     currency: "INR",

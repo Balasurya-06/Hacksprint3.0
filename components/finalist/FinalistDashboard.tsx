@@ -95,10 +95,30 @@ export default function FinalistDashboard() {
     setNotice("");
     setPaying(true);
     try {
-      if (!(await loadCheckout()) || !window.Razorpay) throw new Error("Couldn't load the payment window. Check your connection.");
       const res = await fetch("/api/payment/create-order", { method: "POST" });
       const order = await res.json();
       if (!res.ok) throw new Error(order.error || "Couldn't start the payment.");
+
+      if (order.demo) {
+        /* Local dev without Razorpay keys: simulate a successful payment. */
+        if (!confirm(`DEMO MODE (no Razorpay keys)\n\nSimulate a successful payment of ₹${(order.amount / 100).toLocaleString("en-IN")} for ${order.teamName}?`)) {
+          setPaying(false);
+          return;
+        }
+        setNotice("Demo payment, confirming…");
+        const v = await fetch("/api/payment/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ demo: true, razorpay_order_id: order.orderId }),
+        });
+        if (!v.ok) throw new Error((await v.json().catch(() => ({}))).error || "Demo payment failed");
+        await load();
+        setNotice("Payment successful (demo)! The confirmation mail is printed in the dev terminal.");
+        setPaying(false);
+        return;
+      }
+
+      if (!(await loadCheckout()) || !window.Razorpay) throw new Error("Couldn't load the payment window. Check your connection.");
 
       const rzp = new window.Razorpay({
         key: order.keyId,

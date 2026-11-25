@@ -21,6 +21,15 @@ Shortlisted teams log in with their **Team ID**, see their members, pay **₹300
 
 The amount is always calculated on the server from the member count. A team that has paid cannot pay again.
 
+## Local demo mode (no accounts needed)
+
+Running `npm run dev` with only `ADMIN_PASSWORD` and `SESSION_SECRET` in `.env.local`:
+- **No `DATABASE_URL`** → built-in sample teams `UNIQUE.DEMO` (3 members) and `VIGRON.DEMO` (5 members), kept in memory and reset on restart.
+- **No `SMTP_HOST`** → mails are printed in the dev terminal, and the login code is shown on screen.
+- **No `RAZORPAY_KEY_ID`** → "Pay" simulates a successful payment.
+
+Demo mode is never active in production (`next build` / Vercel): there, missing settings show a configuration error.
+
 ## One-time setup
 
 ### 1. Database (Supabase free tier is enough)

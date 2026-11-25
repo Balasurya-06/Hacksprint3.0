@@ -33,7 +33,11 @@ export default function FinalistLogin() {
       setEmail(data.email);
       setTeamName(data.teamName);
       setStep("code");
-      setInfo(`Code sent to ${data.email}`);
+      setInfo(
+        data.devCode
+          ? `Dev mode (no SMTP): mail not sent. Your code is ${data.devCode}`
+          : `Code sent to ${data.email}`,
+      );
     } catch (err) {
       setError((err as Error).message);
     } finally {

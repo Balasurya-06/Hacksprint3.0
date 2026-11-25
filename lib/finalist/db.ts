@@ -1,19 +1,10 @@
 import postgres from "postgres";
 import { requireEnv } from "./config";
+import { memoryStore } from "./memory-store";
 
-/* One pooled client per server instance (survives hot reload in dev). */
-const globalForDb = globalThis as unknown as { __hsSql?: postgres.Sql };
-
-export function db() {
-  if (!globalForDb.__hsSql) {
-    globalForDb.__hsSql = postgres(requireEnv("DATABASE_URL"), {
-      max: 5,
-      ssl: process.env.DATABASE_SSL === "false" ? false : "require",
-      prepare: false, // needed for Supabase/Neon poolers (pgbouncer transaction mode)
-    });
-  }
-  return globalForDb.__hsSql;
-}
+/* All data access for the finalist portal goes through `store()`.
+   - DATABASE_URL set        → Postgres
+   - not set, in `next dev`  → in-memory demo data (Unique & Vigron), resets on restart */
 
 export type TeamRow = {
   id: number;
@@ -27,19 +18,128 @@ export type TeamRow = {
   id_mail_sent_at: Date | null;
   paid_mail_sent_at: Date | null;
 };
-
 export type MemberRow = { id: number; team_id: number; name: string; email: string | null; is_leader: boolean };
+export type LoginCodeRow = { code_hash: string; expires_at: Date; attempts: number; sent_at: Date };
+export type OrderRow = { team_id: number; amount: number; status: "created" | "paid" | "failed" };
+export type AdminTeamRow = TeamRow & { member_count: number; members: string };
 
-export async function getTeamByCode(code: string) {
-  const rows = await db()<TeamRow[]>`select * from teams where upper(team_code) = upper(${code.trim()}) limit 1`;
-  return rows[0] ?? null;
+export interface Store {
+  getTeamByCode(code: string): Promise<TeamRow | null>;
+  getTeamById(id: number): Promise<TeamRow | null>;
+  getMembers(teamId: number): Promise<MemberRow[]>;
+
+  getLoginCode(teamId: number): Promise<LoginCodeRow | null>;
+  saveLoginCode(teamId: number, codeHash: string, ttlMs: number): Promise<void>;
+  bumpLoginAttempts(teamId: number): Promise<void>;
+  deleteLoginCode(teamId: number): Promise<void>;
+
+  findReusableOrder(teamId: number, amount: number): Promise<string | null>;
+  insertOrder(teamId: number, orderId: string, amount: number): Promise<void>;
+  getOrder(orderId: string): Promise<OrderRow | null>;
+  /** Marks order + team paid. Returns the team only the FIRST time (null if already paid). */
+  markOrderPaid(orderId: string, paymentId: string, amount?: number): Promise<TeamRow | null>;
+
+  setMailSent(teamId: number, kind: "id" | "paid"): Promise<void>;
+  listTeams(): Promise<AdminTeamRow[]>;
+  teamsWithoutIdMail(limit: number): Promise<TeamRow[]>;
+  countWithoutIdMail(): Promise<number>;
 }
 
-export async function getTeamById(id: number) {
-  const rows = await db()<TeamRow[]>`select * from teams where id = ${id} limit 1`;
-  return rows[0] ?? null;
+export const isDemoDb = () => !process.env.DATABASE_URL && process.env.NODE_ENV !== "production";
+
+const g = globalThis as unknown as { __hsSql?: postgres.Sql };
+function sql() {
+  if (!g.__hsSql) {
+    g.__hsSql = postgres(requireEnv("DATABASE_URL"), {
+      max: 5,
+      ssl: process.env.DATABASE_SSL === "false" ? false : "require",
+      prepare: false, // needed for Supabase/Neon poolers (pgbouncer transaction mode)
+    });
+  }
+  return g.__hsSql;
 }
 
-export async function getMembers(teamId: number) {
-  return db()<MemberRow[]>`select * from members where team_id = ${teamId} order by is_leader desc, id asc`;
+const pgStore: Store = {
+  async getTeamByCode(code) {
+    const [t] = await sql()<TeamRow[]>`select * from teams where upper(team_code) = upper(${code.trim()}) limit 1`;
+    return t ?? null;
+  },
+  async getTeamById(id) {
+    const [t] = await sql()<TeamRow[]>`select * from teams where id = ${id} limit 1`;
+    return t ?? null;
+  },
+  getMembers: (teamId) => sql()<MemberRow[]>`select * from members where team_id = ${teamId} order by is_leader desc, id asc`,
+
+  async getLoginCode(teamId) {
+    const [r] = await sql()<LoginCodeRow[]>`select code_hash, expires_at, attempts, sent_at from login_codes where team_id = ${teamId}`;
+    return r ?? null;
+  },
+  async saveLoginCode(teamId, codeHash, ttlMs) {
+    const expires = new Date(Date.now() + ttlMs);
+    await sql()`
+      insert into login_codes (team_id, code_hash, expires_at, attempts, sent_at)
+      values (${teamId}, ${codeHash}, ${expires}, 0, now())
+      on conflict (team_id) do update set code_hash = excluded.code_hash, expires_at = excluded.expires_at, attempts = 0, sent_at = now()`;
+  },
+  async bumpLoginAttempts(teamId) {
+    await sql()`update login_codes set attempts = attempts + 1 where team_id = ${teamId}`;
+  },
+  async deleteLoginCode(teamId) {
+    await sql()`delete from login_codes where team_id = ${teamId}`;
+  },
+
+  async findReusableOrder(teamId, amount) {
+    const [r] = await sql()<{ order_id: string }[]>`
+      select order_id from payments
+      where team_id = ${teamId} and status = 'created' and amount = ${amount} and created_at > now() - interval '12 hours'
+      order by created_at desc limit 1`;
+    return r?.order_id ?? null;
+  },
+  async insertOrder(teamId, orderId, amount) {
+    await sql()`insert into payments (team_id, order_id, amount) values (${teamId}, ${orderId}, ${amount})`;
+  },
+  async getOrder(orderId) {
+    const [r] = await sql()<OrderRow[]>`select team_id, amount, status from payments where order_id = ${orderId}`;
+    return r ?? null;
+  },
+  async markOrderPaid(orderId, paymentId, amount) {
+    return sql().begin(async (tx) => {
+      const [order] = await tx<OrderRow[]>`select team_id, amount, status from payments where order_id = ${orderId} for update`;
+      if (!order) return null;
+      if (amount !== undefined && amount !== order.amount) {
+        throw new Error(`Amount mismatch for ${orderId}: got ${amount}, expected ${order.amount}`);
+      }
+      if (order.status !== "paid") {
+        await tx`update payments set status = 'paid', payment_id = ${paymentId}, paid_at = now() where order_id = ${orderId}`;
+      }
+      const [team] = await tx<TeamRow[]>`
+        update teams set status = 'paid', paid_at = now(), payment_id = ${paymentId}, amount_paid = ${order.amount}
+        where id = ${order.team_id} and status <> 'paid' returning *`;
+      return team ?? null;
+    });
+  },
+
+  async setMailSent(teamId, kind) {
+    if (kind === "id") await sql()`update teams set id_mail_sent_at = now() where id = ${teamId}`;
+    else await sql()`update teams set paid_mail_sent_at = now() where id = ${teamId}`;
+  },
+  listTeams: () => sql()<AdminTeamRow[]>`
+    select t.*, count(m.id)::int as member_count,
+           coalesce(string_agg(m.name, '; ' order by m.is_leader desc, m.id), '') as members
+    from teams t left join members m on m.team_id = t.id
+    group by t.id order by t.name`,
+  teamsWithoutIdMail: (limit) => sql()<TeamRow[]>`select * from teams where id_mail_sent_at is null order by id limit ${limit}`,
+  async countWithoutIdMail() {
+    const [{ n }] = await sql()<{ n: number }[]>`select count(*)::int as n from teams where id_mail_sent_at is null`;
+    return n;
+  },
+};
+
+export function store(): Store {
+  return isDemoDb() ? memoryStore() : pgStore;
 }
+
+/* Convenience wrappers (used widely). */
+export const getTeamByCode = (code: string) => store().getTeamByCode(code);
+export const getTeamById = (id: number) => store().getTeamById(id);
+export const getMembers = (teamId: number) => store().getMembers(teamId);

@@ -7,8 +7,12 @@ import { passToken } from "./tokens";
 /* Any SMTP works: Gmail (app password), Brevo, Amazon SES, Zoho, Resend SMTP...
    Gmail free accounts allow ~500 mails/day, which covers 400 teams. */
 let transporter: Transporter | null = null;
+
+/** Local dev without SMTP: mails are printed in the terminal instead of sent. */
+export const isDevMail = () => !process.env.SMTP_HOST && process.env.NODE_ENV !== "production";
+
 function mailer() {
-  if (!transporter && !process.env.SMTP_HOST && process.env.NODE_ENV !== "production") {
+  if (!transporter && isDevMail()) {
     /* Local dev without SMTP: don't send, print the mail in the `npm run dev` terminal. */
     const dev = nodemailer.createTransport({ jsonTransport: true });
     transporter = {
