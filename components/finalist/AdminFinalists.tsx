@@ -271,7 +271,7 @@ export default function AdminFinalists() {
                           <form className="fp-btn-row" style={{ flex: 1 }}
                             onSubmit={(e) => { e.preventDefault(); teamAction({ action: "addMember", teamId: t.id, ...newMember }, `Added ${newMember.name} to ${t.name}`); }}>
                             <input className="fp-input" style={{ flex: "1 1 180px", height: 42, fontSize: "0.88rem", fontFamily: "var(--font-body)" }} placeholder="New member name" value={newMember.name} onChange={(e) => setNewMember((v) => ({ ...v, name: e.target.value }))} required />
-                            <input className="fp-input" style={{ flex: "1 1 200px", height: 42, fontSize: "0.88rem", fontFamily: "var(--font-body)" }} type="email" placeholder="Email (optional)" value={newMember.email} onChange={(e) => setNewMember((v) => ({ ...v, email: e.target.value }))} />
+                            <input className="fp-input" style={{ flex: "1 1 200px", height: 42, fontSize: "0.88rem", fontFamily: "var(--font-body)" }} type="email" placeholder="Email (required for login)" required value={newMember.email} onChange={(e) => setNewMember((v) => ({ ...v, email: e.target.value }))} />
                             <button className="hs-btn hs-btn--primary hs-btn--sm" disabled={busy}>＋ Add member</button>
                           </form>
                         )}

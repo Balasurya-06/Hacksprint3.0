@@ -4,6 +4,7 @@
 
   Usage:
     node --env-file=.env.local scripts/import-teams.mjs data/finalists.csv [--dry-run]
+  (You can also upload the same CSV from /admin/finalists → "+ Add finalists".)
 
   CSV: one row per MEMBER (header names are case-insensitive):
     team_name, member_name, member_email, is_leader
@@ -78,12 +79,13 @@ for (const [team, members] of teams) {
   if (members.length < 2 || members.length > 5) problems.push(`${team}: ${members.length} members (expected 2–5)`);
   if (!members.some((m) => m.leader)) members[0].leader = true;
   if (members.filter((m) => m.leader).length > 1) problems.push(`${team}: more than one leader`);
-  if (!members.find((m) => m.leader).email) problems.push(`${team}: leader has no email`);
+  const noMail = members.filter((m) => !m.email).map((m) => m.name);
+  if (noMail.length) problems.push(`${team}: email missing for ${noMail.join(", ")}`);
 }
 console.log(`Parsed ${teams.size} teams, ${[...teams.values()].flat().length} members.`);
 if (problems.length) {
   console.warn("⚠ Check these:\n  " + problems.join("\n  "));
-  if (problems.some((p) => p.includes("leader has no email"))) { console.error("A leader email is required for login. Fix the CSV."); process.exit(1); }
+  if (problems.some((p) => p.includes("email missing"))) { console.error("Every member needs an email (each member logs in with their own email). Fix the CSV."); process.exit(1); }
 }
 if (dryRun) { console.log("Dry run: nothing written."); process.exit(0); }
 

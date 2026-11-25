@@ -35,8 +35,10 @@ async function handlePOST(req: Request) {
       const name = body.name?.trim();
       const email = body.email?.trim().toLowerCase() || null;
       if (!name) return bad("Member name is required");
-      if (email && !EMAIL.test(email)) return bad(`Invalid email: ${email}`);
+      if (!email) return bad("Member email is required (every member logs in with their email)");
+      if (!EMAIL.test(email)) return bad(`Invalid email: ${email}`);
       const members = await getMembers(team.id);
+      if (members.some((m) => m.email?.toLowerCase() === email)) return bad(`${email} is already in this team`);
       if (members.length >= MAX_MEMBERS) return bad(`A team can have at most ${MAX_MEMBERS} members.`);
       await db.addMember(team.id, name, email);
       return Response.json({ ok: true });
@@ -47,7 +49,7 @@ async function handlePOST(req: Request) {
       if (!member) return bad("Member not found", 404);
       const team = await getTeamById(member.team_id);
       if (team?.status === "paid") return bad("This team has already paid. Members can't be changed.");
-      if (member.is_leader) return bad("The team leader can't be removed (their email is used for login).");
+      if (member.is_leader) return bad("The team leader can't be removed (payment receipts go to the leader).");
       const members = await getMembers(member.team_id);
       if (members.length <= MIN_MEMBERS) return bad(`A team needs at least ${MIN_MEMBERS} members.`);
       await db.removeMember(member.id);

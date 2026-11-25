@@ -11,11 +11,9 @@ type PreviewRow = {
 type MemberInput = { name: string; email: string };
 
 const SAMPLE = `team_name,member_name,member_email,is_leader
-Unique,Arun Kumar,arun@example.com,yes
-Unique,Divya R,divya@example.com,
-Unique,Karthik S,karthik@example.com,
-Vigron,Priya M,priya@example.com,yes
-Vigron,Rahul V,rahul@example.com,
+Team Name,Leader Name,leader@email.com,yes
+Team Name,Member 2 Name,member2@email.com,
+Team Name,Member 3 Name,member3@email.com,
 `;
 
 async function post(url: string, body: unknown) {
@@ -120,7 +118,7 @@ export default function AddFinalists({ onDone }: { onDone: () => void }) {
       {tab === "csv" ? (
         <div style={{ marginTop: 18 }}>
           <p className="fp-muted" style={{ marginTop: 0 }}>
-            One row per member, with columns <code>team_name, member_name, member_email, is_leader</code>. Put{" "}
+            One row per member, with columns <code>team_name, member_name, member_email, is_leader</code>. Every member needs an email, because each member logs in with their own email. Put{" "}
             <code>yes</code> in <code>is_leader</code> for the leader (if none is marked, the first member is the leader).
             Teams that already exist are skipped, so re-uploading is safe.{" "}
             <a
@@ -183,12 +181,12 @@ export default function AddFinalists({ onDone }: { onDone: () => void }) {
             <input id="new-team" className="fp-input" style={{ fontFamily: "var(--font-body)" }} value={teamName} onChange={(e) => setTeamName(e.target.value)} placeholder="e.g. Vigron" required />
           </div>
           <div>
-            <span className="fp-label">Members (2–5) · first member is the team leader</span>
+            <span className="fp-label">Members (2–5) · first member is the team leader · every member needs an email (they log in with it)</span>
             <div style={{ display: "grid", gap: 8 }}>
               {members.map((m, i) => (
                 <div key={i} className="fp-btn-row" style={{ alignItems: "center" }}>
                   <input className="fp-input" style={{ flex: "1 1 200px", height: 46, fontSize: "0.92rem", fontFamily: "var(--font-body)" }} placeholder={i === 0 ? "Leader name" : `Member ${i + 1} name`} value={m.name} onChange={(e) => setMember(i, "name", e.target.value)} required={i < 2} />
-                  <input className="fp-input" style={{ flex: "1 1 220px", height: 46, fontSize: "0.92rem", fontFamily: "var(--font-body)" }} type="email" placeholder={i === 0 ? "Leader email (used for login)" : "Email (optional)"} value={m.email} onChange={(e) => setMember(i, "email", e.target.value)} required={i === 0} />
+                  <input className="fp-input" style={{ flex: "1 1 220px", height: 46, fontSize: "0.92rem", fontFamily: "var(--font-body)" }} type="email" placeholder={i === 0 ? "Leader email" : `Member ${i + 1} email`} value={m.email} onChange={(e) => setMember(i, "email", e.target.value)} required={i < 2 || !!m.name} />
                   {i >= 2 && (
                     <button type="button" className="fp-link" onClick={() => setMembers((ms) => ms.filter((_, j) => j !== i))}>Remove</button>
                   )}

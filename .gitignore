@@ -44,3 +44,6 @@ next-env.d.ts
 # finalist data exports (real participant data)
 /data/*.csv
 !/data/finalists.sample.csv
+
+# local finalist data when running without a database (next dev)
+/.data/

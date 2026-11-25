@@ -1,47 +1,41 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import type { AdminTeamRow, LoginCodeRow, MemberRow, Store, TeamRow } from "./db";
 
-/* Local demo data (only when DATABASE_URL is not set in `next dev`). Resets when the dev server restarts. */
+/* Local store, used only in `next dev` when DATABASE_URL is not set.
+   Starts EMPTY (add teams from /admin/finalists) and is saved to .data/finalists-local.json
+   so teams survive a dev-server restart. Production always uses Postgres. */
 
 type Order = { team_id: number; order_id: string; amount: number; status: "created" | "paid" | "failed"; created_at: number };
-type State = { teams: TeamRow[]; members: MemberRow[]; codes: Map<number, LoginCodeRow>; orders: Order[] };
+type State = { teams: TeamRow[]; members: MemberRow[]; orders: Order[] };
 
-const DEMO_TEAMS: { name: string; code: string; members: [string, string][] }[] = [
-  {
-    name: "Unique",
-    code: "UNIQUE.DEMO",
-    members: [["Arun Kumar", "arun@example.com"], ["Divya R", "divya@example.com"], ["Karthik S", "karthik@example.com"]],
-  },
-  {
-    name: "Vigron",
-    code: "VIGRON.DEMO",
-    members: [
-      ["Priya M", "priya@example.com"],
-      ["Rahul V", "rahul@example.com"],
-      ["Sneha P", "sneha@example.com"],
-      ["Vishal K", "vishal@example.com"],
-      ["Meena L", "meena@example.com"],
-    ],
-  },
-];
+const FILE = join(process.cwd(), ".data", "finalists-local.json");
 
-function seed(): State {
-  const s: State = { teams: [], members: [], codes: new Map(), orders: [] };
-  let mid = 1;
-  DEMO_TEAMS.forEach((t, i) => {
-    const id = i + 1;
-    s.teams.push({
-      id, team_code: t.code, name: t.name, leader_email: t.members[0][1], status: "shortlisted",
-      paid_at: null, payment_id: null, amount_paid: null, id_mail_sent_at: null, paid_mail_sent_at: null,
-    });
-    t.members.forEach(([name, email], j) => s.members.push({ id: mid++, team_id: id, name, email, is_leader: j === 0 }));
-  });
-  return s;
+function loadState(): State {
+  try {
+    if (existsSync(FILE)) return JSON.parse(readFileSync(FILE, "utf8")) as State;
+  } catch (err) {
+    console.error("[finalist] couldn't read local data file, starting empty", err);
+  }
+  return { teams: [], members: [], orders: [] };
 }
 
-const g = globalThis as unknown as { __hsMemV2?: State };
-const st = () => (g.__hsMemV2 ??= seed());
+function save() {
+  try {
+    mkdirSync(join(process.cwd(), ".data"), { recursive: true });
+    writeFileSync(FILE, JSON.stringify(st(), null, 2));
+  } catch (err) {
+    console.error("[finalist] couldn't save local data file", err);
+  }
+}
+
+const g = globalThis as unknown as { __hsLocal?: State; __hsCodes?: Map<string, LoginCodeRow> };
+const st = () => (g.__hsLocal ??= loadState());
+const codes = () => (g.__hsCodes ??= new Map()); // login codes: memory only
+const codeKey = (teamId: number, email: string) => `${teamId}:${email.toLowerCase()}`;
 const nextId = (rows: { id: number }[]) => rows.reduce((n, r) => Math.max(n, r.id), 0) + 1;
 const copy = <T,>(v: T): T => (v ? { ...v } : v);
+const sortMembers = (ms: MemberRow[]) => ms.sort((a, b) => Number(b.is_leader) - Number(a.is_leader) || a.id - b.id);
 
 const mem: Store = {
   async getTeamByCode(code) {
@@ -51,7 +45,7 @@ const mem: Store = {
     return copy(st().teams.find((t) => t.id === id) ?? null);
   },
   async getMembers(teamId) {
-    return st().members.filter((m) => m.team_id === teamId).sort((a, b) => Number(b.is_leader) - Number(a.is_leader) || a.id - b.id);
+    return sortMembers(st().members.filter((m) => m.team_id === teamId).map((m) => ({ ...m })));
   },
   async getTeamByName(name) {
     return copy(st().teams.find((t) => t.name.toLowerCase() === name.trim().toLowerCase()) ?? null);
@@ -65,11 +59,13 @@ const mem: Store = {
     };
     s.teams.push(team);
     for (const mb of members) s.members.push({ id: nextId(s.members), team_id: team.id, name: mb.name, email: mb.email, is_leader: mb.isLeader });
+    save();
     return { ...team };
   },
   async addMember(team_id, name, email) {
     const mb: MemberRow = { id: nextId(st().members), team_id, name, email, is_leader: false };
     st().members.push(mb);
+    save();
     return { ...mb };
   },
   async getMember(memberId) {
@@ -77,27 +73,28 @@ const mem: Store = {
   },
   async removeMember(memberId) {
     st().members = st().members.filter((x) => x.id !== memberId);
+    save();
   },
   async deleteTeam(teamId) {
     const s = st();
     s.teams = s.teams.filter((t) => t.id !== teamId);
     s.members = s.members.filter((x) => x.team_id !== teamId);
     s.orders = s.orders.filter((o) => o.team_id !== teamId);
-    s.codes.delete(teamId);
+    save();
   },
 
-  async getLoginCode(teamId) {
-    return copy(st().codes.get(teamId) ?? null);
+  async getLoginCode(teamId, email) {
+    return copy(codes().get(codeKey(teamId, email)) ?? null);
   },
-  async saveLoginCode(teamId, code_hash, ttlMs) {
-    st().codes.set(teamId, { code_hash, expires_at: new Date(Date.now() + ttlMs), attempts: 0, sent_at: new Date() });
+  async saveLoginCode(teamId, email, code_hash, ttlMs) {
+    codes().set(codeKey(teamId, email), { code_hash, expires_at: new Date(Date.now() + ttlMs), attempts: 0, sent_at: new Date() });
   },
-  async bumpLoginAttempts(teamId) {
-    const c = st().codes.get(teamId);
+  async bumpLoginAttempts(teamId, email) {
+    const c = codes().get(codeKey(teamId, email));
     if (c) c.attempts++;
   },
-  async deleteLoginCode(teamId) {
-    st().codes.delete(teamId);
+  async deleteLoginCode(teamId, email) {
+    codes().delete(codeKey(teamId, email));
   },
 
   async findReusableOrder(teamId, amount) {
@@ -105,6 +102,7 @@ const mem: Store = {
   },
   async insertOrder(team_id, order_id, amount) {
     st().orders.push({ team_id, order_id, amount, status: "created", created_at: Date.now() });
+    save();
   },
   async getOrder(orderId) {
     const o = st().orders.find((x) => x.order_id === orderId);
@@ -116,20 +114,22 @@ const mem: Store = {
     if (amount !== undefined && amount !== o.amount) throw new Error(`Amount mismatch for ${orderId}`);
     o.status = "paid";
     const t = st().teams.find((x) => x.id === o.team_id);
-    if (!t || t.status === "paid") return null;
+    if (!t || t.status === "paid") { save(); return null; }
     Object.assign(t, { status: "paid", paid_at: new Date(), payment_id: paymentId, amount_paid: o.amount });
+    save();
     return { ...t };
   },
 
   async setMailSent(teamId, kind) {
     const t = st().teams.find((x) => x.id === teamId);
     if (t) t[kind === "id" ? "id_mail_sent_at" : "paid_mail_sent_at"] = new Date();
+    save();
   },
   async listTeams() {
     return st()
       .teams.map((t): AdminTeamRow => {
-        const ms = st().members.filter((m) => m.team_id === t.id).sort((a, b) => Number(b.is_leader) - Number(a.is_leader) || a.id - b.id);
-        return { ...t, member_count: ms.length, members: ms.map((m) => m.name).join("; "), member_list: ms.map((m) => ({ ...m })) };
+        const ms = sortMembers(st().members.filter((m) => m.team_id === t.id).map((m) => ({ ...m })));
+        return { ...t, member_count: ms.length, members: ms.map((m) => m.name).join("; "), member_list: ms };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   },

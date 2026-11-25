@@ -32,8 +32,8 @@ export function readToken<T extends Record<string, unknown>>(token: string | und
   }
 }
 
-export function hashCode(teamId: number, code: string) {
-  return createHmac("sha256", requireEnv("SESSION_SECRET")).update(`otp:${teamId}:${code}`).digest("hex");
+export function hashCode(teamId: number, email: string, code: string) {
+  return createHmac("sha256", requireEnv("SESSION_SECRET")).update(`otp:${teamId}:${email.toLowerCase()}:${code}`).digest("hex");
 }
 
 /* Entry-pass QR token: never expires, but only verifies for teams that are paid. */

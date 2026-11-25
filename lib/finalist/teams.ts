@@ -29,9 +29,11 @@ export function validateTeam(t: NewTeam): string[] {
     p.push(`${t.members.length} members (needs ${MIN_MEMBERS}–${MAX_MEMBERS})`);
   if (t.members.length && !t.members.some((m) => m.isLeader)) t.members[0].isLeader = true;
   if (t.members.filter((m) => m.isLeader).length > 1) p.push("More than one leader");
-  const leader = t.members.find((m) => m.isLeader);
-  if (leader && !leader.email) p.push("Leader email is required (used for login)");
+  const missing = t.members.filter((m) => !m.email).map((m) => m.name);
+  if (missing.length) p.push(`Email missing for: ${missing.join(", ")} (every member logs in with their email)`);
   for (const m of t.members) if (m.email && !EMAIL.test(m.email)) p.push(`Invalid email: ${m.email}`);
+  const emails = t.members.map((m) => m.email).filter(Boolean);
+  if (new Set(emails).size !== emails.length) p.push("The same email is used twice in this team");
   return p;
 }
 

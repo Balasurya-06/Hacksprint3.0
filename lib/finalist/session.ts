@@ -16,8 +16,8 @@ const cookieOpts = (maxAge: number) => ({
 });
 
 /* ── Team session ── */
-export async function setTeamSession(teamId: number) {
-  const token = makeToken({ t: teamId, exp: Date.now() + TEAM_TTL_S * 1000 }, "team");
+export async function setTeamSession(teamId: number, memberId: number) {
+  const token = makeToken({ t: teamId, m: memberId, exp: Date.now() + TEAM_TTL_S * 1000 }, "team");
   (await cookies()).set(TEAM_COOKIE, token, cookieOpts(TEAM_TTL_S));
 }
 
@@ -25,11 +25,20 @@ export async function clearTeamSession() {
   (await cookies()).delete(TEAM_COOKIE);
 }
 
+async function sessionData() {
+  return readToken<{ t: number; m?: number }>((await cookies()).get(TEAM_COOKIE)?.value, "team");
+}
+
 /** Returns the logged-in team, or null. */
 export async function currentTeam() {
-  const data = readToken<{ t: number }>((await cookies()).get(TEAM_COOKIE)?.value, "team");
+  const data = await sessionData();
   if (!data) return null;
   return getTeamById(data.t);
+}
+
+/** Id of the team member who logged in (null for old sessions). */
+export async function currentMemberId() {
+  return (await sessionData())?.m ?? null;
 }
 
 /* ── Admin session ── */

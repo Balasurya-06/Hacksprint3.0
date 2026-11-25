@@ -4,7 +4,7 @@ import { memoryStore } from "./memory-store";
 
 /* All data access for the finalist portal goes through `store()`.
    - DATABASE_URL set        → Postgres
-   - not set, in `next dev`  → in-memory demo data (Unique & Vigron), resets on restart */
+   - not set, in `next dev`  → local JSON file store (.data/finalists-local.json), starts empty */
 
 export type TeamRow = {
   id: number;
@@ -35,10 +35,11 @@ export interface Store {
   removeMember(memberId: number): Promise<void>;
   deleteTeam(teamId: number): Promise<void>;
 
-  getLoginCode(teamId: number): Promise<LoginCodeRow | null>;
-  saveLoginCode(teamId: number, codeHash: string, ttlMs: number): Promise<void>;
-  bumpLoginAttempts(teamId: number): Promise<void>;
-  deleteLoginCode(teamId: number): Promise<void>;
+  /* Login codes are per (team, member email): any member can log in with their own email. */
+  getLoginCode(teamId: number, email: string): Promise<LoginCodeRow | null>;
+  saveLoginCode(teamId: number, email: string, codeHash: string, ttlMs: number): Promise<void>;
+  bumpLoginAttempts(teamId: number, email: string): Promise<void>;
+  deleteLoginCode(teamId: number, email: string): Promise<void>;
 
   findReusableOrder(teamId: number, amount: number): Promise<string | null>;
   insertOrder(teamId: number, orderId: string, amount: number): Promise<void>;
@@ -107,22 +108,23 @@ const pgStore: Store = {
     await sql()`delete from teams where id = ${teamId}`;
   },
 
-  async getLoginCode(teamId) {
-    const [r] = await sql()<LoginCodeRow[]>`select code_hash, expires_at, attempts, sent_at from login_codes where team_id = ${teamId}`;
+  async getLoginCode(teamId, email) {
+    const [r] = await sql()<LoginCodeRow[]>`
+      select code_hash, expires_at, attempts, sent_at from login_codes where team_id = ${teamId} and email = ${email.toLowerCase()}`;
     return r ?? null;
   },
-  async saveLoginCode(teamId, codeHash, ttlMs) {
+  async saveLoginCode(teamId, email, codeHash, ttlMs) {
     const expires = new Date(Date.now() + ttlMs);
     await sql()`
-      insert into login_codes (team_id, code_hash, expires_at, attempts, sent_at)
-      values (${teamId}, ${codeHash}, ${expires}, 0, now())
-      on conflict (team_id) do update set code_hash = excluded.code_hash, expires_at = excluded.expires_at, attempts = 0, sent_at = now()`;
+      insert into login_codes (team_id, email, code_hash, expires_at, attempts, sent_at)
+      values (${teamId}, ${email.toLowerCase()}, ${codeHash}, ${expires}, 0, now())
+      on conflict (team_id, email) do update set code_hash = excluded.code_hash, expires_at = excluded.expires_at, attempts = 0, sent_at = now()`;
   },
-  async bumpLoginAttempts(teamId) {
-    await sql()`update login_codes set attempts = attempts + 1 where team_id = ${teamId}`;
+  async bumpLoginAttempts(teamId, email) {
+    await sql()`update login_codes set attempts = attempts + 1 where team_id = ${teamId} and email = ${email.toLowerCase()}`;
   },
-  async deleteLoginCode(teamId) {
-    await sql()`delete from login_codes where team_id = ${teamId}`;
+  async deleteLoginCode(teamId, email) {
+    await sql()`delete from login_codes where team_id = ${teamId} and email = ${email.toLowerCase()}`;
   },
 
   async findReusableOrder(teamId, amount) {

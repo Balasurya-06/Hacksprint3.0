@@ -12,6 +12,7 @@ export default function FinalistLogin() {
   const [code, setCode] = useState("");
   const [email, setEmail] = useState("");
   const [teamName, setTeamName] = useState("");
+  const [memberName, setMemberName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
@@ -29,14 +30,14 @@ export default function FinalistLogin() {
     setError("");
     setInfo("");
     try {
-      const data = await post("/api/finalist/login", { teamCode: teamCode.trim() });
-      setEmail(data.email);
+      const data = await post("/api/finalist/login", { teamCode: teamCode.trim(), email: email.trim() });
       setTeamName(data.teamName);
+      setMemberName(data.memberName);
       setStep("code");
       setInfo(
         data.devCode
           ? `Dev mode (no SMTP): mail not sent. Your code is ${data.devCode}`
-          : `Code sent to ${data.email}`,
+          : `One-time code sent to ${email.trim()}`,
       );
     } catch (err) {
       setError((err as Error).message);
@@ -50,7 +51,7 @@ export default function FinalistLogin() {
     setBusy(true);
     setError("");
     try {
-      await post("/api/finalist/verify-code", { teamCode: teamCode.trim(), code });
+      await post("/api/finalist/verify-code", { teamCode: teamCode.trim(), email: email.trim(), code });
       router.push("/finalist/dashboard");
     } catch (err) {
       setError((err as Error).message);
@@ -76,12 +77,27 @@ export default function FinalistLogin() {
               required
             />
           </div>
+          <div>
+            <label className="fp-label" htmlFor="member-email">Your email</label>
+            <input
+              id="member-email"
+              className="fp-input"
+              type="email"
+              placeholder="The email you registered with"
+              autoComplete="email"
+              style={{ fontFamily: "var(--font-body)", letterSpacing: 0 }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
           <p className="fp-muted" style={{ margin: 0 }}>
-            The Team ID is in your shortlist mail. We&apos;ll send a 6-digit login code to your team leader&apos;s email.
+            Any member of the team can log in. The Team ID is in your shortlist mail. We&apos;ll send a 6-digit one-time
+            password (OTP) to your email.
           </p>
           {error && <div className="fp-error">{error}</div>}
-          <button className="hs-btn hs-btn--primary hs-btn--lg" disabled={busy || !teamCode.trim()}>
-            {busy ? "Sending code…" : "Send login code →"}
+          <button className="hs-btn hs-btn--primary hs-btn--lg" disabled={busy || !teamCode.trim() || !email.trim()}>
+            {busy ? "Sending OTP…" : "Send OTP →"}
           </button>
         </form>
       ) : (
@@ -91,9 +107,10 @@ export default function FinalistLogin() {
             <p style={{ margin: 0, fontWeight: 700 }}>
               {teamName} <span className="fp-code">· {teamCode}</span>
             </p>
+            <p className="fp-muted" style={{ margin: "4px 0 0" }}>Logging in as {memberName}</p>
           </div>
           <div>
-            <label className="fp-label" htmlFor="otp">6-digit code sent to {email}</label>
+            <label className="fp-label" htmlFor="otp">6-digit OTP sent to {email.trim()}</label>
             <input
               id="otp"
               className="fp-input fp-input--code"
@@ -113,10 +130,10 @@ export default function FinalistLogin() {
           </button>
           <div className="fp-btn-row" style={{ justifyContent: "space-between" }}>
             <button type="button" className="fp-link" onClick={() => { setStep("team"); setCode(""); setError(""); setInfo(""); }}>
-              ← Change Team ID
+              ← Change Team ID / email
             </button>
             <button type="button" className="fp-link" disabled={busy} onClick={() => requestCode()}>
-              Resend code
+              Resend OTP
             </button>
           </div>
         </form>

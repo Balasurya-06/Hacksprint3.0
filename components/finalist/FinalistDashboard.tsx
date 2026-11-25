@@ -6,7 +6,8 @@ import EntryPass from "./EntryPass";
 
 type Me = {
   team: { code: string; name: string; status: "shortlisted" | "paid"; paidAt: string | null; paymentId: string | null; amountPaid: number | null };
-  members: { name: string; isLeader: boolean }[];
+  members: { name: string; isLeader: boolean; isYou?: boolean }[];
+  you: string | null;
   feePerMember: number;
   amountDue: number;
   passToken: string | null;
@@ -193,6 +194,7 @@ export default function FinalistDashboard() {
             </span>
             <h1 className="fp-team-name">{me.team.name}</h1>
             <p className="fp-code">TEAM ID · {me.team.code}</p>
+            {me.you && <p className="fp-muted" style={{ margin: "6px 0 0" }}>Logged in as <b style={{ color: "var(--bone)" }}>{me.you}</b></p>}
           </div>
           <button className="hs-btn hs-btn--ghost hs-btn--sm" onClick={logout}>Log out</button>
         </div>
@@ -215,7 +217,7 @@ export default function FinalistDashboard() {
             {me.members.map((m, i) => (
               <li key={i}>
                 <span className="fp-avatar">{m.name.trim().charAt(0).toUpperCase()}</span>
-                <span>{m.name}</span>
+                <span>{m.name}{m.isYou && <span className="fp-muted" style={{ fontSize: "0.78rem" }}> (you)</span>}</span>
                 {m.isLeader && <span className="fp-tag">LEADER</span>}
               </li>
             ))}

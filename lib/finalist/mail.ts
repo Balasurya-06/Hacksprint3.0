@@ -61,15 +61,15 @@ const ccEmails = (team: TeamRow, members: MemberRow[]) =>
   [...new Set(members.map((m) => m.email?.trim().toLowerCase()).filter((e): e is string => !!e && e !== team.leader_email.toLowerCase()))];
 
 /* ── 1. Login code ── */
-export async function sendLoginCode(team: TeamRow, code: string) {
+export async function sendLoginCode(team: TeamRow, member: MemberRow, code: string) {
   await mailer().sendMail({
     from: FROM(),
-    to: team.leader_email,
+    to: member.email!,
     subject: `${code} is your HackSprint 3.0 login code`,
-    text: `Your login code for team ${team.name} (${team.team_code}) is ${code}. It expires in 10 minutes.`,
+    text: `Hi ${member.name}, your one-time login code for team ${team.name} (${team.team_code}) is ${code}. It expires in 10 minutes.`,
     html: shell(
       "Your login code",
-      `<p>Use this code to log in to the finalist dashboard for <b>${esc(team.name)}</b>:</p>
+      `<p>Hi ${esc(member.name)}, use this one-time code to log in to the finalist dashboard for team <b>${esc(team.name)}</b>:</p>
        <div style="font-size:34px;letter-spacing:10px;font-weight:bold;background:#151515;border:1px solid #333;border-radius:10px;padding:16px;text-align:center;color:#fff">${code}</div>
        <p style="color:#a9a4a0">It expires in 10 minutes. If you didn't try to log in, you can ignore this mail.</p>`,
     ),
@@ -84,14 +84,14 @@ export async function sendShortlistMail(team: TeamRow, members: MemberRow[]) {
     to: team.leader_email,
     cc: ccEmails(team, members),
     subject: `🎉 ${team.name} is shortlisted for the HackSprint 3.0 Grand Finale`,
-    text: `Congratulations! Team ${team.name} is shortlisted for the HackSprint 3.0 finals. Your Team ID: ${team.team_code}. Log in at ${SITE_URL}/finalist to pay the finale fee (₹${fee}) and download your entry pass.`,
+    text: `Congratulations! Team ${team.name} is shortlisted for the HackSprint 3.0 finals. Your Team ID: ${team.team_code}. Any member can log in at ${SITE_URL}/finalist with this Team ID and their registered email to pay the finale fee (₹${fee}) and download your entry pass.`,
     html: shell(
       "You're in the Grand Finale! 🎉",
       `<p>Congratulations, team <b>${esc(team.name)}</b> has been shortlisted for the HackSprint 3.0 finals.</p>
        <p style="margin:18px 0 6px;color:#a9a4a0">Your Team ID</p>
        <div style="font-size:24px;font-weight:bold;font-family:monospace;background:#151515;border:1px solid #333;border-radius:10px;padding:14px;text-align:center;color:#fff">${esc(team.team_code)}</div>
        <p style="margin-top:18px">Team members:</p>${memberList(members)}
-       <p>Next step: log in with your Team ID, pay the finale fee of <b>₹${fee}</b> (₹300 × ${members.length} members) and download your entry pass.</p>
+       <p>Next step: any team member can log in with this Team ID and <b>their own registered email</b> (a one-time code is sent to that email). Then pay the finale fee of <b>₹${fee}</b> (₹300 × ${members.length} members) and download your entry pass.</p>
        <p style="margin:24px 0"><a href="${SITE_URL}/finalist" style="background:#e5191f;color:#fff;padding:14px 26px;border-radius:10px;text-decoration:none;font-weight:bold">Open finalist dashboard →</a></p>`,
     ),
   });

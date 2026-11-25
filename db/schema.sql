@@ -19,7 +19,7 @@ create table if not exists members (
   id         serial primary key,
   team_id    integer not null references teams(id) on delete cascade,
   name       text not null,
-  email      text,
+  email      text not null,               -- each member can log in with this email
   is_leader  boolean not null default false
 );
 create index if not exists members_team_idx on members(team_id);
@@ -36,10 +36,13 @@ create table if not exists payments (
 );
 create index if not exists payments_team_idx on payments(team_id);
 
+-- One-time login codes, per team member email (any member can log in with their own email)
 create table if not exists login_codes (
-  team_id     integer primary key references teams(id) on delete cascade,
+  team_id     integer not null references teams(id) on delete cascade,
+  email       text not null,
   code_hash   text not null,
   expires_at  timestamptz not null,
   attempts    integer not null default 0,
-  sent_at     timestamptz not null default now()
+  sent_at     timestamptz not null default now(),
+  primary key (team_id, email)
 );
