@@ -97,20 +97,25 @@ export async function sendShortlistMail(team: TeamRow, members: MemberRow[]) {
   });
 }
 
-/* ── 3. Payment success ── */
+/* ── 3. Payment success: receipt + each member's entry QR + what to bring ── */
 export async function sendPaymentSuccessMail(team: TeamRow, members: MemberRow[]) {
-  const qr = qrcode(0, "M");
-  qr.addData(`${SITE_URL}/finalist/verify?t=${passToken(team.id)}`);
-  qr.make();
-  const gif = Buffer.from(qr.createDataURL(8, 4).split(",")[1], "base64");
   const amount = ((team.amount_paid ?? 0) / 100).toLocaleString("en-IN");
+  const qrs = members.map((m, i) => {
+    const qr = qrcode(0, "M");
+    qr.addData(`${SITE_URL}/finalist/verify?t=${passToken(m.id)}`);
+    qr.make();
+    return { m, cid: `passqr${i}`, gif: Buffer.from(qr.createDataURL(6, 3).split(",")[1], "base64") };
+  });
 
   await mailer().sendMail({
     from: FROM(),
     to: team.leader_email,
     cc: ccEmails(team, members),
     subject: `✅ Payment received: ${team.name} is confirmed for HackSprint 3.0`,
-    text: `Payment of ₹${amount} received for team ${team.name} (${team.team_code}). Payment ID: ${team.payment_id}. Download your entry pass at ${SITE_URL}/finalist/dashboard and show the QR at the venue.`,
+    text:
+      `Payment of ₹${amount} received for team ${team.name} (${team.team_code}). Payment ID: ${team.payment_id}. ` +
+      `Each member can download their own entry pass at ${SITE_URL}/finalist/dashboard. ` +
+      `At registration, every member must show their entry pass, college ID card and Aadhaar card. Bring everything you need for your project.`,
     html: shell(
       "Payment successful ✅",
       `<p>We've received the finale fee for team <b>${esc(team.name)}</b>. Your spot is confirmed!</p>
@@ -120,11 +125,18 @@ export async function sendPaymentSuccessMail(team: TeamRow, members: MemberRow[]
          <tr><td style="padding:8px 0;color:#a9a4a0">Amount paid</td><td style="text-align:right"><b>₹${amount}</b></td></tr>
          <tr><td style="padding:8px 0;color:#a9a4a0">Payment ID</td><td style="text-align:right;font-family:monospace">${esc(team.payment_id ?? "")}</td></tr>
        </table>
-       <p>Team members:</p>${memberList(members)}
-       <p>Show this QR at the venue entry:</p>
-       <div style="background:#fff;display:inline-block;padding:10px;border-radius:10px"><img src="cid:passqr" width="200" height="200" alt="Entry QR"></div>
-       <p style="margin:24px 0"><a href="${SITE_URL}/finalist/dashboard" style="background:#e5191f;color:#fff;padding:14px 26px;border-radius:10px;text-decoration:none;font-weight:bold">Download entry pass →</a></p>`,
+       <p><b>Entry passes</b>: every member has their own QR (also used for food &amp; snack tokens):</p>
+       <table style="border-collapse:collapse">${qrs
+         .map(
+           (q) => `<tr><td style="padding:8px 14px 8px 0"><div style="background:#fff;padding:6px;border-radius:8px;display:inline-block"><img src="cid:${q.cid}" width="120" height="120" alt="QR for ${esc(q.m.name)}"></div></td>
+                   <td style="padding:8px 0"><b>${esc(q.m.name)}</b>${q.m.is_leader ? " <span style='color:#ff7a70'>(Leader)</span>" : ""}</td></tr>`,
+         )
+         .join("")}</table>
+       <p style="margin-top:20px"><b>At registration, every member must bring:</b></p>
+       <ul style="line-height:1.8"><li>Entry pass (on phone or printed)</li><li>College ID card</li><li>Aadhaar card (for verification only)</li></ul>
+       <p>Also bring everything you need for your project: laptop, charger, hardware components, etc.</p>
+       <p style="margin:24px 0"><a href="${SITE_URL}/finalist/dashboard" style="background:#e5191f;color:#fff;padding:14px 26px;border-radius:10px;text-decoration:none;font-weight:bold">Open dashboard &amp; download passes →</a></p>`,
     ),
-    attachments: [{ filename: "entry-qr.gif", content: gif, cid: "passqr" }],
+    attachments: qrs.map((q) => ({ filename: `entry-qr-${q.m.name.replace(/[^a-z0-9]+/gi, "-")}.gif`, content: q.gif, cid: q.cid })),
   });
 }

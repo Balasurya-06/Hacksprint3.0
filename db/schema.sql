@@ -20,7 +20,8 @@ create table if not exists members (
   team_id    integer not null references teams(id) on delete cascade,
   name       text not null,
   email      text not null,               -- each member can log in with this email
-  is_leader  boolean not null default false
+  is_leader  boolean not null default false,
+  checked_in_at timestamptz                -- set when a volunteer checks them in at the venue
 );
 create index if not exists members_team_idx on members(team_id);
 
@@ -35,6 +36,14 @@ create table if not exists payments (
   paid_at     timestamptz
 );
 create index if not exists payments_team_idx on payments(team_id);
+
+-- Food / snack tokens redeemed at the counter (one per member per token, keys from lib/finalist/event.ts)
+create table if not exists token_redemptions (
+  member_id   integer not null references members(id) on delete cascade,
+  token_key   text not null,
+  redeemed_at timestamptz not null default now(),
+  primary key (member_id, token_key)
+);
 
 -- One-time login codes, per team member email (any member can log in with their own email)
 create table if not exists login_codes (

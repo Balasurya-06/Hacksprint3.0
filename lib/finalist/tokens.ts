@@ -36,6 +36,6 @@ export function hashCode(teamId: number, email: string, code: string) {
   return createHmac("sha256", requireEnv("SESSION_SECRET")).update(`otp:${teamId}:${email.toLowerCase()}:${code}`).digest("hex");
 }
 
-/* Entry-pass QR token: never expires, but only verifies for teams that are paid. */
-export const passToken = (teamId: number) => makeToken({ t: teamId }, "pass");
-export const readPassToken = (token: string) => readToken<{ t: number }>(token, "pass");
+/* Entry-pass QR token, one per MEMBER: never expires, but only valid while the team is paid. */
+export const passToken = (memberId: number) => makeToken({ m: memberId }, "pass");
+export const readPassToken = (token: string) => readToken<{ m: number }>(token, "pass");

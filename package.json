@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "jsqr": "^1.4.0",
     "next": "16.4.6",
     "nodemailer": "^10.6.1",
     "postgres": "^4.1.1",

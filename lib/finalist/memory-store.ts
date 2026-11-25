@@ -1,13 +1,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { AdminTeamRow, LoginCodeRow, MemberRow, Store, TeamRow } from "./db";
+import type { AdminTeamRow, LoginCodeRow, MemberRow, RedemptionRow, Store, TeamRow } from "./db";
 
 /* Local store, used only in `next dev` when DATABASE_URL is not set.
    Starts EMPTY (add teams from /admin/finalists) and is saved to .data/finalists-local.json
    so teams survive a dev-server restart. Production always uses Postgres. */
 
 type Order = { team_id: number; order_id: string; amount: number; status: "created" | "paid" | "failed"; created_at: number };
-type State = { teams: TeamRow[]; members: MemberRow[]; orders: Order[] };
+type State = { teams: TeamRow[]; members: MemberRow[]; orders: Order[]; redemptions?: RedemptionRow[] };
 
 const FILE = join(process.cwd(), ".data", "finalists-local.json");
 
@@ -73,12 +73,15 @@ const mem: Store = {
   },
   async removeMember(memberId) {
     st().members = st().members.filter((x) => x.id !== memberId);
+    st().redemptions = (st().redemptions ?? []).filter((r) => r.member_id !== memberId);
     save();
   },
   async deleteTeam(teamId) {
     const s = st();
+    const gone = new Set(s.members.filter((x) => x.team_id === teamId).map((x) => x.id));
     s.teams = s.teams.filter((t) => t.id !== teamId);
     s.members = s.members.filter((x) => x.team_id !== teamId);
+    s.redemptions = (s.redemptions ?? []).filter((r) => !gone.has(r.member_id));
     s.orders = s.orders.filter((o) => o.team_id !== teamId);
     save();
   },
@@ -132,6 +135,34 @@ const mem: Store = {
         return { ...t, member_count: ms.length, members: ms.map((m) => m.name).join("; "), member_list: ms };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
+  },
+  async checkIn(memberId) {
+    const m = st().members.find((x) => x.id === memberId);
+    if (!m) throw new Error("Member not found");
+    if (m.checked_in_at) return { at: m.checked_in_at, already: true };
+    m.checked_in_at = new Date();
+    save();
+    return { at: m.checked_in_at, already: false };
+  },
+  async undoCheckIn(memberId) {
+    const m = st().members.find((x) => x.id === memberId);
+    if (m) m.checked_in_at = null;
+    save();
+  },
+  async redeem(member_id, token_key) {
+    const list = (st().redemptions ??= []);
+    const old = list.find((r) => r.member_id === member_id && r.token_key === token_key);
+    if (old) return { at: old.redeemed_at, already: true };
+    const row = { member_id, token_key, redeemed_at: new Date() };
+    list.push(row);
+    save();
+    return { at: row.redeemed_at, already: false };
+  },
+  async getRedemptions(ids) {
+    return (st().redemptions ?? []).filter((r) => ids.includes(r.member_id)).map((r) => ({ ...r }));
+  },
+  async stats() {
+    return { checkedIn: st().members.filter((m) => m.checked_in_at).length };
   },
   async teamsWithoutIdMail(limit) {
     return st().teams.filter((t) => !t.id_mail_sent_at).slice(0, limit).map((t) => ({ ...t }));

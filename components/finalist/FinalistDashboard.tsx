@@ -1,16 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import EntryPass from "./EntryPass";
+import EntryPass, { downloadPass, type MemberPass } from "./EntryPass";
+import Schedule from "./Schedule";
+import { EVENT, MEAL_TOKENS, MUST_BRING, PROJECT_BRING } from "@/lib/finalist/event";
 
 type Me = {
   team: { code: string; name: string; status: "shortlisted" | "paid"; paidAt: string | null; paymentId: string | null; amountPaid: number | null };
-  members: { name: string; isLeader: boolean; isYou?: boolean }[];
+  members: {
+    name: string;
+    isLeader: boolean;
+    isYou?: boolean;
+    checkedInAt: string | null;
+    pass: { passNumber: string; passToken: string; tokens: { key: string; usedAt: string | null }[] } | null;
+  }[];
   you: string | null;
   feePerMember: number;
   amountDue: number;
-  passToken: string | null;
 };
 
 type RazorpayResponse = { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string };
@@ -19,8 +26,6 @@ declare global {
   interface Window { Razorpay?: new (opts: Record<string, unknown>) => RazorpayInstance }
 }
 
-const VENUE = "KAHE, Coimbatore";
-const DATES = "Feb 5–6, 2027";
 
 async function fetchMe(): Promise<Me | null> {
   const res = await fetch("/api/finalist/me", { cache: "no-store" });
@@ -48,6 +53,7 @@ export default function FinalistDashboard() {
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [selected, setSelected] = useState(0);
 
   const load = useCallback(
     () =>
@@ -161,36 +167,45 @@ export default function FinalistDashboard() {
     router.replace("/finalist");
   }
 
-  const passData = useMemo(
-    () =>
-      me?.passToken
-        ? {
-            teamName: me.team.name,
-            teamCode: me.team.code,
-            members: me.members,
-            amountPaid: me.team.amountPaid,
-            paymentId: me.team.paymentId,
-            token: me.passToken,
-            venue: VENUE,
-            dates: DATES,
-            siteUrl: window.location.origin,
-          }
-        : null,
-    [me],
-  );
-
   if (loading) return <div className="fp-card"><p className="fp-muted">Loading your dashboard…</p></div>;
   if (!me) return <div className="fp-error">{error || "Couldn't load your dashboard. Please refresh."}</div>;
 
   const paid = me.team.status === "paid";
+  const checkedIn = me.members.filter((m) => m.checkedInAt).length;
+  const siteUrl = window.location.origin;
+  const passOf = (i: number): MemberPass | null => {
+    const m = me.members[i];
+    return m?.pass
+      ? { name: m.name, isLeader: m.isLeader, teamName: me.team.name, teamCode: me.team.code, passNumber: m.pass.passNumber, token: m.pass.passToken, siteUrl }
+      : null;
+  };
+  const sel = Math.min(selected, me.members.length - 1);
+  const selPass = passOf(sel);
+
+  async function downloadAll() {
+    for (let i = 0; i < me!.members.length; i++) {
+      const p = passOf(i);
+      if (p) await downloadPass(p);
+      await new Promise((r) => setTimeout(r, 400));
+    }
+  }
+
+  const steps = [
+    { label: "Shortlisted", done: true },
+    { label: "Payment", done: paid },
+    { label: "Entry passes", done: paid },
+    { label: "Check-in at venue", done: me.members.length > 0 && checkedIn === me.members.length },
+  ];
+  const current = steps.findIndex((x) => !x.done);
 
   return (
     <>
+      {/* ── Header ── */}
       <div className="fp-card">
         <div className="fp-head">
           <div>
             <span className={`fp-badge ${paid ? "fp-badge--paid" : "fp-badge--short"}`}>
-              {paid ? "✓ Confirmed · Paid" : "★ Shortlisted for the finals"}
+              {paid ? "✓ Confirmed · Paid" : "★ Shortlisted for the Grand Finale"}
             </span>
             <h1 className="fp-team-name">{me.team.name}</h1>
             <p className="fp-code">TEAM ID · {me.team.code}</p>
@@ -198,10 +213,20 @@ export default function FinalistDashboard() {
           </div>
           <button className="hs-btn hs-btn--ghost hs-btn--sm" onClick={logout}>Log out</button>
         </div>
+
+        <ol className="fp-steps">
+          {steps.map((s, i) => (
+            <li key={s.label} className={s.done ? "is-done" : current === i ? "is-current" : ""}>
+              <span className="fp-step-dot">{s.done ? "✓" : i + 1}</span>
+              <span>{s.label}</span>
+            </li>
+          ))}
+        </ol>
+
         {!paid && (
-          <p className="fp-muted" style={{ marginTop: 14 }}>
-            Congratulations! Your team made it to the HackSprint 3.0 Grand Finale ({DATES}, {VENUE}). Complete the
-            payment below to confirm your spot and unlock your entry pass.
+          <p className="fp-muted" style={{ marginTop: 14, marginBottom: 0 }}>
+            Congratulations! Your team made it to the {EVENT.name} ({EVENT.dates}, {EVENT.venueShort}). Complete the
+            payment to confirm your spot and unlock an entry pass for every member.
           </p>
         )}
       </div>
@@ -209,15 +234,22 @@ export default function FinalistDashboard() {
       {notice && <div className="fp-ok" style={{ marginTop: 18 }}>{notice}</div>}
       {error && <div className="fp-error" style={{ marginTop: 18 }}>{error}</div>}
 
+      {/* ── Members + payment ── */}
       <div className="fp-grid">
         <div className="fp-card">
           <h2 className="fp-card-title">Team members</h2>
-          <p className="fp-muted" style={{ margin: 0 }}>{me.members.length} members</p>
+          <p className="fp-muted" style={{ margin: 0 }}>
+            {me.members.length} members{paid && checkedIn > 0 ? ` · ${checkedIn} checked in` : ""}
+          </p>
           <ul className="fp-members">
             {me.members.map((m, i) => (
               <li key={i}>
                 <span className="fp-avatar">{m.name.trim().charAt(0).toUpperCase()}</span>
-                <span>{m.name}{m.isYou && <span className="fp-muted" style={{ fontSize: "0.78rem" }}> (you)</span>}</span>
+                <span>
+                  {m.name}
+                  {m.isYou && <span className="fp-muted" style={{ fontSize: "0.78rem" }}> (you)</span>}
+                  {m.checkedInAt && <span style={{ color: "#7fe6a8", fontSize: "0.74rem", marginLeft: 8 }}>✓ checked in</span>}
+                </span>
                 {m.isLeader && <span className="fp-tag">LEADER</span>}
               </li>
             ))}
@@ -253,15 +285,98 @@ export default function FinalistDashboard() {
         </div>
       </div>
 
+      {/* ── Entry passes (one per member) ── */}
       <div className="fp-card" style={{ marginTop: 18 }}>
-        {passData ? (
-          <EntryPass data={passData} />
-        ) : (
+        <div className="fp-head">
+          <div>
+            <h2 className="fp-card-title">Entry passes {paid ? "" : "🔒"}</h2>
+            <p className="fp-muted" style={{ margin: 0 }}>
+              {paid
+                ? "Every member has a personal pass. The same QR is used for check-in and for food & snack tokens."
+                : "Each member's entry pass unlocks here as soon as the payment is complete."}
+            </p>
+          </div>
+          {paid && <button className="hs-btn hs-btn--primary hs-btn--sm" onClick={downloadAll}>⬇ Download all passes</button>}
+        </div>
+
+        {paid && selPass && (
           <>
-            <h2 className="fp-card-title">Entry pass 🔒</h2>
-            <p className="fp-muted" style={{ margin: 0 }}>Your entry pass unlocks here as soon as the payment is complete.</p>
+            <div className="fp-pill-tabs">
+              {me.members.map((m, i) => (
+                <button key={i} className={i === sel ? "is-active" : ""} onClick={() => setSelected(i)}>
+                  {m.name}{m.isYou ? " (you)" : ""}
+                </button>
+              ))}
+            </div>
+            <div className="fp-pass">
+              <EntryPass data={selPass} />
+              <div>
+                <h3 className="fp-card-title" style={{ fontSize: "1.3rem" }}>{me.members[sel].name}</h3>
+                <p className="fp-code" style={{ marginTop: 0 }}>PASS NO. {selPass.passNumber}</p>
+                <div className="fp-btn-row" style={{ margin: "12px 0 20px" }}>
+                  <button className="hs-btn hs-btn--primary hs-btn--sm" onClick={() => downloadPass(selPass)}>⬇ Download this pass</button>
+                </div>
+                <span className="fp-label">Food & snack tokens</span>
+                <ul className="fp-tokens">
+                  {MEAL_TOKENS.map((t) => {
+                    const used = me.members[sel].pass?.tokens.find((x) => x.key === t.key)?.usedAt;
+                    return (
+                      <li key={t.key} className={used ? "is-used" : ""}>
+                        <span>{t.kind === "food" ? "🍽" : "☕"} {t.label}</span>
+                        <span className="fp-muted" style={{ fontSize: "0.74rem" }}>
+                          {used ? `Used ${new Date(used).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}` : t.time}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p className="fp-muted" style={{ fontSize: "0.8rem" }}>
+                  Show the pass QR at the food counter. Each token can be used once, only by the pass holder.
+                </p>
+              </div>
+            </div>
           </>
         )}
+      </div>
+
+      {/* ── What to bring ── */}
+      <div className="fp-grid">
+        <div className="fp-card">
+          <h2 className="fp-card-title">Must bring for registration</h2>
+          <p className="fp-muted" style={{ marginTop: 0 }}>Every member must show all three at the registration desk. No entry without them.</p>
+          <ul className="fp-checklist">
+            {MUST_BRING.map((b) => (
+              <li key={b.title}><b>{b.title}</b><span className="fp-muted">{b.note}</span></li>
+            ))}
+          </ul>
+        </div>
+        <div className="fp-card">
+          <h2 className="fp-card-title">Bring for your project</h2>
+          <p className="fp-muted" style={{ marginTop: 0 }}>Bring all the belongings you want to use for your project. Only power and Wi-Fi are provided.</p>
+          <ul className="fp-checklist fp-checklist--plain">
+            {PROJECT_BRING.map((b) => <li key={b}>{b}</li>)}
+          </ul>
+        </div>
+      </div>
+
+      {/* ── Schedule ── */}
+      <div className="fp-card" style={{ marginTop: 18 }}>
+        <div className="fp-head">
+          <h2 className="fp-card-title">Finale schedule</h2>
+          {EVENT.scheduleTentative && <span className="fp-badge fp-badge--bad">Tentative · final timings will be shared</span>}
+        </div>
+        <Schedule />
+      </div>
+
+      <div className="fp-card" style={{ marginTop: 18 }}>
+        <h2 className="fp-card-title">Venue & help</h2>
+        <p className="fp-muted" style={{ margin: 0 }}>
+          {EVENT.venue} · {EVENT.dates} ·{" "}
+          <a className="fp-link" href={EVENT.mapUrl} target="_blank" rel="noreferrer">Open in Maps</a>
+          <br />
+          Questions? Call <a className="fp-link" href={`tel:${EVENT.contactPhone.replace(/\s/g, "")}`}>{EVENT.contactPhone}</a> or mail{" "}
+          <a className="fp-link" href={`mailto:${EVENT.contactEmail}`}>{EVENT.contactEmail}</a>
+        </p>
       </div>
     </>
   );

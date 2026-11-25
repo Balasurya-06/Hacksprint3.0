@@ -13,7 +13,7 @@ export default function VerifyPassPage() {
     <div className="hs-section page-top">
       <div className="hs-bg-grid" aria-hidden="true" />
       <div className="hs-container">
-        <div className="fp-wrap fp-wrap--sm">
+        <div className="fp-wrap">
           <Suspense fallback={<div className="fp-card"><p className="fp-muted">Checking pass…</p></div>}>
             <PassVerify />
           </Suspense>

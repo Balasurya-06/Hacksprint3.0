@@ -16,7 +16,7 @@ type Team = {
   paid_mail_sent_at: string | null;
   member_count: number;
   members: string;
-  member_list: { id: number; name: string; email: string | null; is_leader: boolean }[];
+  member_list: { id: number; name: string; email: string | null; is_leader: boolean; checked_in_at?: string | null }[];
 };
 
 async function fetchTeams(): Promise<Team[] | null> {
@@ -152,6 +152,7 @@ export default function AdminFinalists() {
       paid: paid.length,
       pending: teams.length - paid.length,
       members: teams.reduce((n, t) => n + t.member_count, 0),
+      checkedIn: teams.reduce((n, t) => n + t.member_list.filter((m) => m.checked_in_at).length, 0),
       collected: paid.reduce((n, t) => n + (t.amount_paid ?? 0), 0) / 100,
     };
   }, [teams]);
@@ -178,6 +179,7 @@ export default function AdminFinalists() {
           <button className={`hs-btn hs-btn--sm ${showAdd ? "hs-btn--light" : "hs-btn--primary"}`} onClick={() => setShowAdd((v) => !v)}>
             {showAdd ? "✕ Close" : "＋ Add finalists"}
           </button>
+          <a className="hs-btn hs-btn--ghost hs-btn--sm" href="/admin/scan">📷 Venue scanner</a>
           <button className="hs-btn hs-btn--ghost hs-btn--sm" onClick={load} disabled={busy}>↻ Refresh</button>
           <a className="hs-btn hs-btn--ghost hs-btn--sm" href="/api/admin/teams?format=csv">⬇ Export CSV</a>
           <button className="hs-btn hs-btn--ghost hs-btn--sm" onClick={sendAllShortlist} disabled={busy}>✉ Send Team ID mails</button>
@@ -192,6 +194,7 @@ export default function AdminFinalists() {
         <div className="fp-stat"><b style={{ color: "#7fe6a8" }}>{stats.paid}</b><span>Paid</span></div>
         <div className="fp-stat"><b style={{ color: "var(--red-soft)" }}>{stats.pending}</b><span>Pending</span></div>
         <div className="fp-stat"><b>₹{stats.collected.toLocaleString("en-IN")}</b><span>Collected</span></div>
+        <div className="fp-stat"><b>{stats.checkedIn}</b><span>Checked in</span></div>
       </div>
 
       {loadError && <div className="fp-error" style={{ marginTop: 16 }}>{loadError}</div>}
@@ -249,7 +252,7 @@ export default function AdminFinalists() {
                       {t.member_list.map((m) => (
                         <li key={m.id}>
                           <span className="fp-avatar">{m.name.trim().charAt(0).toUpperCase()}</span>
-                          <span>{m.name} <span className="fp-muted" style={{ fontSize: "0.78rem" }}>{m.email ?? "no email"}</span></span>
+                          <span>{m.name} <span className="fp-muted" style={{ fontSize: "0.78rem" }}>{m.email ?? "no email"}</span>{m.checked_in_at && <span style={{ color: "#7fe6a8", fontSize: "0.74rem", marginLeft: 8 }}>✓ checked in</span>}</span>
                           {m.is_leader ? (
                             <span className="fp-tag">LEADER</span>
                           ) : (

@@ -7,8 +7,9 @@ Shortlisted teams log in with their **Team ID**, see their members, pay **₹300
 | URL | Who | What |
 |---|---|---|
 | `/finalist` | Any team member | Team ID + **their own registered email** → 6-digit OTP mailed to that email → log in |
-| `/finalist/dashboard` | Teams | Members, shortlist status, pay, download entry pass |
-| `/finalist/verify?t=…` | Gate volunteers | Opened by scanning the pass QR: shows ✓ Valid/Paid + member names |
+| `/finalist/dashboard` | Teams | Progress steps, members, pay, one entry pass per member, food/snack token status, what to bring, schedule, venue |
+| `/finalist/verify?t=…` | Anyone scanning a pass with a phone | Pass holder, ✓ valid/paid, the finale schedule and what to bring |
+| `/admin/scan` | Volunteers at the venue (admin password) | Camera QR scanner: registration check-in (ID checked by sight) and food/snack tokens |
 | `/admin/finalists` | Organisers | Add finalists (CSV upload with preview, or manually), add/remove members, delete teams, paid/pending stats, search, CSV export, send/resend mails |
 
 ## Flow
@@ -78,6 +79,16 @@ node --env-file=.env.local scripts/import-teams.mjs data/finalists.csv          
 3. Check: dashboard shows Paid, the mail arrives, the pass downloads, and scanning the QR opens `/finalist/verify` showing ✓.
 4. For webhook testing on localhost, use the Vercel preview URL (webhooks need a public URL).
 5. Go live: swap to `rzp_live_` keys + a live-mode webhook, then delete the test teams.
+
+## At the venue
+
+Open **/admin/scan** on a phone (the live HTTPS site, so the camera works), log in with the admin password and pick the mode:
+
+- **Registration check-in**: scan the member's pass → name, team and pass no. appear → look at the **entry pass, college ID card and Aadhaar card** (name and photo match the person) → tick the three boxes → **Confirm check-in**. No ID numbers are typed or stored.
+- **A food/snack token** (Day 1 Lunch, Snacks, …): scan → green **SERVE** or red **ALREADY USED**. Tokens work only after check-in, once per person.
+- If a QR won't scan, type the pass number printed on the pass (e.g. `HS3-0042`).
+
+Edit the schedule, food/snack tokens and the "what to bring" list in `lib/finalist/event.ts` (set `scheduleTentative: false` once timings are final).
 
 ## Edge cases handled
 - Payment succeeded but the browser closed → webhook still marks the team paid and sends the mail.
