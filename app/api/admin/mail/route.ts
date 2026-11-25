@@ -1,3 +1,4 @@
+import { withErrors } from "@/lib/finalist/http";
 import { db, getMembers, getTeamById, type TeamRow } from "@/lib/finalist/db";
 import { sendShortlistMail } from "@/lib/finalist/mail";
 import { sendPaidMailSafely } from "@/lib/finalist/payments";
@@ -7,7 +8,7 @@ const BATCH = 20; // keep each request short; the admin page loops until done
 
 /* POST { kind: "shortlist", all: true }        → mail Team IDs to the next batch of un-notified teams
    POST { kind: "shortlist" | "paid", teamId }   → (re)send one mail to one team */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   if (!(await isAdmin())) return Response.json({ error: "Unauthorized" }, { status: 401 });
   const { kind, teamId, all } = (await req.json().catch(() => ({}))) as { kind?: string; teamId?: number; all?: boolean };
   const sql = db();
@@ -44,3 +45,5 @@ export async function POST(req: Request) {
   }
   return Response.json({ error: "Unknown kind" }, { status: 400 });
 }
+
+export const POST = withErrors(handlePOST);

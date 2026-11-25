@@ -24,7 +24,9 @@ const DATES = "Feb 5–6, 2027";
 async function fetchMe(): Promise<Me | null> {
   const res = await fetch("/api/finalist/me", { cache: "no-store" });
   if (res.status === 401) return null;
-  return (await res.json()) as Me;
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Server error (${res.status})`);
+  return data as Me;
 }
 
 function loadCheckout() {
@@ -62,19 +64,26 @@ export default function FinalistDashboard() {
 
   useEffect(() => {
     let alive = true;
-    fetchMe().then((data) => {
-      if (!alive) return;
-      if (!data) return router.replace("/finalist");
-      setMe(data);
-      setLoading(false);
-    });
+    fetchMe().then(
+      (data) => {
+        if (!alive) return;
+        if (!data) return router.replace("/finalist");
+        setMe(data);
+        setLoading(false);
+      },
+      (err: Error) => {
+        if (!alive) return;
+        setError(err.message);
+        setLoading(false);
+      },
+    );
     return () => { alive = false; };
   }, [router]);
 
   /* After checkout, the webhook may land a moment later than the browser: poll briefly. */
   async function waitForPaid() {
     for (let i = 0; i < 10; i++) {
-      const data = await load();
+      const data = await load().catch(() => null);
       if (data?.team.status === "paid") return true;
       await new Promise((r) => setTimeout(r, 2000));
     }
@@ -149,7 +158,8 @@ export default function FinalistDashboard() {
     [me],
   );
 
-  if (loading || !me) return <div className="fp-card"><p className="fp-muted">Loading your dashboard…</p></div>;
+  if (loading) return <div className="fp-card"><p className="fp-muted">Loading your dashboard…</p></div>;
+  if (!me) return <div className="fp-error">{error || "Couldn't load your dashboard. Please refresh."}</div>;
 
   const paid = me.team.status === "paid";
 

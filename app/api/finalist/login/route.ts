@@ -1,10 +1,11 @@
+import { withErrors } from "@/lib/finalist/http";
 import { randomInt } from "node:crypto";
 import { db, getTeamByCode } from "@/lib/finalist/db";
 import { sendLoginCode } from "@/lib/finalist/mail";
 import { hashCode } from "@/lib/finalist/tokens";
 
 /* Step 1: team enters its Team ID → we mail a 6-digit code to the team leader. */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const { teamCode } = (await req.json().catch(() => ({}))) as { teamCode?: string };
   if (!teamCode || teamCode.length > 60) return Response.json({ error: "Enter your Team ID." }, { status: 400 });
 
@@ -37,3 +38,5 @@ function maskEmail(email: string) {
   const [user, domain] = email.split("@");
   return `${user.slice(0, 2)}${"•".repeat(Math.max(user.length - 2, 3))}@${domain}`;
 }
+
+export const POST = withErrors(handlePOST);

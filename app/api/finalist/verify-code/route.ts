@@ -1,3 +1,4 @@
+import { withErrors } from "@/lib/finalist/http";
 import { db, getTeamByCode } from "@/lib/finalist/db";
 import { setTeamSession } from "@/lib/finalist/session";
 import { hashCode, safeEqual } from "@/lib/finalist/tokens";
@@ -5,7 +6,7 @@ import { hashCode, safeEqual } from "@/lib/finalist/tokens";
 const MAX_ATTEMPTS = 5;
 
 /* Step 2: team enters the 6-digit code → session cookie is set. */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const { teamCode, code } = (await req.json().catch(() => ({}))) as { teamCode?: string; code?: string };
   if (!teamCode || !code || !/^\d{6}$/.test(code)) return Response.json({ error: "Enter the 6-digit code." }, { status: 400 });
 
@@ -31,3 +32,5 @@ export async function POST(req: Request) {
   await setTeamSession(team.id);
   return Response.json({ ok: true });
 }
+
+export const POST = withErrors(handlePOST);

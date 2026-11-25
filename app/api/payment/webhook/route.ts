@@ -1,9 +1,10 @@
+import { withErrors } from "@/lib/finalist/http";
 import { markOrderPaid } from "@/lib/finalist/payments";
 import { verifyWebhookSignature } from "@/lib/finalist/razorpay";
 
 /* Razorpay → server webhook. Configure in Razorpay Dashboard → Settings → Webhooks:
    URL: https://<your-domain>/api/payment/webhook   Events: payment.captured, order.paid */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const raw = await req.text();
   const signature = req.headers.get("x-razorpay-signature") ?? "";
   if (!verifyWebhookSignature(raw, signature)) return new Response("bad signature", { status: 400 });
@@ -24,3 +25,5 @@ export async function POST(req: Request) {
   }
   return new Response("ok");
 }
+
+export const POST = withErrors(handlePOST);

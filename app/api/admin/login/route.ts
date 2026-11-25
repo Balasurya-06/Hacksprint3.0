@@ -1,8 +1,9 @@
+import { withErrors } from "@/lib/finalist/http";
 import { requireEnv } from "@/lib/finalist/config";
 import { setAdminSession } from "@/lib/finalist/session";
 import { safeEqual } from "@/lib/finalist/tokens";
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const { password } = (await req.json().catch(() => ({}))) as { password?: string };
   if (!password || !safeEqual(password, requireEnv("ADMIN_PASSWORD"))) {
     await new Promise((r) => setTimeout(r, 800)); // slow down guessing
@@ -11,3 +12,5 @@ export async function POST(req: Request) {
   await setAdminSession();
   return Response.json({ ok: true });
 }
+
+export const POST = withErrors(handlePOST);

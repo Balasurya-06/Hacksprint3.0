@@ -1,3 +1,4 @@
+import { withErrors } from "@/lib/finalist/http";
 import { db } from "@/lib/finalist/db";
 import { markOrderPaid } from "@/lib/finalist/payments";
 import { verifyCheckoutSignature } from "@/lib/finalist/razorpay";
@@ -5,7 +6,7 @@ import { currentTeam } from "@/lib/finalist/session";
 
 /* Called by the browser right after Razorpay Checkout succeeds.
    The webhook does the same job server-to-server, in case this call never arrives. */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const team = await currentTeam();
   if (!team) return Response.json({ error: "Not logged in" }, { status: 401 });
 
@@ -27,3 +28,5 @@ export async function POST(req: Request) {
   await markOrderPaid(orderId, paymentId);
   return Response.json({ ok: true });
 }
+
+export const POST = withErrors(handlePOST);

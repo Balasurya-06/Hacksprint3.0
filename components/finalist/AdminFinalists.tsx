@@ -20,7 +20,9 @@ type Team = {
 async function fetchTeams(): Promise<Team[] | null> {
   const res = await fetch("/api/admin/teams", { cache: "no-store" });
   if (res.status === 401) return null;
-  return (await res.json()).teams;
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Server error (${res.status})`);
+  return data.teams;
 }
 
 export default function AdminFinalists() {
@@ -32,29 +34,45 @@ export default function AdminFinalists() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const [loadError, setLoadError] = useState("");
+
   const load = useCallback(
     () =>
-      fetchTeams().then((list) => {
-        if (list) setTeams(list);
-        setAuthed(!!list);
-      }),
+      fetchTeams().then(
+        (list) => {
+          if (list) setTeams(list);
+          setAuthed(!!list);
+          setLoadError("");
+        },
+        (err: Error) => {
+          setAuthed(true);
+          setLoadError(err.message);
+        },
+      ),
     [],
   );
 
   useEffect(() => {
     let alive = true;
-    fetchTeams().then((list) => {
-      if (!alive) return;
-      if (list) setTeams(list);
-      setAuthed(!!list);
-    });
+    fetchTeams().then(
+      (list) => {
+        if (!alive) return;
+        if (list) setTeams(list);
+        setAuthed(!!list);
+      },
+      (err: Error) => {
+        if (!alive) return;
+        setAuthed(true);
+        setLoadError(err.message);
+      },
+    );
     return () => { alive = false; };
   }, []);
 
   async function login(e: React.FormEvent) {
     e.preventDefault();
     const res = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
-    if (!res.ok) return setMsg("Wrong password");
+    if (!res.ok) return setMsg((await res.json().catch(() => ({}))).error || "Login failed");
     setMsg("");
     load();
   }
@@ -150,6 +168,7 @@ export default function AdminFinalists() {
         <div className="fp-stat"><b>₹{stats.collected.toLocaleString("en-IN")}</b><span>Collected</span></div>
       </div>
 
+      {loadError && <div className="fp-error" style={{ marginTop: 16 }}>{loadError}</div>}
       {msg && <div className="fp-ok" style={{ marginTop: 16 }}>{msg}</div>}
 
       <div className="fp-btn-row" style={{ marginTop: 18 }}>

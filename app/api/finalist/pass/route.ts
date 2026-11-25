@@ -1,8 +1,9 @@
+import { withErrors } from "@/lib/finalist/http";
 import { getMembers, getTeamById } from "@/lib/finalist/db";
 import { readPassToken } from "@/lib/finalist/tokens";
 
 /* Public: gate volunteers scan the entry-pass QR → this says if the team is valid & paid. */
-export async function GET(req: Request) {
+async function handleGET(req: Request) {
   const token = new URL(req.url).searchParams.get("t") ?? "";
   const data = readPassToken(token);
   const team = data ? await getTeamById(data.t) : null;
@@ -18,3 +19,5 @@ export async function GET(req: Request) {
     { headers: { "Cache-Control": "no-store" } },
   );
 }
+
+export const GET = withErrors(handleGET);

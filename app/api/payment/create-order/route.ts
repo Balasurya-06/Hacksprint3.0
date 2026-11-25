@@ -1,3 +1,4 @@
+import { withErrors } from "@/lib/finalist/http";
 import { amountForMembers, requireEnv } from "@/lib/finalist/config";
 import { db, getMembers } from "@/lib/finalist/db";
 import { createOrder } from "@/lib/finalist/razorpay";
@@ -5,7 +6,7 @@ import { currentTeam } from "@/lib/finalist/session";
 
 /* Creates (or reuses) a Razorpay order for the logged-in team.
    The amount is ALWAYS computed here from the member count, never taken from the browser. */
-export async function POST() {
+async function handlePOST() {
   const team = await currentTeam();
   if (!team) return Response.json({ error: "Not logged in" }, { status: 401 });
   if (team.status === "paid") return Response.json({ error: "Your team has already paid." }, { status: 409 });
@@ -43,3 +44,5 @@ export async function POST() {
     prefill: { name: leader?.name ?? "", email: team.leader_email },
   });
 }
+
+export const POST = withErrors(handlePOST);

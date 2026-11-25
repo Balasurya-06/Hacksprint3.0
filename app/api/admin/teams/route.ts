@@ -1,3 +1,4 @@
+import { withErrors } from "@/lib/finalist/http";
 import { db } from "@/lib/finalist/db";
 import { isAdmin } from "@/lib/finalist/session";
 
@@ -18,7 +19,7 @@ type Row = {
 
 /* GET /api/admin/teams            → JSON list
    GET /api/admin/teams?format=csv → CSV download */
-export async function GET(req: Request) {
+async function handleGET(req: Request) {
   if (!(await isAdmin())) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const rows = await db()<Row[]>`
@@ -51,3 +52,5 @@ export async function GET(req: Request) {
 
   return Response.json({ teams: rows }, { headers: { "Cache-Control": "no-store" } });
 }
+
+export const GET = withErrors(handleGET);
