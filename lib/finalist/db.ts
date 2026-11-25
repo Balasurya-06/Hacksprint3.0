@@ -21,12 +21,19 @@ export type TeamRow = {
 export type MemberRow = { id: number; team_id: number; name: string; email: string | null; is_leader: boolean };
 export type LoginCodeRow = { code_hash: string; expires_at: Date; attempts: number; sent_at: Date };
 export type OrderRow = { team_id: number; amount: number; status: "created" | "paid" | "failed" };
-export type AdminTeamRow = TeamRow & { member_count: number; members: string };
+export type AdminTeamRow = TeamRow & { member_count: number; members: string; member_list: MemberRow[] };
 
 export interface Store {
   getTeamByCode(code: string): Promise<TeamRow | null>;
   getTeamById(id: number): Promise<TeamRow | null>;
   getMembers(teamId: number): Promise<MemberRow[]>;
+  getTeamByName(name: string): Promise<TeamRow | null>;
+  /** Inserts team + members. Returns null if the team code is already taken. */
+  createTeam(code: string, name: string, leaderEmail: string, members: { name: string; email: string | null; isLeader: boolean }[]): Promise<TeamRow | null>;
+  addMember(teamId: number, name: string, email: string | null): Promise<MemberRow>;
+  getMember(memberId: number): Promise<MemberRow | null>;
+  removeMember(memberId: number): Promise<void>;
+  deleteTeam(teamId: number): Promise<void>;
 
   getLoginCode(teamId: number): Promise<LoginCodeRow | null>;
   saveLoginCode(teamId: number, codeHash: string, ttlMs: number): Promise<void>;
@@ -69,6 +76,36 @@ const pgStore: Store = {
     return t ?? null;
   },
   getMembers: (teamId) => sql()<MemberRow[]>`select * from members where team_id = ${teamId} order by is_leader desc, id asc`,
+  async getTeamByName(name) {
+    const [t] = await sql()<TeamRow[]>`select * from teams where lower(name) = lower(${name.trim()}) limit 1`;
+    return t ?? null;
+  },
+  async createTeam(code, name, leaderEmail, members) {
+    return sql().begin(async (tx) => {
+      const [team] = await tx<TeamRow[]>`
+        insert into teams (team_code, name, leader_email) values (${code}, ${name}, ${leaderEmail})
+        on conflict (team_code) do nothing returning *`;
+      if (!team) return null;
+      for (const m of members) {
+        await tx`insert into members (team_id, name, email, is_leader) values (${team.id}, ${m.name}, ${m.email}, ${m.isLeader})`;
+      }
+      return team;
+    });
+  },
+  async addMember(teamId, name, email) {
+    const [m] = await sql()<MemberRow[]>`insert into members (team_id, name, email) values (${teamId}, ${name}, ${email}) returning *`;
+    return m;
+  },
+  async getMember(memberId) {
+    const [m] = await sql()<MemberRow[]>`select * from members where id = ${memberId}`;
+    return m ?? null;
+  },
+  async removeMember(memberId) {
+    await sql()`delete from members where id = ${memberId}`;
+  },
+  async deleteTeam(teamId) {
+    await sql()`delete from teams where id = ${teamId}`;
+  },
 
   async getLoginCode(teamId) {
     const [r] = await sql()<LoginCodeRow[]>`select code_hash, expires_at, attempts, sent_at from login_codes where team_id = ${teamId}`;
@@ -125,7 +162,9 @@ const pgStore: Store = {
   },
   listTeams: () => sql()<AdminTeamRow[]>`
     select t.*, count(m.id)::int as member_count,
-           coalesce(string_agg(m.name, '; ' order by m.is_leader desc, m.id), '') as members
+           coalesce(string_agg(m.name, '; ' order by m.is_leader desc, m.id), '') as members,
+           coalesce(json_agg(json_build_object('id', m.id, 'team_id', m.team_id, 'name', m.name, 'email', m.email, 'is_leader', m.is_leader)
+                    order by m.is_leader desc, m.id) filter (where m.id is not null), '[]') as member_list
     from teams t left join members m on m.team_id = t.id
     group by t.id order by t.name`,
   teamsWithoutIdMail: (limit) => sql()<TeamRow[]>`select * from teams where id_mail_sent_at is null order by id limit ${limit}`,

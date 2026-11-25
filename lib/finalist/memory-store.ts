@@ -38,8 +38,9 @@ function seed(): State {
   return s;
 }
 
-const g = globalThis as unknown as { __hsMem?: State };
-const st = () => (g.__hsMem ??= seed());
+const g = globalThis as unknown as { __hsMemV2?: State };
+const st = () => (g.__hsMemV2 ??= seed());
+const nextId = (rows: { id: number }[]) => rows.reduce((n, r) => Math.max(n, r.id), 0) + 1;
 const copy = <T,>(v: T): T => (v ? { ...v } : v);
 
 const mem: Store = {
@@ -51,6 +52,38 @@ const mem: Store = {
   },
   async getMembers(teamId) {
     return st().members.filter((m) => m.team_id === teamId).sort((a, b) => Number(b.is_leader) - Number(a.is_leader) || a.id - b.id);
+  },
+  async getTeamByName(name) {
+    return copy(st().teams.find((t) => t.name.toLowerCase() === name.trim().toLowerCase()) ?? null);
+  },
+  async createTeam(code, name, leader_email, members) {
+    const s = st();
+    if (s.teams.some((t) => t.team_code === code)) return null;
+    const team: TeamRow = {
+      id: nextId(s.teams), team_code: code, name, leader_email, status: "shortlisted",
+      paid_at: null, payment_id: null, amount_paid: null, id_mail_sent_at: null, paid_mail_sent_at: null,
+    };
+    s.teams.push(team);
+    for (const mb of members) s.members.push({ id: nextId(s.members), team_id: team.id, name: mb.name, email: mb.email, is_leader: mb.isLeader });
+    return { ...team };
+  },
+  async addMember(team_id, name, email) {
+    const mb: MemberRow = { id: nextId(st().members), team_id, name, email, is_leader: false };
+    st().members.push(mb);
+    return { ...mb };
+  },
+  async getMember(memberId) {
+    return copy(st().members.find((x) => x.id === memberId) ?? null);
+  },
+  async removeMember(memberId) {
+    st().members = st().members.filter((x) => x.id !== memberId);
+  },
+  async deleteTeam(teamId) {
+    const s = st();
+    s.teams = s.teams.filter((t) => t.id !== teamId);
+    s.members = s.members.filter((x) => x.team_id !== teamId);
+    s.orders = s.orders.filter((o) => o.team_id !== teamId);
+    s.codes.delete(teamId);
   },
 
   async getLoginCode(teamId) {
@@ -96,7 +129,7 @@ const mem: Store = {
     return st()
       .teams.map((t): AdminTeamRow => {
         const ms = st().members.filter((m) => m.team_id === t.id).sort((a, b) => Number(b.is_leader) - Number(a.is_leader) || a.id - b.id);
-        return { ...t, member_count: ms.length, members: ms.map((m) => m.name).join("; ") };
+        return { ...t, member_count: ms.length, members: ms.map((m) => m.name).join("; "), member_list: ms.map((m) => ({ ...m })) };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   },

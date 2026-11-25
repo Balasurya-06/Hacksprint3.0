@@ -9,7 +9,7 @@ Shortlisted teams log in with their **Team ID**, see their members, pay **₹300
 | `/finalist` | Teams | Enter Team ID → 6-digit code mailed to leader → log in |
 | `/finalist/dashboard` | Teams | Members, shortlist status, pay, download entry pass |
 | `/finalist/verify?t=…` | Gate volunteers | Opened by scanning the pass QR: shows ✓ Valid/Paid + member names |
-| `/admin/finalists` | Organisers | All teams, paid/pending stats, search, CSV export, send/resend mails |
+| `/admin/finalists` | Organisers | Add finalists (CSV upload with preview, or manually), add/remove members, delete teams, paid/pending stats, search, CSV export, send/resend mails |
 
 ## Flow
 
