@@ -1,4 +1,4 @@
-import nodemailer, { type Transporter } from "nodemailer";
+import nodemailer, { type SendMailOptions, type Transporter } from "nodemailer";
 import qrcode from "qrcode-generator";
 import { EVENT_DATES, EVENT_VENUE, SITE_URL, requireEnv } from "./config";
 import type { MemberRow, TeamRow } from "./db";
@@ -8,6 +8,18 @@ import { passToken } from "./tokens";
    Gmail free accounts allow ~500 mails/day, which covers 400 teams. */
 let transporter: Transporter | null = null;
 function mailer() {
+  if (!transporter && !process.env.SMTP_HOST && process.env.NODE_ENV !== "production") {
+    /* Local dev without SMTP: don't send, print the mail in the `npm run dev` terminal. */
+    const dev = nodemailer.createTransport({ jsonTransport: true });
+    transporter = {
+      sendMail: async (opts: SendMailOptions) => {
+        console.log(
+          `\n📧 [dev mail, not sent] to: ${opts.to}${opts.cc && String(opts.cc) ? ` cc: ${opts.cc}` : ""}\n   subject: ${opts.subject}\n   ${opts.text}\n`,
+        );
+        return dev.sendMail(opts);
+      },
+    } as unknown as Transporter;
+  }
   if (!transporter) {
     transporter = nodemailer.createTransport({
       host: requireEnv("SMTP_HOST"),
