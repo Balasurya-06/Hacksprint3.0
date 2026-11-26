@@ -1,3 +1,5 @@
+import { unstable_rethrow } from "next/navigation";
+
 /* Wraps a route handler so unexpected errors come back as JSON, never an empty 500.
    Missing env vars are named (useful while setting up); other details stay in the server log. */
 export function withErrors<A extends unknown[]>(handler: (...args: A) => Promise<Response>) {
@@ -5,6 +7,7 @@ export function withErrors<A extends unknown[]>(handler: (...args: A) => Promise
     try {
       return await handler(...args);
     } catch (err) {
+      unstable_rethrow(err); // let Next.js internal signals (prerender bail-out, redirects…) through
       console.error("[finalist] route error", err);
       const msg = err instanceof Error ? err.message : "";
       const missing = msg.startsWith("Missing environment variable");
